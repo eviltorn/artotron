@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f0f12" />
+  <title>Artotron — Арт-Барабан</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #0f0f12;
+      --bg-card: #17171d;
+      --bg-elevated: #22222b;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-locked: rgba(255, 46, 147, 0.65);
+      --text-primary: #f5f5f7;
+      --text-secondary: #8e8e9e;
+      --accent-start: #ff2e93;
+      --accent-end: #ff5e62;
+      --accent-gradient: linear-gradient(135deg, #ff2e93 0%, #ff5e62 100%);
+      --accent-glow: 0 8px 28px rgba(255, 46, 147, 0.36);
+      --accent-soft: rgba(255, 46, 147, 0.14);
+      --success: #2ee59d;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 460px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(255, 46, 147, 0.2) 0%, rgba(255, 94, 98, 0.06) 50%, transparent 72%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      max-width: 460px;
+      min-height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      padding: calc(10px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
+      gap: 10px;
+    }
+
+    /* Centered Hero Header */
+    .hero-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .brand-lockup {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .brand-art-img {
+      height: 28px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 10px rgba(255, 46, 147, 0.35));
+    }
+
+    .brand-text-img {
+      height: 18px;
+      width: auto;
+      object-fit: contain;
+      opacity: 0.92;
+    }
+
+    .hero-question {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.05;
+      margin-top: 2px;
+    }
+
+    .hero-question-top {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .hero-question-accent {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 14px rgba(255, 46, 147, 0.35));
+    }
+
+    /* Centered Socials Row */
+    .socials {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .social-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+      transition: transform 0.15s ease, border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .social-btn svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .social-btn:active {
+      transform: scale(0.91);
+      border-color: var(--accent-start);
+      color: #fff;
+      background: var(--bg-elevated);
+    }
+
+    @media (hover: hover) {
+      .social-btn:hover {
+        border-color: rgba(255, 46, 147, 0.5);
+        color: #fff;
+      }
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .stat-pill strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .stat-pill.has-locks {
+      border-color: rgba(255, 46, 147, 0.45);
+      background: var(--accent-soft);
+      color: #ffb8d9;
+    }
+
+    .stat-pill.has-locks strong {
+      color: #fff;
+    }
+
+    /* Cards Stack */
+    .cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .drum-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 12px 14px 12px;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+      overflow: hidden;
+    }
+
+    .drum-card.is-locked {
+      border-color: var(--border-locked);
+      box-shadow: 0 0 0 1px rgba(255, 46, 147, 0.16), 0 8px 24px rgba(255, 46, 147, 0.12);
+    }
+
+    .drum-card.is-spinning {
+      border-color: rgba(255, 94, 98, 0.55);
+      box-shadow: 0 0 22px rgba(255, 46, 147, 0.18);
+    }
+
+    .drum-card.landed {
+      animation: cardPop 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes cardPop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.012); }
+      100% { transform: scale(1); }
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .category-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      min-width: 0;
+    }
+
+    .category-num {
+      color: #ff4791;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .category-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .circle-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: transform 0.14s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .circle-btn img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+    }
+
+    .circle-btn:active {
+      transform: scale(0.9);
+    }
+
+    .circle-btn.wat-btn:active {
+      border-color: rgba(255, 46, 147, 0.6);
+    }
+
+    .circle-btn.lock-btn.active {
+      background: var(--accent-gradient);
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(255, 46, 147, 0.4);
+    }
+
+    .circle-btn.refresh-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .circle-btn.refresh-btn.spinning img {
+      animation: spinIcon 0.55s linear infinite;
+    }
+
+    @keyframes spinIcon {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Continuous Drum Viewport */
+    .drum-viewport {
+      position: relative;
+      height: 94px;
+      overflow: hidden;
+      border-radius: 12px;
+      background: rgba(11, 11, 15, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .drum-viewport::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 50%;
+      height: 36px;
+      transform: translateY(-50%);
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.035);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .drum-viewport::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(14, 14, 18, 0.94) 0%,
+        rgba(14, 14, 18, 0.25) 26%,
+        rgba(14, 14, 18, 0) 42%,
+        rgba(14, 14, 18, 0) 58%,
+        rgba(14, 14, 18, 0.25) 74%,
+        rgba(14, 14, 18, 0.94) 100%
+      );
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .drum-drum {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .drum-slot-item {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 34px;
+      margin-top: -17px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      font-size: 18.5px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      will-change: transform, opacity;
+    }
+
+    /* Bottom Dock */
+    .bottom-dock {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      padding-top: 2px;
+    }
+
+    .copy-btn {
+      width: 100%;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.14s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .copy-btn img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .copy-btn:active {
+      transform: scale(0.98);
+      background: var(--bg-elevated);
+    }
+
+    .copy-btn.copied {
+      border-color: rgba(46, 229, 157, 0.5);
+      background: rgba(46, 229, 157, 0.12);
+      color: var(--success);
+    }
+
+    .spin-all-btn {
+      position: relative;
+      width: 100%;
+      height: 54px;
+      border-radius: 16px;
+      border: none;
+      background: var(--accent-gradient);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: var(--accent-glow);
+      overflow: hidden;
+      transition: transform 0.14s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .spin-all-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.26), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.55s ease;
+    }
+
+    .spin-all-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 16px rgba(255, 46, 147, 0.25);
+    }
+
+    .spin-all-btn:disabled {
+      opacity: 0.75;
+      cursor: wait;
+    }
+
+    .spin-all-btn.shimmer::before {
+      left: 150%;
+    }
+
+    /* Info Modal ("Що це?") */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 8, 12, 0.76);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 360px;
+      background: #1b1b23;
+      border: 1px solid rgba(255, 46, 147, 0.35);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(255, 46, 147, 0.14);
+      transform: scale(0.92) translateY(10px);
+      transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .modal-backdrop.open .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .modal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #ff6aa8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .modal-close-x {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      font-size: 16px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+
+    .modal-desc {
+      font-size: 14px;
+      line-height: 1.55;
+      color: #c5c5d2;
+      margin-bottom: 18px;
+    }
+
+    .modal-ok-btn {
+      width: 100%;
+      height: 44px;
+      border-radius: 13px;
+      border: none;
+      background: var(--accent-gradient);
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(255, 46, 147, 0.3);
+    }
+
+    .modal-ok-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(128px + var(--safe-bottom));
+      transform: translateX(-50%) translateY(16px);
+      background: rgba(23, 23, 29, 0.96);
+      border: 1px solid rgba(255, 46, 147, 0.45);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      z-index: 50;
+      white-space: nowrap;
+      max-width: calc(100vw - 32px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
+    }
+
+    .shake {
+      animation: shake 0.35s ease;
+    }
+
+    @media (max-height: 700px) {
+      .hero-question-top { font-size: 19px; }
+      .hero-question-accent { font-size: 22px; }
+      .drum-viewport { height: 82px; }
+      .drum-slot-item { font-size: 17px; }
+      .drum-card { padding: 10px 13px; }
+      .spin-all-btn { height: 48px; }
+      .copy-btn { height: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Centered Hero Header -->
+    <header class="hero-header">
+      <div class="brand-lockup">
+        <img src="./UI/Logo%20art.png" alt="Artotron" class="brand-art-img" />
+        <img src="./UI/Logo%20text.png" alt="Artotron" class="brand-text-img" />
+      </div>
+
+      <h1 class="hero-question">
+        <span class="hero-question-top">ЩО МАЛЮЄМО</span>
+        <span class="hero-question-accent">СЬОГОДНІ?</span>
+      </h1>
+
+      <nav class="socials" aria-label="Соціальні мережі автора" id="socialsNav"></nav>
+    </header>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-pill">
+        <span>🎲</span>
+        <span>Більше <strong>250 000</strong> поєднань</span>
+      </div>
+      <div class="stat-pill" id="lockedPill">
+        <span>🔒</span>
+        <span>Закріплено: <strong id="lockedCount">0</strong> з 3</span>
+      </div>
+    </div>
+
+    <!-- 3 Drum Cards -->
+    <main class="cards-stack">
+      <!-- 01 -->
+      <section class="drum-card" id="card-0">
+        <div class="card-header">
+          <div class="category-label">
+            <span class="category-num">01</span>
+            <span class="category-title">ПЕРСОНАЖ / ХТО?</span>
+          </div>
+          <div class="card-actions">
+            <button type="button" class="circle-btn wat-btn" data-info="0" title="Що це?" aria-label="Що це?">
+              <img src="./UI/wat.png" alt="?" />
+            </button>
+            <button type="button" class="circle-btn refresh-btn" data-refresh="0" title="Оновити персонажа" aria-label="Оновити персонажа">
+              <img src="./UI/reroll.png" alt="Оновити" />
+            </button>
+            <button type="button" class="circle-btn lock-btn" data-lock="0" title="Замок" aria-label="Закріпити персонажа">
+              <img src="./UI/lock.png" alt="Замок" class="lock-img" />
+            </button>
+          </div>
+        </div>
+        <div class="drum-viewport">
+          <div class="drum-drum" id="drum-0"></div>
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section class="drum-card" id="card-1">
+        <div class="card-header">
+          <div class="category-label">
+            <span class="category-num">02</span>
+            <span class="category-title">ОБСТАВИНИ / ДЕ / СЮЖЕТ?</span>
+          </div>
+          <div class="card-actions">
+            <button type="button" class="circle-btn wat-btn" data-info="1" title="Що це?" aria-label="Що це?">
+              <img src="./UI/wat.png" alt="?" />
+            </button>
+            <button type="button" class="circle-btn refresh-btn" data-refresh="1" title="Оновити обставини" aria-label="Оновити обставини">
+              <img src="./UI/reroll.png" alt="Оновити" />
+            </button>
+            <button type="button" class="circle-btn lock-btn" data-lock="1" title="Замок" aria-label="Закріпити обставини">
+              <img src="./UI/lock.png" alt="Замок" class="lock-img" />
+            </button>
+          </div>
+        </div>
+        <div class="drum-viewport">
+          <div class="drum-drum" id="drum-1"></div>
+        </div>
+      </section>
+
+      <!-- 03 -->
+      <section class="drum-card" id="card-2">
+        <div class="card-header">
+          <div class="category-label">
+            <span class="category-num">03</span>
+            <span class="category-title">СТИЛЬ / ПАЛІТРА / ЯК?</span>
+          </div>
+          <div class="card-actions">
+            <button type="button" class="circle-btn wat-btn" data-info="2" title="Що це?" aria-label="Що це?">
+              <img src="./UI/wat.png" alt="?" />
+            </button>
+            <button type="button" class="circle-btn refresh-btn" data-refresh="2" title="Оновити стиль" aria-label="Оновити стиль">
+              <img src="./UI/reroll.png" alt="Оновити" />
+            </button>
+            <button type="button" class="circle-btn lock-btn" data-lock="2" title="Замок" aria-label="Закріпити стиль">
+              <img src="./UI/lock.png" alt="Замок" class="lock-img" />
+            </button>
+          </div>
+        </div>
+        <div class="drum-viewport">
+          <div class="drum-drum" id="drum-2"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Controls -->
+    <footer class="bottom-dock">
+      <button type="button" class="copy-btn" id="copyBtn">
+        <img src="./UI/list.png" alt="" />
+        <span id="copyBtnText">Скопіювати завдання</span>
+      </button>
+      <button type="button" class="spin-all-btn" id="spinAllBtn">
+        <span>✨</span>
+        <span>Крутити все</span>
+      </button>
+    </footer>
+  </div>
+
+  <!-- Info Modal -->
+  <div class="modal-backdrop" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-top">
+        <span class="modal-badge" id="modalBadge">03 СТИЛЬ</span>
+        <button type="button" class="modal-close-x" id="modalCloseX" aria-label="Закрити">✕</button>
+      </div>
+      <h2 class="modal-title" id="modalTitle">Назва</h2>
+      <p class="modal-desc" id="modalDesc">Опис</p>
+      <button type="button" class="modal-ok-btn" id="modalOkBtn">Зрозуміло</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // =========================================================================
+    // СОЦМЕРЕЖІ АВТОРА (eviltorn.carrd.co)
+    // =========================================================================
+    const AUTHOR_SOCIALS = [
+      {
+        name: 'Instagram',
+        url: 'https://www.instagram.com/eviltornsberg/',
+        svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>'
+      },
+      {
+        name: 'Telegram',
+        url: 'https://t.me/zloytorn',
+        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>'
+      },
+      {
+        name: 'TikTok',
+        url: 'https://www.tiktok.com/@eviltornsberg',
+        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>'
+      },
+      {
+        name: 'Behance',
+        url: 'https://www.behance.net/eviltorn',
+        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 7h-7v-1.5h7V7zm-3.5 2.3c-2.6 0-4.3 1.9-4.3 4.6 0 2.8 1.6 4.5 4.4 4.5 2 0 3.4-.9 4-2.6h-2.2c-.3.6-.9.9-1.7.9-1.1 0-1.9-.6-2-1.9h6.1c.1-3.2-1.3-5.5-4.3-5.5zm-1.8 3.6c.1-1.1.8-1.8 1.8-1.8s1.7.7 1.8 1.8h-3.6zM8.5 11.4c1-.5 1.5-1.3 1.5-2.5 0-2-1.5-3.1-4.1-3.1H1v12.4h5.1c2.7 0 4.4-1.3 4.4-3.7 0-1.5-.7-2.6-2-3.1zM3.6 7.9h2.1c1 0 1.7.4 1.7 1.3s-.7 1.4-1.7 1.4H3.6V7.9zm2.3 8.2H3.6v-3.2h2.4c1.2 0 1.9.5 1.9 1.6s-.8 1.6-2 1.6z"/></svg>'
+      }
+    ];
+
+    const CATEGORY_META = [
+      '01 ПЕРСОНАЖ / ХТО?',
+      '02 ОБСТАВИНИ / ДЕ / СЮЖЕТ?',
+      '03 СТИЛЬ / ПАЛІТРА / ЯК?'
+    ];
+
+    // =========================================================================
+    // БАЗА ДАНИХ: [Назва, Короткий опис для попапу "Що це?"]
+    // 68 × 68 × 68 = 314 432 поєднань
+    // =========================================================================
+    const CATEGORIES = [
+      // 01. ПЕРСОНАЖ / ХТО?
+      [
+        ['Медуза Горгона', 'Міфічна істота зі зміями замість волосся, погляд якої перетворює на камінь. Спробуй передати пластику змій або незвичний сучасний образ.'],
+        ['Некромант', 'Маг, що керує душами та кістками. Зроби акцент на черепах, рунах, димі або похмурому вбранні.'],
+        ['Козак-характерник', 'Легендарний воїн-чарівник із українського фольклору. Поєднай традиційний стрій, оселедець і містичну силу.'],
+        ['Кібер-мольфар', 'Карпатський відун у світі майбутнього: люлька, вишивка з мікросхем, голографічні амулети.'],
+        ['Лісова мавка', 'Дух лісу з вінком, довгим волоссям і тілом, що переплітається з гілками та квітами.'],
+        ['Втомлений янгол', 'Крилатий охоронець із скуйовдженим пір’ям, поглядом після довгої зміни та повсякденними деталями.'],
+        ['Кіт-алхімік', 'Пухнастий учений у мантії, з колбами, латунними окулярами та плямами від зілля на хутрі.'],
+        ['Самурай', 'Воїн кодексу бусідо. Використай силует обладунків, катану та стриману, зібрану позу.'],
+        ['Відьма-бариста', 'Чаклунка, яка варить магічну каву замість звичайного зілля. Додай пари, кристал і фартух.'],
+        ['Астронавт', 'Дослідник космосу у скафандрі. Відблиск на візорі шолома — чудовий спосіб додати історію.'],
+        ['Робот-садівник', 'Залізний механізм із пророслим мохом і квітами, який ніжно доглядає за живим.'],
+        ['Древній голем', 'Велетень із каменю, глини або рун, на якому час залишив тріщини й рослинність.'],
+        ['Привид маячника', 'Напівпрозорий сторож морів зі старим ліхтарем, що веде заблукалі кораблі.'],
+        ['Сирена', 'Морська спокусниця з лускою, плавцями та голосом, від якого закипає вода.'],
+        ['Юний детектив', 'Допитливий підліток із лупою, нотатником і вірним супутником у пошуках таємниць.'],
+        ['Лицар без обличчя', 'Загадковий воїн у глухому шоломі чи порцеляновій масці, де всю емоцію тримає поза.'],
+        ['Бібліотекар снів', 'Хранитель полиць із чужими сновидіннями: круглі окуляри, ключі та м’яке світло.'],
+        ['Скелет-джазмен', 'Веселий кістяк у капелюсі та з саксофоном чи трубою — живий ритм без жодної краплі плоті.'],
+        ['Мисливець на тіней', 'Той, хто полює на нічних монстрів. Додай плащ, амулети та зброю зі світла.'],
+        ['Пілот дирижабля', 'Стімпанк-авіатор в окулярах-гоглах, шкіряній куртці та з компасом на ремені.'],
+        ['Кам’яна горгулья', 'Готична скульптура з крилами, яка ожила і роздивляється світ зверху.'],
+        ['Дівчина-оригамі', 'Персонаж, чий одяг або навіть тіло складене з гострих граней паперу.'],
+        ['Сталкер', 'Мандрівник небезпечною зоною з протигазом, рюкзаком та лічильником аномалій.'],
+        ['Алхімік', 'Шукач філософського каменя серед реторт, сувоїв і дивних металевих приладів.'],
+        ['Сплячий титан', 'Величезний гігант, настільки старий, що на ньому вже виросли дерева й будинки.'],
+        ['Лисиця-перевертень', 'Кіцуне або хитрун із людським силуетом, лисячими вухами, хвостами й загадковою усмішкою.'],
+        ['Королева бджіл', 'Велична постать із короною зі стільників, прозорими крилами та золотим нектаром.'],
+        ['Бродячий фокусник', 'Артист у циліндрі, з картами, димом і фокусами, які здаються справжньою магією.'],
+        ['Дух метро', 'Міська легенда підземки: провідник між станціями в оточенні тунельних вогнів.'],
+        ['Шаман', 'Посередник між світами з бубном, пір’ям, тотемами та розфарбованим обличчям.'],
+        ['Вовкулака-книголюб', 'Перевертень у затишному светрі й окулярах, який просто хоче спокійно почитати.'],
+        ['Джин із термоса', 'Сучасний дух, що виривається хмарою пари не зі старої лампи, а зі сталевого термоса.'],
+        ['Космічний пірат', 'Зухвалий авантюрист із протезами, бластером і голографічною мапою скарбів.'],
+        ['Механічна лялька', 'Порцелянова фігура на шарнірах із ключем для заведення в спині.'],
+        ['Пастух хмар', 'Мандрівник висот, що зганяє пухнасті хмари довгою палицею-герлиґою.'],
+        ['Вампір-агроном', 'Аристократ ночі, який із любов’ю вирощує екзотичні рослини в теплиці.'],
+        ['Тіньовий коваль', 'Майстер біля горна, що кує зброю з темряви, іскор та зоряного металу.'],
+        ['Пес-найманець', 'Антропоморфний собака в плащі нуарного детектива або тактичному спорядженні.'],
+        ['Хранителька ключів', 'Таємнича жінка, у якої на поясі дзвенять десятки ключів від різних світів.'],
+        ['Снігова принцеса', 'Володарка зими в сучасному пуховику або крижаній короні з інеєм на віях.'],
+        ['Капітан-кракен', 'Морський вовк із щупальцями замість бороди та штурвалом у руках.'],
+        ['Мутант-бармен', 'Персонаж із чотирма руками, що вправно змішує напої, які світяться в темряві.'],
+        ['Мандрівний художник', 'Творець із етюдником, плямами фарби на щоках і пензлями, що оживляють світ.'],
+        ['Забутий бог', 'Колись могутнє божество, що тепер доживає в буденності, зберігаючи крихти величі.'],
+        ['Воїн-грибник', 'Захисник лісу в обладунках із кори, моху та капелюшків мухоморів.'],
+        ['Скрипаль-блискавка', 'Музикант, чия гра на скрипці висікає справжні електричні розряди.'],
+        ['Бабуся-хакерка', 'Мила старенька в окулярах, яка вправно зламує сервери корпорацій за чаєм.'],
+        ['Кентавр-кур’єр', 'Напівкінь-напівлюдина з термосумкою доставки, що мчить нічним містом.'],
+        ['Демон-колекціонер', 'Рогатий естет, який збирає рідкісні дрібнички, душі або порцелянові чашки.'],
+        ['Вінтажний водолаз', 'Дослідник глибин у важкому мідному шоломі з круглими ілюмінаторами.'],
+        ['Придворний шут', 'Блазень у дзвіночках, за усмішкою якого ховається гострий розум і таємниця.'],
+        ['Богиня грози', 'Могутня постать серед блискавок і вітру, що керує штормами.'],
+        ['Кістяний гончар', 'Майстер, що ліпить на крузі не горщики, а химерні маски й зірки.'],
+        ['Сова-професорка', 'Мудра антропоморфна сова в мантії викладача з сувоєм у крилах.'],
+        ['Юна лучниця', 'Спритна мисливиця з луком, натягнутою тятивою та світлячками замість стріл.'],
+        ['Паладин', 'Світлий воїн у важких латах, щитом і теплим променем віри на мечі.'],
+        ['Чумацький мандрівник', 'Подорожній нічними дорогами з возом, що везе зоряну сіль крізь степ.'],
+        ['Маленький дракон', 'Компактний лускатий звір, що легко вміщується в рюкзаку або на плечі.'],
+        ['Балерина-кіборг', 'Витончена танцівниця, де класична пачка поєднана з біонічними ногами.'],
+        ['Степова амазонка', 'Вільна вершниця з косами, луком і вітром у плащі.'],
+        ['Хлопець без тіні', 'Загадковий юнак, чия тінь живе власним життям або схована у валізі.'],
+        ['Кіборг-бандурист', 'Механічний музикант у вишиванці, чиї струни гудуть неоновим світлом.'],
+        ['Проклятий король', 'Монарх на троні з кривою короною та важким тягарем минулого.'],
+        ['Прибулець-турист', 'Інопланетянин у гавайській сорочці з фотоапаратом, що захоплено вивчає Землю.'],
+        ['Вартовий часу', 'Хрономаг із піщаним годинником, шестернями та поглядом крізь епохи.'],
+        ['Хімік-винахідник', 'Ексцентричний вчений у захисних окулярах, оточений реактивами й димом.'],
+        ['Примарний гонщик', 'Водій або байкер, оповитий полум’ям і швидкістю на нічній трасі.'],
+        ['Королева воронів', 'Повелителька чорної зграї з короною з пір’я та холодним поглядом.']
+      ],
+
+      // 02. ОБСТАВИНИ / ДЕ / СЮЖЕТ?
+      [
+        ['В перукарні', 'Крісло, дзеркала з лампами, ножиці, фен і неочікуваний візит незвичного клієнта.'],
+        ['Пустеля і міраж', 'Безкраї бархани, спека й ілюзія оази або міста, що тане на горизонті.'],
+        ['На даху хмарочоса', 'Висота, вітер, вогні нічного мегаполіса внизу та відчуття свободи.'],
+        ['У нічній кав’ярні', 'Тепле світло з вікна, пара над чашкою, дощ на вулиці та затишна пауза в часі.'],
+        ['Серед руїн храму', 'Зруйновані колони, мох, ліани та промені сонця крізь провали в стелі.'],
+        ['У космічному потязі', 'Вагон із великими вікнами, за якими пропливають туманності, планети й комети.'],
+        ['На карпатському перевалі', 'Густий туман, смереки, кам’яниста стежка й подих стародавніх гір.'],
+        ['Всередині годинника', 'Гігантські шестерні, пружини, маятники та дзвінкий ритм механізму.'],
+        ['На летючому ринку', 'Ятки на дирижаблях, різнобарвні намети, мотузкові мости високо в хмарах.'],
+        ['У затопленому метро', 'Покинута станція під водою, де крізь рейки пропливають світні риби.'],
+        ['Під старим дубом', 'Велетенське коріння, крона до неба, прихована магія й затінок.'],
+        ['На заправці в пустелі', 'Самотня неонова вивіска серед ночі, іржаві колонки та дорога в нікуди.'],
+        ['У майстерні винахідника', 'Безлад із креслень, інструментів, дротів і дивних недобудованих приладів.'],
+        ['На крижаному озері', 'Дзеркальна гладь льоду, тріщини під ногами та полярне сяйво в небі.'],
+        ['У провулку Токіо', 'Тісна вуличка з ієрогліфами вивісок, дротами, парасолями й мокрим асфальтом.'],
+        ['На уламку астероїда', 'Крихітний острівець каменю посеред відкритого космосу та невагомість.'],
+        ['У летючій бібліотеці', 'Високі стелажі, сходи й книжки, що самі пурхають під склепінням.'],
+        ['На сцені театру', 'Червона завіса, софіти в порожньому залі й драматична мить виступу.'],
+        ['У лавандовому полі', 'Безкінечні фіолетові ряди на заході сонця та м’яке золоте світло.'],
+        ['В підземній оранжереї', 'Бетонний бункер, де під лампами буяють екзотичні рослини й квіти.'],
+        ['На мосту над прірвою', 'Вузький підвісний міст у тумані, що веде на інший бік невідомості.'],
+        ['В антикварній крамниці', 'Полиці зі старими годинниками, дзеркалами, скриньками та таємницями.'],
+        ['На палубі криголама', 'Хвилі, крижини, сніжний буран і боротьба з арктичною стихією.'],
+        ['У кімнаті дзеркал', 'Безліч відображень, кожне з яких показує трохи іншу реальність.'],
+        ['На ярмарку духів', 'Нічні ліхтарики, дивні маски, ятки з чарами та святковий гамір.'],
+        ['Посеред грози', 'Шквальний вітер, стіна зливи та сліпучі спалахи блискавки на горизонті.'],
+        ['У ліфті між вимірами', 'Тісна кабіна з десятками дивних кнопок і змінною реальністю за дверима.'],
+        ['Під час затемнення', 'Чорний диск сонця з вогняною короною, що на мить занурює світ у сутінки.'],
+        ['У закинутій теплиці', 'Розбите скло, плющ, роса та кристалічні рослини, що пробились крізь іржу.'],
+        ['На даху трамвая', 'Поїздка старим містом з вітерцем, трамвайними дротами та іскрами від дуги.'],
+        ['У таверні на краю світу', 'Дерев’яні столи, свічки, мапи й дивні гості з усіх куточків всесвіту.'],
+        ['Біля синього багаття', 'Нічний ліс, іскри магічного полум’я та тіні, що танцюють навколо.'],
+        ['У зламаній матриці', 'Простір, що розсипається на пікселі, код і завислі в повітрі уламки.'],
+        ['На спіральній вежі', 'Нескінченні сходи без перил, що крутяться вгору крізь хмари.'],
+        ['У нічній пральні', 'Гудіння машинок, холодне світло флуоресцентних ламп і самотність о 3-й ночі.'],
+        ['На спині черепахи', 'Цілий маленький світ або табір на панцирі велетня, що пливе океаном.'],
+        ['У каналі Венеції', 'Гондола, відблиски ліхтарів на воді та осінній туман між старих стін.'],
+        ['Біля уламків зорельота', 'Гігантський корпус корабля, що врізався в землю й поростає травою.'],
+        ['На світанку в Києві', 'Дніпро, перші рожеві промені сонця, пагорби й тиша прокидання міста.'],
+        ['У таємній лабораторії', 'Прихована кімната з колбами, записами й забороненим експериментом.'],
+        ['На туманному болоті', 'Латаття, вогники-блукальці над водою та похилі дерева в серпанку.'],
+        ['У космопорті', 'Табло вильотів до далеких галактик, валізи й метушня перед стартом.'],
+        ['Під скляним куполом', 'Ботанічний сад або оранжерея серед зими, де панує вічне літо.'],
+        ['На старому пірсі', 'Скрипучі дошки над темною водою, чайки й тривожне небо перед бурею.'],
+        ['У гончарній майстерні', 'Глина на руках, полиці з глечиками та тихий стукіт дощу у вікно.'],
+        ['На нічному ярмарку', 'Вогні гірлянд, смаколики, маски й атмосфера таємничого свята.'],
+        ['У нескінченному готелі', 'Довгий коридор із червоним килимом, однаковими дверима й дивною тишею.'],
+        ['На полі соняшників', 'Золоті квіти до самого обрію під яскравим небом або грозовими хмарами.'],
+        ['У підводній обсерваторії', 'Панорамне вікно в безодню океану, де пропливають кити й скати.'],
+        ['На балконі з дирижаблями', 'Ранкова кава з видом на величезні повітряні судна над дахами міста.'],
+        ['У магічному колі', 'Накреслені символи на підлозі, свічки по краях і момент прикликання.'],
+        ['На зупинці в іншому світі', 'Звичайна лавка й дашок, але замість автобуса прибуває щось фантастичне.'],
+        ['У крамниці спогадів', 'Скляні пляшечки, що світяться різними кольорами, зберігаючи чиїсь миті.'],
+        ['На вершині маяка', 'Потужний промінь світла, гвинтові сходи та шалений вітер з океану.'],
+        ['У закинутому луна-парку', 'Іржаве колесо огляду, вицвілі вивіски й природа, що повертає своє.'],
+        ['На нічній кухні', 'Приглушене світло витяжки, сковорідка, спеції та незвичні інгредієнти.'],
+        ['У печері зі світними грибами', 'Підземний грот, де кожен крок підсвічується м’яким бірюзовим сяйвом.'],
+        ['На замерзлій ковзанці', 'Слід від ковзанів на льоду, сніжинки в повітрі та вечірні ліхтарі.'],
+        ['У старому гаражі', 'Верстак, зварювальні іскри й спроба зібрати щось неймовірне з мотлоху.'],
+        ['На вуличці Львова', 'Бруківка після дощу, кав’ярні, старовинні фасади та запах свіжої кави.'],
+        ['У Східному експресі', 'Розкішне купе з латунними лампами, оксамитом і засніженим пейзажем за вікном.'],
+        ['В нічному музеї', 'Тіні між вітринами та експонати, що ожили після закриття залу.'],
+        ['У джунглях папороті', 'Гігантські доісторичні листки, вологе повітря й таємничі звуки заростей.'],
+        ['Біля вогнища на морі', 'Шум прибою в темряві, іскри від плавника та зоряне небо.'],
+        ['У серверній майбутнього', 'Ряди гудучих стійок, кабелі й холодне мерехтіння світлодіодів.'],
+        ['На старому горищі', 'Пил у промені світла, старі валізи, листи та забуті реліквії.'],
+        ['За грою в карти', 'Напружений погляд суперників над столом, де на кону щось більше за гроші.'],
+        ['Перед довгою дорогою', 'Зібраний наплічник, мапа на столі й остання мить перед порогом.']
+      ],
+
+      // 03. СТИЛЬ / ПАЛІТРА / ЯК?
+      [
+        ['Гранж', 'Шорсткі текстури, подряпини, брудні мазки, розриви та бунтарська, неідеальна естетика.'],
+        ['Синтвейв', 'Ретро-естетика 80-х: яскравий неон, маджента, ціан, сітка горизонту й захід сонця.'],
+        ['Неоновий нуар', 'Глибокі чорні тіні й дощ у поєднанні з різкими, насиченими спалахами неонового світла.'],
+        ['Акварель', 'Прозорі шари фарби, плавні перетікання, легкі потьоки й світло чистого паперу.'],
+        ['Олійний живопис', 'Густі, фактурні мазки пензля або мастихіна, багата глибина й об’єм світлотіні.'],
+        ['Японська гравюра Укійо-е', 'Чіткі контурні лінії, пласкі декоративні плями кольору й витончена композиція.'],
+        ['Lo-Fi захід сонця', 'Тепла, затишна пастельна палітра, м’яке вечірнє світло та легка плівкова зернистість.'],
+        ['Темне фентезі', 'Похмура атмосфера, приглушені землисті й смарагдові тони з акцентом старого золота.'],
+        ['Поп-арт комікс', 'Сміливі чорні контури, яскраві відкриті кольори та растрові точки (бендей).'],
+        ['Туш і перо', 'Графічний монохром, побудований на виразній лінії, плямах туші та перехресному штрихуванні.'],
+        ['Кінематограф', 'Широкоформатне кадрування, продумана глибина різкості та кіношна корекція кольору.'],
+        ['Осіння палітра', 'Гармонія вохри, іржі, теракоти, теплого бордо й приглушеного оливкового.'],
+        ['Стиль студії Ghibli', 'Мальовничі фони природи, чисті кольори, ніжне світло й відчуття живої казки.'],
+        ['Біопанк', 'Поєднання органіки й технологій: кислотно-зелений, слиз, мембрани й темний метал.'],
+        ['Вінтажний плакат', 'Смілива геометрія, обмежена кількість фарб і композиція в дусі афіш 1950–60-х.'],
+        ['Векторний мінімалізм', 'Максимальна простота форм, чисті лінії без зайвих деталей і 2–3 влучних кольори.'],
+        ['Сюрреалізм', 'Поєднання непоєднуваного, логіка сновидінь, викривлена перспектива й символи.'],
+        ['Синя година', 'Сутінки одразу після заходу сонця: глибокий кобальт неба й теплі вогні вікон.'],
+        ['Імпресіонізм', 'Передача миттєвого враження через дрібні, живі мазки чистого кольору й гру світла.'],
+        ['Олівець на крафті', 'Теплий бежево-коричневий фон паперу, штрих графітом і яскраві білі бліки.'],
+        ['16-біт Піксель-арт', 'Чітка піксельна сітка, обмежена ретро-палітра та дизеринг, як у класичних іграх.'],
+        ['Ар-нуво (Модерн)', 'Плавні вигнуті лінії, рослинні орнаменти, золоті акценти та декоративні рамки.'],
+        ['Готичний вітраж', 'Світло, що проходить крізь кольорові скельця, розбиті на фрагменти товстим контуром.'],
+        ['Пастельний градієнт', 'Ніжні, повітряні переходи лаванди, персикового, рожевого й м’ятного відтінків.'],
+        ['Кіберпанк-дощ', 'Вологі поверхні, численні віддзеркалення вивісок на асфальті та холодний хром.'],
+        ['Українська витинанка', 'Декоративна симетрія, ажурні силуетні вирізи й контрастне поєднання кольорів.'],
+        ['Сел-шейдинг аніме', 'Чіткі, не розмиті межі світла й тіні, виразні лінії й динамічний дизайн.'],
+        ['Подвійна експозиція', 'Силует персонажа або об’єкта, всередині якого розгортається цілий пейзаж.'],
+        ['Ретрофутуризм 80-х', 'Уявлення про майбутнє з минулого: хром, лазери, касети й смілива геометрія.'],
+        ['Монохром сепія', 'Теплі коричнево-золотаві відтінки, що створюють настрій старої фотографії.'],
+        ['Контрове світло', 'Джерело світла позаду об’єкта, яке малює яскравий сяючий контур по краях силуету.'],
+        ['Тропічний колорит', 'Соковитий вибух бірюзи, коралу, смарагдової зелені та яскравого сонця.'],
+        ['Книжкова гуаш', 'Матова, щільна фарба з оксамитовою фактурою та теплотою ілюстрацій із дитинства.'],
+        ['Темне бароко', 'Драматичні тіні, пишні деталі, складки тканин і точкове світло в дусі Рембрандта.'],
+        ['Ізометрична діорама', 'Огляд сцени під кутом 30°, ніби це акуратний зріз маленького світу в повітрі.'],
+        ['VHS-глітч', 'Ефект старої відеокасети: зсув каналів RGB, горизонтальні смуги й легкий шум.'],
+        ['Арктичний холод', 'Монотонна крижана палітра: білий, сріблястий, блідо-блакитний і сталевий сірий.'],
+        ['Експресіонізм', 'Навмисно спотворені форми, різкі мазки й тривожний контраст для передачі емоцій.'],
+        ['Газетний колаж', 'Поєднання малюнка з вирізками шрифтів, обривків паперу та фактур друку.'],
+        ['Картка Таро', 'Симетрична рамка, містична символіка, нумерація та плоска декоративна графіка.'],
+        ['Суха пастель', 'Оксамитові, м’які розтушовані штрихи на темному або фактурному папері.'],
+        ['Вуличний мурал', 'Монументальний масштаб, сміливі площини кольору й естетика міського стінопису.'],
+        ['Вулканічний контраст', 'Глибокий вугільно-чорний обсидіан і попіл, прорізані розпеченим помаранчевим.'],
+        ['Ботанічний атлас', 'Детальна, майже наукова промальовка контурів із легким акварельним тонуванням.'],
+        ['Пластилінове 3D', 'М’які, трохи нерівні форми з імітацією відбитків пальців та теплого студійного світла.'],
+        ['Двоколірний ризограф', 'Друк лише двома яскравими фарбами (наприклад, рожевою й синьою) з накладанням.'],
+        ['Біолюмінесценція', 'Майже повна темрява, в якій світяться живі організми, гриби або магічні візерунки.'],
+        ['Комікс 90-х', 'Динамічні ракурси, густі чорні тіні, штриховка та енергія супергеройських сторінок.'],
+        ['Хром і голографія', 'Дзеркальні металеві поверхні, що переливаються всіма кольорами перламутру.'],
+        ['Тепла лампа', 'Затишна палітра вечірньої кімнати: бурштиновий, кавовий, медовий і кремовий.'],
+        ['Ракурс риб’яче око', 'Екстремальне ширококутне викривлення перспективи, що додає шаленої динаміки.'],
+        ['Сангiна й вугілля', 'Класичний академічний малюнок теплим червоно-коричневим і глибоким чорним олівцем.'],
+        ['Абстрактна геометрія', 'Кола, трикутники й прямі лінії, що перетинають або формують реалістичний образ.'],
+        ['Пустельний захід', 'Насичений перехід від вогняного шафрану й пурпуру до густих фіолетових тіней.'],
+        ['Мідна гравюра', 'Старовинна друкована графіка з безліччю тонких паралельних та вигнутих штрихів.'],
+        ['Неонове графіті', 'Зухвалі теги, бризки фарби, патьоки балончика й флуоресцентне світіння.'],
+        ['Ігровий концепт-арт', 'Чітка подача дизайну, акцент на матеріалах, силуеті й читабельності деталей.'],
+        ['Силует на тлі місяця', 'Абсолютно темна фігура перед величезним яскравим диском місяця.'],
+        ['Літнє боке', 'Теплі сонячні зайчики й розмиті світні кружечки на фоні крізь листя.'],
+        ['Вогонь і лід', 'Пряме зіткнення двох температур у кадрі: гаряче полум’я проти крижаного синього.'],
+        ['Тріщини фрески', 'Імітація старовинного настінного розпису з потертостями штукатурки й позолотою.'],
+        ['Бруталізм', 'Важкі бетонні форми, різкі рубані тіні, монолітність і мінімум кольору.'],
+        ['Макро-фокус', 'Надблизький план із крихітними деталями, пилинками й сильно розмитим фоном.'],
+        ['Чарівний пил', 'М’яке розсіяне світіння, іскри й легкий казковий серпанок навколо об’єктів.'],
+        ['Арт-деко', 'Розкішна симетрія 1920-х: чорний мармур, строгі лінії, віяла та тонке золото.'],
+        ['Меш-градієнт', 'Сучасна цифрова ілюстрація без контурів, побудована на плавних плямах світла.'],
+        ['Скандинавський нуар', 'Холодний туман, волога сірість, стриманість і один блідий тривожний акцент.'],
+        ['Вид зверху', 'Незвична композиція прямо з висоти пташиного польоту з довгими тінями.']
+      ]
+    ];
+
+    // =========================================================================
+    // TELEGRAM WEB APP & СТАН
+    // =========================================================================
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      try {
+        tg.setHeaderColor('#0f0f12');
+        tg.setBackgroundColor('#0f0f12');
+      } catch (_) {}
+    }
+
+    const ITEM_STEP = 32;
+    const VISIBLE_RANGE = 2;
+
+    const state = {
+      positions: [0, 0, 0],
+      locked: [false, false, false],
+      spinning: [false, false, false],
+      isSpinningAll: false
+    };
+
+    const socialsNav = document.getElementById('socialsNav');
+    const lockedCountEl = document.getElementById('lockedCount');
+    const lockedPillEl = document.getElementById('lockedPill');
+    const spinAllBtn = document.getElementById('spinAllBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const copyBtnText = document.getElementById('copyBtnText');
+    const toastEl = document.getElementById('toast');
+
+    const infoModal = document.getElementById('infoModal');
+    const modalBadge = document.getElementById('modalBadge');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalCloseX = document.getElementById('modalCloseX');
+    const modalOkBtn = document.getElementById('modalOkBtn');
+
+    let toastTimer = null;
+
+    function triggerHaptic(style = 'medium') {
+      try {
+        window.Telegram?.WebApp?.HapticFeedback?.impactOccurred(style);
+      } catch (_) {}
+    }
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, 2200);
+    }
+
+    function openExternalUrl(item) {
+      triggerHaptic('medium');
+      if (tg) {
+        if (item.url.startsWith('https://t.me/') && typeof tg.openTelegramLink === 'function') {
+          tg.openTelegramLink(item.url);
+          return;
+        }
+        if (typeof tg.openLink === 'function') {
+          tg.openLink(item.url);
+          return;
+        }
+      }
+      window.open(item.url, '_blank', 'noopener,noreferrer');
+    }
+
+    function renderSocials() {
+      socialsNav.innerHTML = '';
+      AUTHOR_SOCIALS.forEach((item) => {
+        const a = document.createElement('a');
+        a.className = 'social-btn';
+        a.href = item.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.title = item.name;
+        a.setAttribute('aria-label', item.name);
+        a.innerHTML = item.svg;
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          openExternalUrl(item);
+        });
+        socialsNav.appendChild(a);
+      });
+    }
+
+    function mod(n, m) {
+      return ((n % m) + m) % m;
+    }
+
+    function getActiveIndex(catIdx) {
+      const len = CATEGORIES[catIdx].length;
+      return mod(Math.round(state.positions[catIdx]), len);
+    }
+
+    const drumNodes = [[], [], []];
+    function initDrumNodes() {
+      for (let catIdx = 0; catIdx < 3; catIdx++) {
+        const container = document.getElementById(`drum-${catIdx}`);
+        container.innerHTML = '';
+        for (let offset = -VISIBLE_RANGE; offset <= VISIBLE_RANGE; offset++) {
+          const el = document.createElement('div');
+          el.className = 'drum-slot-item';
+          container.appendChild(el);
+          drumNodes[catIdx].push({ el, slotOffset: offset });
+        }
+      }
+    }
+
+    function renderDrum(catIdx) {
+      const pos = state.positions[catIdx];
+      const baseIdx = Math.floor(pos);
+      const frac = pos - baseIdx;
+      const pool = CATEGORIES[catIdx];
+      const len = pool.length;
+
+      const nodes = drumNodes[catIdx];
+      for (let i = 0; i < nodes.length; i++) {
+        const { el, slotOffset } = nodes[i];
+        const virtualIdx = baseIdx + slotOffset;
+        const itemIdx = mod(virtualIdx, len);
+        const dist = slotOffset - frac;
+
+        const y = dist * ITEM_STEP;
+        const absDist = Math.abs(dist);
+        const scale = Math.max(0.78, 1 - absDist * 0.14);
+        const opacity = Math.max(0, 1 - absDist * 0.62);
+
+        const label = pool[itemIdx][0];
+        if (el.textContent !== label) {
+          el.textContent = label;
+        }
+        el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(3)})`;
+        el.style.opacity = opacity.toFixed(3);
+      }
+    }
+
+    function updateLockUI() {
+      const lockedTotal = state.locked.filter(Boolean).length;
+      lockedCountEl.textContent = String(lockedTotal);
+      lockedPillEl.classList.toggle('has-locks', lockedTotal > 0);
+
+      for (let i = 0; i < 3; i++) {
+        const card = document.getElementById(`card-${i}`);
+        const lockBtn = card.querySelector(`[data-lock="${i}"]`);
+        const lockImg = lockBtn.querySelector('.lock-img');
+        const refreshBtn = card.querySelector(`[data-refresh="${i}"]`);
+
+        const isLocked = state.locked[i];
+        card.classList.toggle('is-locked', isLocked);
+        lockBtn.classList.toggle('active', isLocked);
+        lockImg.src = isLocked ? './UI/lock2.png' : './UI/lock.png';
+        refreshBtn.disabled = isLocked || state.spinning[i];
+      }
+    }
+
+    function easeOutQuart(t) {
+      return 1 - Math.pow(1 - t, 4);
+    }
+
+    function spinCategory(catIdx, durationMs = 1500, extraItems = 24) {
+      return new Promise((resolve) => {
+        if (state.locked[catIdx] || state.spinning[catIdx]) {
+          resolve();
+          return;
+        }
+
+        state.spinning[catIdx] = true;
+        const card = document.getElementById(`card-${catIdx}`);
+        const refreshBtn = card.querySelector(`[data-refresh="${catIdx}"]`);
+
+        card.classList.remove('landed');
+        card.classList.add('is-spinning');
+        refreshBtn.classList.add('spinning');
+        refreshBtn.disabled = true;
+
+        const startPos = Math.round(state.positions[catIdx]);
+        const len = CATEGORIES[catIdx].length;
+        const randomShift = extraItems + Math.floor(Math.random() * len);
+        const targetPos = startPos + (randomShift % len === 0 ? randomShift + 1 : randomShift);
+
+        const startTime = performance.now();
+
+        function frame(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(1, elapsed / durationMs);
+          const eased = easeOutQuart(progress);
+
+          state.positions[catIdx] = startPos + (targetPos - startPos) * eased;
+          renderDrum(catIdx);
+
+          if (progress < 1) {
+            requestAnimationFrame(frame);
+          } else {
+            state.positions[catIdx] = targetPos;
+            renderDrum(catIdx);
+            state.spinning[catIdx] = false;
+            card.classList.remove('is-spinning');
+            card.classList.add('landed');
+            refreshBtn.classList.remove('spinning');
+            updateLockUI();
+            resolve();
+          }
+        }
+
+        requestAnimationFrame(frame);
+      });
+    }
+
+    async function handleSpinAll() {
+      if (state.isSpinningAll) return;
+      triggerHaptic('medium');
+
+      const unlocked = [0, 1, 2].filter((i) => !state.locked[i]);
+      if (unlocked.length === 0) {
+        for (let i = 0; i < 3; i++) {
+          const card = document.getElementById(`card-${i}`);
+          card.classList.remove('shake');
+          void card.offsetWidth;
+          card.classList.add('shake');
+        }
+        showToast('Усі категорії закріплено 🔒 Зніміть замок хоча б з однієї');
+        return;
+      }
+
+      state.isSpinningAll = true;
+      spinAllBtn.disabled = true;
+      spinAllBtn.classList.remove('shimmer');
+      void spinAllBtn.offsetWidth;
+      spinAllBtn.classList.add('shimmer');
+
+      const promises = unlocked.map((catIdx, order) => {
+        const delay = order * 80;
+        const duration = 1350 + order * 420;
+        const extra = 22 + order * 8;
+        return new Promise((res) => {
+          setTimeout(() => {
+            spinCategory(catIdx, duration, extra).then(res);
+          }, delay);
+        });
+      });
+
+      await Promise.all(promises);
+
+      state.isSpinningAll = false;
+      spinAllBtn.disabled = false;
+    }
+
+    function openInfoModal(catIdx) {
+      triggerHaptic('medium');
+      const idx = getActiveIndex(catIdx);
+      const [title, desc] = CATEGORIES[catIdx][idx];
+
+      modalBadge.textContent = CATEGORY_META[catIdx];
+      modalTitle.textContent = title;
+      modalDesc.textContent = desc;
+      infoModal.classList.add('open');
+    }
+
+    function closeInfoModal() {
+      infoModal.classList.remove('open');
+    }
+
+    async function handleCopy() {
+      triggerHaptic('medium');
+
+      const p1 = CATEGORIES[0][getActiveIndex(0)][0];
+      const p2 = CATEGORIES[1][getActiveIndex(1)][0];
+      const p3 = CATEGORIES[2][getActiveIndex(2)][0];
+
+      const formatted = [
+        '🎨 Арт-Барабан | Artotron',
+        '',
+        `01 Персонаж: ${p1}`,
+        `02 Обставини: ${p2}`,
+        `03 Стиль: ${p3}`
+      ].join('\n');
+
+      let copied = false;
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(formatted);
+          copied = true;
+        } catch (_) {}
+      }
+
+      if (!copied) {
+        const textarea = document.createElement('textarea');
+        textarea.value = formatted;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+          copied = document.execCommand('copy');
+        } catch (_) {
+          copied = false;
+        }
+        document.body.removeChild(textarea);
+      }
+
+      if (copied) {
+        copyBtn.classList.add('copied');
+        copyBtnText.textContent = 'Скопійовано!';
+        showToast('✅ Завдання скопійовано в буфер обміну');
+        setTimeout(() => {
+          copyBtn.classList.remove('copied');
+          copyBtnText.textContent = 'Скопіювати завдання';
+        }, 1800);
+      } else {
+        showToast('Не вдалося скопіювати автоматично');
+      }
+    }
+
+    document.querySelectorAll('[data-info]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.info);
+        openInfoModal(idx);
+      });
+    });
+
+    document.querySelectorAll('[data-lock]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.lock);
+        if (state.spinning[idx]) return;
+        triggerHaptic('medium');
+        state.locked[idx] = !state.locked[idx];
+        updateLockUI();
+      });
+    });
+
+    document.querySelectorAll('[data-refresh]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.refresh);
+        if (state.locked[idx] || state.spinning[idx]) return;
+        triggerHaptic('medium');
+        spinCategory(idx, 1250, 20);
+      });
+    });
+
+    modalCloseX.addEventListener('click', closeInfoModal);
+    modalOkBtn.addEventListener('click', closeInfoModal);
+    infoModal.addEventListener('click', (e) => {
+      if (e.target === infoModal) closeInfoModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeInfoModal();
+    });
+
+    spinAllBtn.addEventListener('click', handleSpinAll);
+    copyBtn.addEventListener('click', handleCopy);
+
+    function init() {
+      renderSocials();
+      initDrumNodes();
+      for (let i = 0; i < 3; i++) {
+        state.positions[i] = Math.floor(Math.random() * CATEGORIES[i].length);
+        renderDrum(i);
+      }
+      updateLockUI();
+    }
+
+    init();
+  </script>
+</body>
+</html>
