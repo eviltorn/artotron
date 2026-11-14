@@ -211,6 +211,31 @@
       color: #fff;
     }
 
+    .sound-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.14s ease, border-color 0.2s ease, opacity 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .sound-pill:active {
+      transform: scale(0.9);
+    }
+
+    .sound-pill.muted {
+      opacity: 0.55;
+      color: var(--text-secondary);
+    }
+
     /* Cards Stack */
     .cards-stack {
       display: flex;
@@ -687,6 +712,9 @@
         <span>🔒</span>
         <span>Закріплено: <strong id="lockedCount">0</strong> з 3</span>
       </div>
+      <button type="button" class="sound-pill" id="soundToggleBtn" aria-label="Звук" title="Увімкнути / вимкнути звук">
+        <span id="soundIcon">🔊</span>
+      </button>
     </div>
 
     <!-- 3 Drum Cards -->
@@ -1076,6 +1104,8 @@
     const spinAllBtn = document.getElementById('spinAllBtn');
     const copyBtn = document.getElementById('copyBtn');
     const copyBtnText = document.getElementById('copyBtnText');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const soundIcon = document.getElementById('soundIcon');
     const toastEl = document.getElementById('toast');
 
     const infoModal = document.getElementById('infoModal');
@@ -1086,6 +1116,152 @@
     const modalOkBtn = document.getElementById('modalOkBtn');
 
     let toastTimer = null;
+
+    // =========================================================================
+    // ЗВУКОВІ ЕФЕКТИ (Web Audio API — без зовнішніх файлів)
+    // =========================================================================
+    const SoundFX = (() => {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      let ctx = null;
+      let enabled = localStorage.getItem('artotron_sound') !== '0';
+
+      function getCtx() {
+        if (!enabled || !AudioCtx) return null;
+        if (!ctx) ctx = new AudioCtx();
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+        return ctx;
+      }
+
+      function unlock() {
+        getCtx();
+      }
+
+      function isEnabled() {
+        return enabled;
+      }
+
+      function toggle() {
+        enabled = !enabled;
+        localStorage.setItem('artotron_sound', enabled ? '1' : '0');
+        if (enabled) pop();
+        return enabled;
+      }
+
+      // М'який клац барабана при прокручуванні кожного пункту
+      function tick(catIdx = 0) {
+        const c = getCtx();
+        if (!c) return;
+        const now = c.currentTime;
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        const baseFreq = 360 + catIdx * 45;
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(120, now + 0.028);
+
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(now);
+        osc.stop(now + 0.032);
+      }
+
+      // Приємний дзвінкий акцент, коли барабан зупинився (C5, E5, G5)
+      function land(catIdx = 0) {
+        const c = getCtx();
+        if (!c) return;
+        const freqs = [523.25, 659.25, 783.99];
+        const freq = freqs[catIdx % freqs.length];
+        const now = c.currentTime;
+
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.14, now + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      }
+
+      // Фінальний перелив, коли всі барабани зупинилися
+      function finishAll() {
+        const c = getCtx();
+        if (!c) return;
+        const now = c.currentTime;
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1046.5, now);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.1, now + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(now);
+        osc.stop(now + 0.38);
+      }
+
+      // Клац замка
+      function lock(isLocked) {
+        const c = getCtx();
+        if (!c) return;
+        const now = c.currentTime;
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(isLocked ? 480 : 620, now);
+        osc.frequency.exponentialRampToValueAtTime(isLocked ? 720 : 400, now + 0.06);
+
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      }
+
+      // Легкий UI-клік
+      function pop() {
+        const c = getCtx();
+        if (!c) return;
+        const now = c.currentTime;
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(580, now);
+        osc.frequency.exponentialRampToValueAtTime(840, now + 0.045);
+
+        gain.gain.setValueAtTime(0.07, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start(now);
+        osc.stop(now + 0.055);
+      }
+
+      return { unlock, isEnabled, toggle, tick, land, finishAll, lock, pop };
+    })();
+
+    function updateSoundUI() {
+      const on = SoundFX.isEnabled();
+      soundIcon.textContent = on ? '🔊' : '🔇';
+      soundToggleBtn.classList.toggle('muted', !on);
+    }
 
     function triggerHaptic(style = 'medium') {
       try {
@@ -1232,14 +1408,22 @@
         const targetPos = startPos + (randomShift % len === 0 ? randomShift + 1 : randomShift);
 
         const startTime = performance.now();
+        let lastStep = Math.floor(startPos);
 
         function frame(now) {
           const elapsed = now - startTime;
           const progress = Math.min(1, elapsed / durationMs);
           const eased = easeOutQuart(progress);
 
-          state.positions[catIdx] = startPos + (targetPos - startPos) * eased;
+          const currentPos = startPos + (targetPos - startPos) * eased;
+          state.positions[catIdx] = currentPos;
           renderDrum(catIdx);
+
+          const step = Math.floor(currentPos);
+          if (step > lastStep) {
+            lastStep = step;
+            SoundFX.tick(catIdx);
+          }
 
           if (progress < 1) {
             requestAnimationFrame(frame);
@@ -1250,6 +1434,7 @@
             card.classList.remove('is-spinning');
             card.classList.add('landed');
             refreshBtn.classList.remove('spinning');
+            SoundFX.land(catIdx);
             updateLockUI();
             resolve();
           }
@@ -1294,12 +1479,14 @@
 
       await Promise.all(promises);
 
+      SoundFX.finishAll();
       state.isSpinningAll = false;
       spinAllBtn.disabled = false;
     }
 
     function openInfoModal(catIdx) {
       triggerHaptic('medium');
+      SoundFX.pop();
       const idx = getActiveIndex(catIdx);
       const [title, desc] = CATEGORIES[catIdx][idx];
 
@@ -1353,6 +1540,7 @@
       }
 
       if (copied) {
+        SoundFX.pop();
         copyBtn.classList.add('copied');
         copyBtnText.textContent = 'Скопійовано!';
         showToast('✅ Завдання скопійовано в буфер обміну');
@@ -1378,6 +1566,7 @@
         if (state.spinning[idx]) return;
         triggerHaptic('medium');
         state.locked[idx] = !state.locked[idx];
+        SoundFX.lock(state.locked[idx]);
         updateLockUI();
       });
     });
@@ -1387,8 +1576,15 @@
         const idx = Number(btn.dataset.refresh);
         if (state.locked[idx] || state.spinning[idx]) return;
         triggerHaptic('medium');
+        SoundFX.unlock();
         spinCategory(idx, 1250, 20);
       });
+    });
+
+    soundToggleBtn.addEventListener('click', () => {
+      triggerHaptic('medium');
+      SoundFX.toggle();
+      updateSoundUI();
     });
 
     modalCloseX.addEventListener('click', closeInfoModal);
@@ -1400,7 +1596,10 @@
       if (e.key === 'Escape') closeInfoModal();
     });
 
-    spinAllBtn.addEventListener('click', handleSpinAll);
+    spinAllBtn.addEventListener('click', () => {
+      SoundFX.unlock();
+      handleSpinAll();
+    });
     copyBtn.addEventListener('click', handleCopy);
 
     function init() {
@@ -1411,6 +1610,7 @@
         renderDrum(i);
       }
       updateLockUI();
+      updateSoundUI();
     }
 
     init();
