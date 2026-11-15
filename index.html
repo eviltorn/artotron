@@ -891,6 +891,63 @@
       line-height: 1.4;
     }
 
+    /* About & Feedback Modal */
+    .about-modal-card {
+      max-width: 385px;
+      padding: 18px;
+    }
+
+    .about-list {
+      margin: 8px 0 14px;
+      padding-left: 18px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .about-list strong {
+      color: var(--text-primary);
+    }
+
+    .about-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .feedback-btn {
+      width: 100%;
+      height: 44px;
+      border-radius: 13px;
+      border: 1px solid rgba(255, 46, 147, 0.45);
+      background: rgba(255, 46, 147, 0.12);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: transform 0.14s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .feedback-btn img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .feedback-btn:active {
+      transform: scale(0.97);
+      background: rgba(255, 46, 147, 0.22);
+    }
+
     .preset-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1032,11 +1089,14 @@
       <div class="top-actions-row">
         <nav class="socials" aria-label="Соціальні мережі автора" id="socialsNav"></nav>
         <div class="utility-actions">
+          <button type="button" class="top-icon-btn" id="aboutBtn" aria-label="Про застосунок і зворотний зв’язок" title="Про застосунок і зворотний зв’язок">
+            <img src="./UI/info.png" alt="Інфо" />
+          </button>
           <button type="button" class="top-icon-btn" id="soundToggleBtn" aria-label="Звук" title="Увімкнути / вимкнути звук">
             <img src="./UI/sound%20o%D1%82.png" alt="Звук" id="soundIconImg" />
           </button>
           <button type="button" class="top-icon-btn" id="copyBtn" aria-label="Скопіювати завдання" title="Скопіювати завдання">
-            <img src="./UI/list.png" alt="Скопіювати" />
+            <img src="./UI/copy.png" alt="Скопіювати" />
           </button>
         </div>
       </div>
@@ -1215,6 +1275,31 @@
       </div>
       <p class="stats-note" id="statFavPreset">Улюблений сетінг: —</p>
       <button type="button" class="modal-ok-btn" id="statsRefreshBtn">Оновити дані</button>
+    </div>
+  </div>
+
+  <!-- About & Feedback Modal -->
+  <div class="modal-backdrop" id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle">
+    <div class="modal-card about-modal-card">
+      <div class="modal-top">
+        <span class="modal-badge">ℹ️ ПРО ARTOTRON</span>
+        <button type="button" class="modal-close-x" id="aboutCloseX" aria-label="Закрити">✕</button>
+      </div>
+      <h2 class="modal-title" id="aboutModalTitle" style="font-size:18px; margin-bottom:6px;">Генератор ідей для малювання</h2>
+      <p class="modal-desc" style="margin-bottom:8px;">Безкоштовний інструмент проти арт-блоку: крути барабани та збирай несподівані сюжети за секунду.</p>
+      <ul class="about-list">
+        <li><strong>01 Хто?</strong> — персонаж або істота. Увімкни <strong>+ Артикул</strong>, щоб додати роль чи професію другим барабаном.</li>
+        <li><strong>02 Місце / Дія</strong> — обирай локацію або конкретну ситуацію, що робить персонаж.</li>
+        <li><strong>03 Стиль / Палітра</strong> — художня техніка або готова палітра з 3 кольорів (HEX-коди в «?»).</li>
+        <li><strong>Замок і пресети</strong> — фіксуй вдалі слоти замком 🔒 або вмикай тематичний сетінг.</li>
+      </ul>
+      <div class="about-actions">
+        <button type="button" class="feedback-btn" id="feedbackBtn">
+          <img src="./UI/feedback.png" alt="" />
+          <span>Зворотний зв’язок / Запропонувати ідею</span>
+        </button>
+        <button type="button" class="modal-ok-btn" id="aboutOkBtn">Повернутися до барабана</button>
+      </div>
     </div>
   </div>
 
@@ -3425,6 +3510,35 @@
     const statsModal = document.getElementById('statsModal');
     const statsCloseX = document.getElementById('statsCloseX');
     const statsRefreshBtn = document.getElementById('statsRefreshBtn');
+    const aboutBtn = document.getElementById('aboutBtn');
+    const aboutModal = document.getElementById('aboutModal');
+    const aboutCloseX = document.getElementById('aboutCloseX');
+    const aboutOkBtn = document.getElementById('aboutOkBtn');
+    const feedbackBtn = document.getElementById('feedbackBtn');
+
+    function openAboutModal() {
+      triggerHaptic('medium');
+      SoundFX.pop();
+      aboutModal.classList.add('open');
+    }
+
+    function closeAboutModal() {
+      aboutModal.classList.remove('open');
+    }
+
+    if (aboutBtn) aboutBtn.addEventListener('click', openAboutModal);
+    if (aboutCloseX) aboutCloseX.addEventListener('click', closeAboutModal);
+    if (aboutOkBtn) aboutOkBtn.addEventListener('click', closeAboutModal);
+    if (aboutModal) {
+      aboutModal.addEventListener('click', (e) => {
+        if (e.target === aboutModal) closeAboutModal();
+      });
+    }
+    if (feedbackBtn) {
+      feedbackBtn.addEventListener('click', () => {
+        openExternalUrl({ url: 'https://t.me/zloytorn' });
+      });
+    }
 
     function openStatsModal() {
       triggerHaptic('medium');
@@ -3473,6 +3587,7 @@
         closeInfoModal();
         closePresetModal();
         closeStatsModal();
+        closeAboutModal();
       }
     });
 
