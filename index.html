@@ -91,6 +91,7 @@
       overflow: visible;
       position: relative;
       z-index: 1;
+      isolation: isolate;
     }
 
     .hero-video {
@@ -100,8 +101,9 @@
       display: block;
       pointer-events: none;
       mix-blend-mode: screen;
-      transform: translateY(-14%) scale(2.35);
+      transform: translate3d(0, -14%, 0) scale(2.35);
       transform-origin: center center;
+      will-change: transform;
     }
 
     /* Row: Socials Left + Sound & Copy Right */
@@ -2231,9 +2233,58 @@
       spinning: [false, false, false],
       isSpinningAll: false,
       cat2Mode: localStorage.getItem('artotron_cat2_mode') === 'action' ? 'action' : 'place',
-      cat3Mode: localStorage.getItem('artotron_cat3_mode') === 'palette' ? 'palette' : 'style',
-      recentPicks: { 0: [], place: [], action: [], style: [], palette: [] }
+      cat3Mode: localStorage.getItem('artotron_cat3_mode') === 'palette' ? 'palette' : 'style'
     };
+
+    const DECK_STORAGE_KEY = 'artotron_decks_v1';
+    let savedDecks = {};
+    try {
+      savedDecks = JSON.parse(localStorage.getItem(DECK_STORAGE_KEY) || '{}') || {};
+    } catch (_) {
+      savedDecks = {};
+    }
+
+    function saveDecks() {
+      try {
+        localStorage.setItem(DECK_STORAGE_KEY, JSON.stringify(savedDecks));
+      } catch (_) {}
+    }
+
+    function getDeckKey(catIdx) {
+      const sub = catIdx === 1 ? state.cat2Mode : (catIdx === 2 ? state.cat3Mode : 'char');
+      return `${state.preset}:${sub}`;
+    }
+
+    function drawFromDeck(catIdx, currentMod) {
+      const len = getPool(catIdx).length;
+      if (len <= 1) return 0;
+      const key = getDeckKey(catIdx);
+      let deck = Array.isArray(savedDecks[key])
+        ? savedDecks[key].filter((i) => Number.isInteger(i) && i >= 0 && i < len)
+        : [];
+
+      if (deck.length === 0) {
+        deck = Array.from({ length: len }, (_, i) => i);
+        for (let i = deck.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        if (currentMod !== undefined && deck[deck.length - 1] === currentMod && deck.length > 1) {
+          const swapIdx = Math.floor(Math.random() * (deck.length - 1));
+          [deck[deck.length - 1], deck[swapIdx]] = [deck[swapIdx], deck[deck.length - 1]];
+        }
+      }
+
+      let next = deck.pop();
+      if (currentMod !== undefined && next === currentMod && deck.length > 0) {
+        const alt = deck.pop();
+        deck.unshift(next);
+        next = alt;
+      }
+      savedDecks[key] = deck;
+      saveDecks();
+      return next;
+    }
 
     function getActivePreset() {
       return PRESETS[state.preset] || PRESETS.all;
@@ -2274,8 +2325,16 @@
       if (!titleAnimVideo) return;
       titleVideoInitialized = true;
       try {
+        titleAnimVideo.pause();
+        let played = false;
+        const startPlay = () => {
+          if (played) return;
+          played = true;
+          titleAnimVideo.play().catch(() => {});
+        };
+        titleAnimVideo.addEventListener('seeked', startPlay, { once: true });
         titleAnimVideo.currentTime = 0;
-        titleAnimVideo.play().catch(() => {});
+        setTimeout(startPlay, 60);
       } catch (_) {}
     }
 
@@ -2600,28 +2659,11 @@
         const startPos = Math.round(state.positions[catIdx]);
         const len = getPool(catIdx).length;
         const startMod = ((startPos % len) + len) % len;
-        const historyKey = catIdx === 1 ? state.cat2Mode : (catIdx === 2 ? state.cat3Mode : 0);
-        const recent = state.recentPicks[historyKey] || [];
-        const avoidCount = Math.min(recent.length, Math.max(1, len - 2));
-        const avoidSet = new Set([startMod, ...recent.slice(-avoidCount)]);
-
-        const candidates = [];
-        for (let i = 0; i < len; i++) {
-          if (!avoidSet.has(i)) candidates.push(i);
-        }
-        const targetMod = candidates.length > 0
-          ? candidates[Math.floor(Math.random() * candidates.length)]
-          : (startMod + 1) % len;
+        const targetMod = drawFromDeck(catIdx, startMod);
 
         const deltaMod = (targetMod - startMod + len) % len || len;
         const fullTurns = Math.max(1, Math.floor(extraItems / len)) * len;
         const targetPos = startPos + fullTurns + deltaMod;
-
-        recent.push(targetMod);
-        if (recent.length > Math.max(4, Math.floor(len / 2))) {
-          recent.shift();
-        }
-        state.recentPicks[historyKey] = recent;
 
         const startTime = performance.now();
         let lastStep = Math.floor(startPos);
@@ -2898,15 +2940,16 @@
       state.preset = id;
       localStorage.setItem('artotron_preset', id);
       state.locked = [false, false, false];
-      state.recentPicks = { 0: [], place: [], action: [], style: [], palette: [] };
       const p = getActivePreset();
-      state.positions[0] = Math.floor(Math.random() * p.chars.length);
+      state.positions[0] = drawFromDeck(0);
       state.cat2Positions.place = Math.floor(Math.random() * p.places.length);
       state.cat2Positions.action = Math.floor(Math.random() * p.actions.length);
-      state.positions[1] = state.cat2Positions[state.cat2Mode];
+      state.positions[1] = drawFromDeck(1);
+      state.cat2Positions[state.cat2Mode] = state.positions[1];
       state.cat3Positions.style = Math.floor(Math.random() * p.styles.length);
       state.cat3Positions.palette = Math.floor(Math.random() * p.palettes.length);
-      state.positions[2] = state.cat3Positions[state.cat3Mode];
+      state.positions[2] = drawFromDeck(2);
+      state.cat3Positions[state.cat3Mode] = state.positions[2];
       updatePresetUI();
       updateLockUI();
       renderDrum(0);
@@ -2984,13 +3027,15 @@
       updateCat3ModeUI();
       updatePresetUI();
       const p = getActivePreset();
-      state.positions[0] = Math.floor(Math.random() * p.chars.length);
+      state.positions[0] = drawFromDeck(0);
       state.cat2Positions.place = Math.floor(Math.random() * p.places.length);
       state.cat2Positions.action = Math.floor(Math.random() * p.actions.length);
-      state.positions[1] = state.cat2Positions[state.cat2Mode];
+      state.positions[1] = drawFromDeck(1);
+      state.cat2Positions[state.cat2Mode] = state.positions[1];
       state.cat3Positions.style = Math.floor(Math.random() * p.styles.length);
       state.cat3Positions.palette = Math.floor(Math.random() * p.palettes.length);
-      state.positions[2] = state.cat3Positions[state.cat3Mode];
+      state.positions[2] = drawFromDeck(2);
+      state.cat3Positions[state.cat3Mode] = state.positions[2];
       renderDrum(0);
       renderDrum(1);
       renderDrum(2);
