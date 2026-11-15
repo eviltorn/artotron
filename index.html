@@ -840,6 +840,57 @@
       padding: 18px;
     }
 
+    /* Hidden Stats Modal */
+    .stats-modal-card {
+      max-width: 380px;
+      padding: 18px;
+    }
+
+    .stats-section-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin: 10px 0 6px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stats-tile {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stats-val {
+      font-size: 19px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .stats-lbl {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+
+    .stats-note {
+      margin: 10px 0 12px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
     .preset-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1119,6 +1170,51 @@
       </div>
       <h2 class="modal-title" id="presetModalTitle" style="font-size:17px; margin-bottom:10px;">Тематичні пресети</h2>
       <div class="preset-grid" id="presetGrid"></div>
+    </div>
+  </div>
+
+  <!-- Hidden Stats Modal (5 taps on header logo) -->
+  <div class="modal-backdrop" id="statsModal" role="dialog" aria-modal="true" aria-labelledby="statsModalTitle">
+    <div class="modal-card stats-modal-card">
+      <div class="modal-top">
+        <span class="modal-badge">📊 СЕКРЕТНА СТАТИСТИКА</span>
+        <button type="button" class="modal-close-x" id="statsCloseX" aria-label="Закрити">✕</button>
+      </div>
+      <h2 class="modal-title" id="statsModalTitle" style="font-size:17px; margin-bottom:4px;">Пульс Artotron</h2>
+
+      <div class="stats-section-label">Усі користувачі (онлайн)</div>
+      <div class="stats-grid">
+        <div class="stats-tile">
+          <span class="stats-val" id="statGlobalUsers">…</span>
+          <span class="stats-lbl">Унікальних людей</span>
+        </div>
+        <div class="stats-tile">
+          <span class="stats-val" id="statGlobalOpens">…</span>
+          <span class="stats-lbl">Запусків міні-апки</span>
+        </div>
+        <div class="stats-tile">
+          <span class="stats-val" id="statGlobalSpins">…</span>
+          <span class="stats-lbl">Прокрутів барабана</span>
+        </div>
+        <div class="stats-tile">
+          <span class="stats-val" id="statGlobalCopies">…</span>
+          <span class="stats-lbl">Скопійованих завдань</span>
+        </div>
+      </div>
+
+      <div class="stats-section-label">Твій пристрій</div>
+      <div class="stats-grid">
+        <div class="stats-tile">
+          <span class="stats-val" id="statLocalSpins">0</span>
+          <span class="stats-lbl">Твоїх прокрутів</span>
+        </div>
+        <div class="stats-tile">
+          <span class="stats-val" id="statLocalCopies">0</span>
+          <span class="stats-lbl">Скопійовано тобою</span>
+        </div>
+      </div>
+      <p class="stats-note" id="statFavPreset">Улюблений сетінг: —</p>
+      <button type="button" class="modal-ok-btn" id="statsRefreshBtn">Оновити дані</button>
     </div>
   </div>
 
@@ -2890,6 +2986,7 @@
       void spinAllBtn.offsetWidth;
       spinAllBtn.classList.add('shimmer');
       playTitleAnimation();
+      StatsTracker.recordSpin();
 
       const promises = unlocked.map((catIdx, order) => {
         const delay = order * 80;
@@ -3012,6 +3109,7 @@
       if (copied) {
         SoundFX.pop();
         copyBtn.classList.add('copied');
+        StatsTracker.recordCopy();
         showToast('✅ Завдання скопійовано в буфер обміну');
         setTimeout(() => {
           copyBtn.classList.remove('copied');
@@ -3131,6 +3229,7 @@
       renderDrum(1);
       renderDrum(2);
       closePresetModal();
+      StatsTracker.recordPreset(id);
       showToast(`${p.emoji} Сетінг: ${p.name}`, { top: true });
       handleSpinAll();
     }
@@ -3206,10 +3305,174 @@
       });
     });
 
+    // =========================================================================
+    // СКРИТА СТАТИСТИКА (5 тапів по шапці)
+    // =========================================================================
+    const StatsTracker = (() => {
+      const API_BASE = 'https://countapi.mileshilliard.com/api/v1';
+      const KEYS = {
+        users: 'artotron_eviltorn_users_v1',
+        opens: 'artotron_eviltorn_opens_v1',
+        spins: 'artotron_eviltorn_spins_v1',
+        copies: 'artotron_eviltorn_copies_v1'
+      };
+      const LOCAL_KEY = 'artotron_local_stats_v1';
+
+      function loadLocal() {
+        try {
+          const raw = JSON.parse(localStorage.getItem(LOCAL_KEY) || '{}') || {};
+          return {
+            spins: Number(raw.spins) || 0,
+            copies: Number(raw.copies) || 0,
+            presets: raw.presets && typeof raw.presets === 'object' ? raw.presets : {}
+          };
+        } catch (_) {
+          return { spins: 0, copies: 0, presets: {} };
+        }
+      }
+
+      function saveLocal(data) {
+        try {
+          localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
+        } catch (_) {}
+      }
+
+      function hitRemote(key) {
+        fetch(`${API_BASE}/hit/${key}`, { mode: 'cors' }).catch(() => {});
+      }
+
+      async function getRemote(key) {
+        try {
+          const res = await fetch(`${API_BASE}/get/${key}`, { mode: 'cors' });
+          if (res.status === 404) return 0;
+          if (!res.ok) return null;
+          const json = await res.json();
+          const val = Number(json.value);
+          return Number.isFinite(val) ? val : null;
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function trackBoot() {
+        try {
+          if (!localStorage.getItem('artotron_stat_user_v1')) {
+            localStorage.setItem('artotron_stat_user_v1', '1');
+            hitRemote(KEYS.users);
+          }
+          if (!sessionStorage.getItem('artotron_stat_open_v1')) {
+            sessionStorage.setItem('artotron_stat_open_v1', '1');
+            hitRemote(KEYS.opens);
+          }
+        } catch (_) {}
+      }
+
+      function recordSpin() {
+        const d = loadLocal();
+        d.spins += 1;
+        saveLocal(d);
+        hitRemote(KEYS.spins);
+      }
+
+      function recordCopy() {
+        const d = loadLocal();
+        d.copies += 1;
+        saveLocal(d);
+        hitRemote(KEYS.copies);
+      }
+
+      function recordPreset(id) {
+        const d = loadLocal();
+        d.presets[id] = (Number(d.presets[id]) || 0) + 1;
+        saveLocal(d);
+      }
+
+      function formatVal(v) {
+        return v === null ? '—' : v.toLocaleString('uk-UA');
+      }
+
+      async function renderStatsModal() {
+        const local = loadLocal();
+        document.getElementById('statLocalSpins').textContent = formatVal(local.spins);
+        document.getElementById('statLocalCopies').textContent = formatVal(local.copies);
+
+        let favText = '—';
+        const entries = Object.entries(local.presets).sort((a, b) => b[1] - a[1]);
+        if (entries.length > 0 && PRESETS[entries[0][0]]) {
+          const fav = PRESETS[entries[0][0]];
+          favText = `${fav.emoji} ${fav.name} (${entries[0][1]}×)`;
+        }
+        document.getElementById('statFavPreset').textContent = `Улюблений сетінг: ${favText}`;
+
+        const ids = ['statGlobalUsers', 'statGlobalOpens', 'statGlobalSpins', 'statGlobalCopies'];
+        ids.forEach((id) => { document.getElementById(id).textContent = '…'; });
+
+        const [users, opens, spins, copies] = await Promise.all([
+          getRemote(KEYS.users),
+          getRemote(KEYS.opens),
+          getRemote(KEYS.spins),
+          getRemote(KEYS.copies)
+        ]);
+        document.getElementById('statGlobalUsers').textContent = formatVal(users);
+        document.getElementById('statGlobalOpens').textContent = formatVal(opens);
+        document.getElementById('statGlobalSpins').textContent = formatVal(spins);
+        document.getElementById('statGlobalCopies').textContent = formatVal(copies);
+      }
+
+      return { trackBoot, recordSpin, recordCopy, recordPreset, renderStatsModal };
+    })();
+
+    const statsModal = document.getElementById('statsModal');
+    const statsCloseX = document.getElementById('statsCloseX');
+    const statsRefreshBtn = document.getElementById('statsRefreshBtn');
+
+    function openStatsModal() {
+      triggerHaptic('medium');
+      SoundFX.pop();
+      statsModal.classList.add('open');
+      StatsTracker.renderStatsModal();
+    }
+
+    function closeStatsModal() {
+      statsModal.classList.remove('open');
+    }
+
+    if (statsCloseX) statsCloseX.addEventListener('click', closeStatsModal);
+    if (statsModal) {
+      statsModal.addEventListener('click', (e) => {
+        if (e.target === statsModal) closeStatsModal();
+      });
+    }
+    if (statsRefreshBtn) {
+      statsRefreshBtn.addEventListener('click', () => {
+        triggerHaptic('light');
+        SoundFX.pop();
+        StatsTracker.renderStatsModal();
+      });
+    }
+
+    if (heroVideoWrap) {
+      let headerTapCount = 0;
+      let headerTapTimer = null;
+      heroVideoWrap.addEventListener('click', () => {
+        headerTapCount += 1;
+        clearTimeout(headerTapTimer);
+        if (headerTapCount >= 5) {
+          headerTapCount = 0;
+          openStatsModal();
+        } else {
+          headerTapTimer = setTimeout(() => {
+            headerTapCount = 0;
+          }, 1600);
+        }
+      });
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeInfoModal();
         closePresetModal();
+        closeStatsModal();
       }
     });
 
@@ -3238,6 +3501,7 @@
       renderDrum(2);
       updateLockUI();
       updateSoundUI();
+      StatsTracker.trackBoot();
     }
 
     init();
