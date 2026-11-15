@@ -848,6 +848,22 @@
       transform: translateX(-50%) translateY(0);
     }
 
+    .toast.toast-top {
+      top: calc(16px + var(--safe-top));
+      bottom: auto;
+      transform: translateX(-50%) translateY(-16px);
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      border-color: rgba(255, 46, 147, 0.65);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 46, 147, 0.2);
+    }
+
+    .toast.toast-top.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20% { transform: translateX(-4px); }
@@ -2061,8 +2077,9 @@
       } catch (_) {}
     }
 
-    function showToast(message) {
+    function showToast(message, options = {}) {
       toastEl.textContent = message;
+      toastEl.classList.toggle('toast-top', Boolean(options.top));
       toastEl.classList.add('show');
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => {
@@ -2495,7 +2512,7 @@
       renderDrum(1);
       renderDrum(2);
       closePresetModal();
-      showToast(`${p.emoji} Сетінг: ${p.name}`);
+      showToast(`${p.emoji} Сетінг: ${p.name}`, { top: true });
     }
 
     presetBtn.addEventListener('click', openPresetModal);
