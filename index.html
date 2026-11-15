@@ -69,8 +69,8 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      padding: calc(10px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
-      gap: 10px;
+      padding: calc(8px + var(--safe-top)) 14px calc(12px + var(--safe-bottom));
+      gap: 8px;
     }
 
     /* Centered Hero Header */
@@ -79,65 +79,82 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 8px;
-      padding-top: 2px;
+      gap: 6px;
     }
 
-    .brand-lockup {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .brand-art-img {
-      height: 28px;
-      width: auto;
-      object-fit: contain;
-      filter: drop-shadow(0 2px 10px rgba(255, 46, 147, 0.35));
-    }
-
-    .brand-text-img {
-      height: 18px;
-      width: auto;
-      object-fit: contain;
-      opacity: 0.92;
-    }
-
-    .hero-question {
+    .hero-video-wrap {
+      width: 100%;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      line-height: 1.05;
-      margin-top: 2px;
+      min-height: 54px;
     }
 
-    .hero-question-top {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      color: #ffffff;
-      text-transform: uppercase;
+    .hero-video {
+      width: 100%;
+      max-width: 300px;
+      max-height: 68px;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+      mix-blend-mode: screen;
     }
 
-    .hero-question-accent {
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      background: var(--accent-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 4px 14px rgba(255, 46, 147, 0.35));
+    /* Row: Socials Left + Sound & Copy Right */
+    .top-actions-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
     }
 
-    /* Centered Socials Row */
     .socials {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 2px;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+
+    .utility-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 46, 147, 0.35);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: transform 0.14s ease, border-color 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .top-icon-btn img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+    }
+
+    .top-icon-btn:active {
+      transform: scale(0.91);
+      background: var(--bg-elevated);
+    }
+
+    .top-icon-btn.muted {
+      border-color: var(--border-subtle);
+      opacity: 0.65;
+    }
+
+    .top-icon-btn.copied {
+      border-color: rgba(46, 229, 157, 0.7);
+      background: rgba(46, 229, 157, 0.14);
     }
 
     .social-btn {
@@ -240,7 +257,7 @@
     .cards-stack {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       flex: 1;
       justify-content: center;
     }
@@ -249,8 +266,8 @@
       position: relative;
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: 20px;
-      padding: 12px 14px 12px;
+      border-radius: 18px;
+      padding: 10px 13px 10px;
       transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
       overflow: hidden;
     }
@@ -366,7 +383,7 @@
     /* Continuous Drum Viewport */
     .drum-viewport {
       position: relative;
-      height: 94px;
+      height: 82px;
       overflow: hidden;
       border-radius: 12px;
       background: rgba(11, 11, 15, 0.62);
@@ -674,32 +691,42 @@
       animation: shake 0.35s ease;
     }
 
-    @media (max-height: 700px) {
-      .hero-question-top { font-size: 19px; }
-      .hero-question-accent { font-size: 22px; }
-      .drum-viewport { height: 82px; }
-      .drum-slot-item { font-size: 17px; }
-      .drum-card { padding: 10px 13px; }
+    @media (max-height: 670px) {
+      .hero-video { max-height: 54px; }
+      .drum-viewport { height: 74px; }
+      .drum-slot-item { font-size: 16.5px; }
+      .drum-card { padding: 8px 12px; }
       .spin-all-btn { height: 48px; }
-      .copy-btn { height: 40px; }
     }
   </style>
 </head>
 <body>
   <div class="app-shell">
-    <!-- Centered Hero Header -->
+    <!-- Compact Hero Header -->
     <header class="hero-header">
-      <div class="brand-lockup">
-        <img src="./UI/Logo%20art.png" alt="Artotron" class="brand-art-img" />
-        <img src="./UI/Logo%20text.png" alt="Artotron" class="brand-text-img" />
+      <div class="hero-video-wrap">
+        <video
+          id="titleAnimVideo"
+          class="hero-video"
+          src="./UI/Text_anim.webm"
+          muted
+          playsinline
+          preload="auto"
+          aria-label="Що малюємо сьогодні?"
+        ></video>
       </div>
 
-      <h1 class="hero-question">
-        <span class="hero-question-top">ЩО МАЛЮЄМО</span>
-        <span class="hero-question-accent">СЬОГОДНІ?</span>
-      </h1>
-
-      <nav class="socials" aria-label="Соціальні мережі автора" id="socialsNav"></nav>
+      <div class="top-actions-row">
+        <nav class="socials" aria-label="Соціальні мережі автора" id="socialsNav"></nav>
+        <div class="utility-actions">
+          <button type="button" class="top-icon-btn" id="soundToggleBtn" aria-label="Звук" title="Увімкнути / вимкнути звук">
+            <img src="./UI/sound%20o%D1%82.png" alt="Звук" id="soundIconImg" />
+          </button>
+          <button type="button" class="top-icon-btn" id="copyBtn" aria-label="Скопіювати завдання" title="Скопіювати завдання">
+            <img src="./UI/list.png" alt="Скопіювати" />
+          </button>
+        </div>
+      </div>
     </header>
 
     <!-- Stats -->
@@ -712,9 +739,6 @@
         <span>🔒</span>
         <span>Закріплено: <strong id="lockedCount">0</strong> з 3</span>
       </div>
-      <button type="button" class="sound-pill" id="soundToggleBtn" aria-label="Звук" title="Увімкнути / вимкнути звук">
-        <span id="soundIcon">🔊</span>
-      </button>
     </div>
 
     <!-- 3 Drum Cards -->
@@ -794,10 +818,6 @@
 
     <!-- Bottom Controls -->
     <footer class="bottom-dock">
-      <button type="button" class="copy-btn" id="copyBtn">
-        <img src="./UI/list.png" alt="" />
-        <span id="copyBtnText">Скопіювати завдання</span>
-      </button>
       <button type="button" class="spin-all-btn" id="spinAllBtn">
         <span>✨</span>
         <span>Крутити все</span>
@@ -839,11 +859,6 @@
         name: 'TikTok',
         url: 'https://www.tiktok.com/@eviltornsberg',
         svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>'
-      },
-      {
-        name: 'Behance',
-        url: 'https://www.behance.net/eviltorn',
-        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 7h-7v-1.5h7V7zm-3.5 2.3c-2.6 0-4.3 1.9-4.3 4.6 0 2.8 1.6 4.5 4.4 4.5 2 0 3.4-.9 4-2.6h-2.2c-.3.6-.9.9-1.7.9-1.1 0-1.9-.6-2-1.9h6.1c.1-3.2-1.3-5.5-4.3-5.5zm-1.8 3.6c.1-1.1.8-1.8 1.8-1.8s1.7.7 1.8 1.8h-3.6zM8.5 11.4c1-.5 1.5-1.3 1.5-2.5 0-2-1.5-3.1-4.1-3.1H1v12.4h5.1c2.7 0 4.4-1.3 4.4-3.7 0-1.5-.7-2.6-2-3.1zM3.6 7.9h2.1c1 0 1.7.4 1.7 1.3s-.7 1.4-1.7 1.4H3.6V7.9zm2.3 8.2H3.6v-3.2h2.4c1.2 0 1.9.5 1.9 1.6s-.8 1.6-2 1.6z"/></svg>'
       }
     ];
 
@@ -1103,10 +1118,33 @@
     const lockedPillEl = document.getElementById('lockedPill');
     const spinAllBtn = document.getElementById('spinAllBtn');
     const copyBtn = document.getElementById('copyBtn');
-    const copyBtnText = document.getElementById('copyBtnText');
     const soundToggleBtn = document.getElementById('soundToggleBtn');
-    const soundIcon = document.getElementById('soundIcon');
+    const soundIconImg = document.getElementById('soundIconImg');
+    const titleAnimVideo = document.getElementById('titleAnimVideo');
     const toastEl = document.getElementById('toast');
+
+    let titleVideoInitialized = false;
+    if (titleAnimVideo) {
+      const seekToLastFrame = () => {
+        if (titleVideoInitialized) return;
+        if (Number.isFinite(titleAnimVideo.duration) && titleAnimVideo.duration > 0) {
+          titleAnimVideo.currentTime = Math.max(0, titleAnimVideo.duration - 0.04);
+          titleAnimVideo.pause();
+          titleVideoInitialized = true;
+        }
+      };
+      titleAnimVideo.addEventListener('loadedmetadata', seekToLastFrame);
+      titleAnimVideo.addEventListener('canplay', seekToLastFrame);
+    }
+
+    function playTitleAnimation() {
+      if (!titleAnimVideo) return;
+      titleVideoInitialized = true;
+      try {
+        titleAnimVideo.currentTime = 0;
+        titleAnimVideo.play().catch(() => {});
+      } catch (_) {}
+    }
 
     const infoModal = document.getElementById('infoModal');
     const modalBadge = document.getElementById('modalBadge');
@@ -1259,7 +1297,7 @@
 
     function updateSoundUI() {
       const on = SoundFX.isEnabled();
-      soundIcon.textContent = on ? '🔊' : '🔇';
+      soundIconImg.src = on ? './UI/sound%20o%D1%82.png' : './UI/sound%20off.png';
       soundToggleBtn.classList.toggle('muted', !on);
     }
 
@@ -1465,6 +1503,7 @@
       spinAllBtn.classList.remove('shimmer');
       void spinAllBtn.offsetWidth;
       spinAllBtn.classList.add('shimmer');
+      playTitleAnimation();
 
       const promises = unlocked.map((catIdx, order) => {
         const delay = order * 80;
@@ -1542,11 +1581,9 @@
       if (copied) {
         SoundFX.pop();
         copyBtn.classList.add('copied');
-        copyBtnText.textContent = 'Скопійовано!';
         showToast('✅ Завдання скопійовано в буфер обміну');
         setTimeout(() => {
           copyBtn.classList.remove('copied');
-          copyBtnText.textContent = 'Скопіювати завдання';
         }, 1800);
       } else {
         showToast('Не вдалося скопіювати автоматично');
