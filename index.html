@@ -95,6 +95,8 @@
     }
 
     .hero-video {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: contain;
@@ -103,7 +105,23 @@
       mix-blend-mode: screen;
       transform: translate3d(0, -14%, 0) scale(2.35);
       transform-origin: center center;
-      will-change: transform;
+      will-change: transform, opacity;
+    }
+
+    .hero-poster {
+      opacity: 1;
+    }
+
+    .hero-video-layer {
+      opacity: 0;
+    }
+
+    .hero-video-wrap.is-playing .hero-poster {
+      opacity: 0;
+    }
+
+    .hero-video-wrap.is-playing .hero-video-layer {
+      opacity: 1;
     }
 
     /* Row: Socials Left + Sound & Copy Right */
@@ -942,15 +960,21 @@
   <div class="app-shell">
     <!-- Compact Hero Header -->
     <header class="hero-header">
-      <div class="hero-video-wrap">
+      <div class="hero-video-wrap" id="heroVideoWrap">
+        <img
+          id="titlePosterImg"
+          class="hero-video hero-poster"
+          src="./UI/Text_anim_last.png"
+          alt="Що малюємо сьогодні?"
+        />
         <video
           id="titleAnimVideo"
-          class="hero-video"
+          class="hero-video hero-video-layer"
           src="./UI/Text_anim.webm"
           muted
           playsinline
           preload="auto"
-          aria-label="Що малюємо сьогодні?"
+          aria-hidden="true"
         ></video>
       </div>
 
@@ -2391,37 +2415,48 @@
     const copyBtn = document.getElementById('copyBtn');
     const soundToggleBtn = document.getElementById('soundToggleBtn');
     const soundIconImg = document.getElementById('soundIconImg');
+    const heroVideoWrap = document.getElementById('heroVideoWrap');
     const titleAnimVideo = document.getElementById('titleAnimVideo');
     const toastEl = document.getElementById('toast');
 
-    let titleVideoInitialized = false;
-    if (titleAnimVideo) {
-      const seekToLastFrame = () => {
-        if (titleVideoInitialized) return;
-        if (Number.isFinite(titleAnimVideo.duration) && titleAnimVideo.duration > 0) {
-          titleAnimVideo.currentTime = Math.max(0, titleAnimVideo.duration - 0.04);
-          titleAnimVideo.pause();
-          titleVideoInitialized = true;
-        }
-      };
-      titleAnimVideo.addEventListener('loadedmetadata', seekToLastFrame);
-      titleAnimVideo.addEventListener('canplay', seekToLastFrame);
+    if (titleAnimVideo && heroVideoWrap) {
+      titleAnimVideo.addEventListener('playing', () => {
+        heroVideoWrap.classList.add('is-playing');
+      });
+      titleAnimVideo.addEventListener('ended', () => {
+        heroVideoWrap.classList.remove('is-playing');
+        setTimeout(() => {
+          try {
+            if (!heroVideoWrap.classList.contains('is-playing')) {
+              titleAnimVideo.currentTime = 0;
+            }
+          } catch (_) {}
+        }, 120);
+      });
     }
 
     function playTitleAnimation() {
-      if (!titleAnimVideo) return;
-      titleVideoInitialized = true;
+      if (!titleAnimVideo || !heroVideoWrap) return;
       try {
-        titleAnimVideo.pause();
-        let played = false;
         const startPlay = () => {
-          if (played) return;
-          played = true;
-          titleAnimVideo.play().catch(() => {});
+          titleAnimVideo.play().catch(() => {
+            heroVideoWrap.classList.remove('is-playing');
+          });
         };
-        titleAnimVideo.addEventListener('seeked', startPlay, { once: true });
-        titleAnimVideo.currentTime = 0;
-        setTimeout(startPlay, 60);
+        if (titleAnimVideo.currentTime > 0.05 || titleAnimVideo.ended) {
+          titleAnimVideo.pause();
+          let started = false;
+          const oncePlay = () => {
+            if (started) return;
+            started = true;
+            startPlay();
+          };
+          titleAnimVideo.addEventListener('seeked', oncePlay, { once: true });
+          titleAnimVideo.currentTime = 0;
+          setTimeout(oncePlay, 80);
+        } else {
+          startPlay();
+        }
       } catch (_) {}
     }
 
