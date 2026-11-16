@@ -8,7 +8,8 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://db.onlinewebfonts.com/c/20e48b2ec8c64b2a1ceb5b28d9bcc9d0?family=Bryndan+Write" rel="stylesheet" />
   <style>
     :root {
       --bg-primary: #0f0f12;
@@ -948,6 +949,439 @@
       background: rgba(255, 46, 147, 0.22);
     }
 
+    .font-hand {
+      font-family: 'Bryndan Write', 'Caveat', cursive, sans-serif;
+    }
+
+    .left-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-badge img {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+      vertical-align: -2px;
+      margin-right: 4px;
+    }
+
+    /* Info Modal (Mockup 5) */
+    .info-pills-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin: 10px 0 14px;
+    }
+
+    .info-pill-row {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 13px;
+      line-height: 1.35;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .info-pill-row .pink {
+      color: #ff4f9a;
+    }
+
+    .info-pill-chip {
+      display: inline-block;
+      background: #0d0d11;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-right: 4px;
+    }
+
+    .info-legend-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+      margin-bottom: 16px;
+    }
+
+    .info-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 11.5px;
+      line-height: 1.25;
+      color: var(--text-primary);
+    }
+
+    .info-legend-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .info-legend-icon img {
+      width: 17px;
+      height: 17px;
+      object-fit: contain;
+    }
+
+    /* Settings Modal */
+    .settings-modal-card {
+      max-width: 370px;
+      padding: 18px;
+    }
+
+    .settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 12px 0 10px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 6px 4px;
+    }
+
+    .setting-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .setting-label img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .switch-btn {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: #101015;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .switch-btn::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4b4b5a;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .switch-btn.on {
+      border-color: rgba(255, 46, 147, 0.45);
+      background: rgba(255, 46, 147, 0.16);
+    }
+
+    .switch-btn.on::after {
+      transform: translateX(22px);
+      background: #ff4f6e;
+    }
+
+    .settings-version {
+      text-align: center;
+      color: #ff4f9a;
+      font-size: 16px;
+      font-weight: 700;
+      margin: 6px 0 12px;
+    }
+
+    /* About Author Modal */
+    .author-modal-card {
+      position: relative;
+      overflow: hidden;
+      max-width: 380px;
+      padding: 20px 18px 18px;
+      text-align: center;
+    }
+
+    .author-floaters {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .author-floater {
+      position: absolute;
+      opacity: 0.13;
+      animation: authorFloat 6s ease-in-out infinite;
+      filter: grayscale(1) brightness(1.4);
+    }
+
+    @keyframes authorFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-9px) rotate(8deg); }
+    }
+
+    .author-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .author-avatar {
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
+      margin: -4px auto 4px;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
+    }
+
+    .author-credit {
+      font-size: 16px;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .author-credit span {
+      color: #ff4f9a;
+    }
+
+    .author-socials-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .author-socials-label {
+      height: 36px;
+      object-fit: contain;
+      transform: rotate(-8deg);
+    }
+
+    .author-arrow-left {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      transform: rotate(10deg);
+    }
+
+    .author-socials-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .author-social-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(16, 16, 22, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+      transition: transform 0.14s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .author-social-btn svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .author-social-btn:active {
+      transform: scale(0.92);
+      color: #fff;
+      border-color: var(--accent-start);
+    }
+
+    .author-support-title {
+      font-size: 15px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .author-support-title span {
+      color: #ff4f9a;
+    }
+
+    .author-mono-row {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1cd8ff;
+      margin-bottom: 10px;
+    }
+
+    .author-mono-row img.mono-paw {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+    }
+
+    .author-mono-row img.mono-arrow {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      transform: rotate(75deg);
+    }
+
+    .author-donate-btn {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 14px;
+      border: none;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      cursor: pointer;
+      box-shadow: var(--accent-glow);
+      transition: transform 0.14s ease;
+    }
+
+    .author-donate-btn img {
+      max-height: 34px;
+      max-width: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .author-donate-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Feedback Modal */
+    .feedback-modal-card {
+      max-width: 390px;
+      max-height: 86dvh;
+      overflow-y: auto;
+      padding: 18px;
+    }
+
+    .feedback-ratings {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .feedback-rate-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .feedback-rate-label {
+      background: #101015;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 7px 11px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ff4f9a;
+      min-width: 112px;
+      text-align: left;
+    }
+
+    .feedback-stars-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #101015;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 5px 10px;
+    }
+
+    .star-btn {
+      background: none;
+      border: none;
+      padding: 2px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: transform 0.12s ease;
+    }
+
+    .star-btn img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      opacity: 0.22;
+      filter: grayscale(1);
+      transition: opacity 0.15s ease, filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .star-btn.filled img {
+      opacity: 1;
+      filter: none;
+    }
+
+    .star-btn:active {
+      transform: scale(0.86);
+    }
+
+    .feedback-textarea {
+      width: 100%;
+      min-height: 82px;
+      resize: vertical;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: #101015;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13.5px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .feedback-textarea:focus {
+      border-color: rgba(255, 46, 147, 0.55);
+    }
+
+    .feedback-thanks {
+      text-align: center;
+      padding: 16px 6px 6px;
+    }
+
+    .feedback-thanks-icon {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
     .preset-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1087,16 +1521,23 @@
       </div>
 
       <div class="top-actions-row">
-        <nav class="socials" aria-label="Соціальні мережі автора" id="socialsNav"></nav>
+        <div class="left-actions">
+          <button type="button" class="top-icon-btn" id="authorBtn" aria-label="Про автора" title="Про автора">
+            <img src="./UI/Subtract.png" alt="Автор" />
+          </button>
+          <button type="button" class="top-icon-btn" id="feedbackOpenBtn" aria-label="Зворотній зв’язок" title="Зворотній зв’язок">
+            <img src="./UI/feedback.png" alt="Відгук" />
+          </button>
+        </div>
         <div class="utility-actions">
-          <button type="button" class="top-icon-btn" id="aboutBtn" aria-label="Про застосунок і зворотний зв’язок" title="Про застосунок і зворотний зв’язок">
-            <img src="./UI/info.png" alt="Інфо" />
-          </button>
-          <button type="button" class="top-icon-btn" id="soundToggleBtn" aria-label="Звук" title="Увімкнути / вимкнути звук">
-            <img src="./UI/sound%20o%D1%82.png" alt="Звук" id="soundIconImg" />
-          </button>
           <button type="button" class="top-icon-btn" id="copyBtn" aria-label="Скопіювати завдання" title="Скопіювати завдання">
             <img src="./UI/copy.png" alt="Скопіювати" />
+          </button>
+          <button type="button" class="top-icon-btn" id="aboutBtn" aria-label="Про Artotron" title="Про Artotron">
+            <img src="./UI/info.png" alt="Інфо" />
+          </button>
+          <button type="button" class="top-icon-btn" id="settingsBtn" aria-label="Налаштування" title="Налаштування">
+            <img src="./UI/settings.png" alt="Налаштування" />
           </button>
         </div>
       </div>
@@ -1278,27 +1719,144 @@
     </div>
   </div>
 
-  <!-- About & Feedback Modal -->
+  <!-- Info Modal (Mockup 5) -->
   <div class="modal-backdrop" id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle">
     <div class="modal-card about-modal-card">
       <div class="modal-top">
-        <span class="modal-badge">ℹ️ ПРО ARTOTRON</span>
+        <span class="modal-badge"><img src="./UI/info.png" alt="" /> ПРО ARTOTRON</span>
         <button type="button" class="modal-close-x" id="aboutCloseX" aria-label="Закрити">✕</button>
       </div>
-      <h2 class="modal-title" id="aboutModalTitle" style="font-size:18px; margin-bottom:6px;">Генератор ідей для малювання</h2>
-      <p class="modal-desc" style="margin-bottom:8px;">Безкоштовний інструмент проти арт-блоку: крути барабани та збирай несподівані сюжети за секунду.</p>
-      <ul class="about-list">
-        <li><strong>01 Хто?</strong> — персонаж або істота. Увімкни <strong>+ Артикул</strong>, щоб додати роль чи професію другим барабаном.</li>
-        <li><strong>02 Місце / Дія</strong> — обирай локацію або конкретну ситуацію, що робить персонаж.</li>
-        <li><strong>03 Стиль / Палітра</strong> — художня техніка або готова палітра з 3 кольорів (HEX-коди в «?»).</li>
-        <li><strong>Замок і пресети</strong> — фіксуй вдалі слоти замком 🔒 або вмикай тематичний сетінг.</li>
-      </ul>
-      <div class="about-actions">
-        <button type="button" class="feedback-btn" id="feedbackBtn">
-          <img src="./UI/feedback.png" alt="" />
-          <span>Зворотний зв’язок / Запропонувати ідею</span>
+      <h2 class="modal-title font-hand" id="aboutModalTitle" style="font-size:18px; margin-bottom:4px;"><span style="color:#ff4f9a;">Артотрон</span> - твій кишеньковий арт ідейник.</h2>
+      <p class="modal-desc font-hand" style="font-size:14.5px; margin-bottom:10px;">Давай розберемося як цим користуватися і що натискать щоб було по-кайфу:</p>
+      <div class="info-pills-list font-hand">
+        <div class="info-pill-row"><span class="pink">1. Хто?</span> — Обирає тобі персонажа</div>
+        <div class="info-pill-row"><span class="info-pill-chip">+ артикул</span> <span class="pink">— Дає роль цьому персонажу</span></div>
+        <div class="info-pill-row"><span class="pink">2. Місце / Дія</span> — Задає локацію або дію</div>
+        <div class="info-pill-row"><span class="pink">3. Стиль / Палітра</span> — техніка малювання або готова палітра</div>
+      </div>
+      <div class="info-legend-grid font-hand">
+        <div class="info-legend-item">
+          <span class="info-legend-icon"><img src="./UI/wat.png" alt="?" /></span>
+          <span>Пояснить тобі що мається наувазі</span>
+        </div>
+        <div class="info-legend-item">
+          <span class="info-legend-icon"><img src="./UI/Subtract.png" alt="Автор" /></span>
+          <span>Про автора</span>
+        </div>
+        <div class="info-legend-item">
+          <span class="info-legend-icon"><img src="./UI/reroll.png" alt="Оновити" /></span>
+          <span>Прокрутить саме цей слот</span>
+        </div>
+        <div class="info-legend-item">
+          <span class="info-legend-icon"><img src="./UI/feedback.png" alt="Відгук" /></span>
+          <span>Зворотній зв’язок</span>
+        </div>
+        <div class="info-legend-item">
+          <span class="info-legend-icon"><img src="./UI/lock.png" alt="Замок" /></span>
+          <span>Заблокує саме цей слот</span>
+        </div>
+        <div class="info-legend-item">
+          <span class="info-legend-icon"><img src="./UI/deadline.png" alt="Дедлайн" /></span>
+          <span>Увімкнення дедлайну</span>
+        </div>
+      </div>
+      <button type="button" class="modal-ok-btn font-hand" id="aboutOkBtn" style="font-size:15px; line-height:1.15; height:50px;">ВСЕ ЗРОЗУМІЛО<br/>ПОВЕРНУТИСЯ ДО АРТОТРОНУ</button>
+    </div>
+  </div>
+
+  <!-- Settings Modal (Mockup 1) -->
+  <div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal-card settings-modal-card">
+      <div class="modal-top">
+        <span class="modal-badge"><img src="./UI/settings.png" alt="" /> налаштування</span>
+        <button type="button" class="modal-close-x" id="settingsCloseX" aria-label="Закрити">✕</button>
+      </div>
+      <h2 class="sr-only" id="settingsModalTitle" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Налаштування</h2>
+      <div class="settings-list">
+        <div class="setting-row">
+          <div class="setting-label">
+            <img src="./UI/sound%20o%D1%82.png" alt="" />
+            <span>звуки</span>
+          </div>
+          <button type="button" class="switch-btn on" id="settingSoundToggle" role="switch" aria-checked="true" aria-label="Звуки"></button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">
+            <img src="./UI/icon_topanimation.png" alt="" />
+            <span>анімація шапки</span>
+          </div>
+          <button type="button" class="switch-btn on" id="settingHeaderAnimToggle" role="switch" aria-checked="true" aria-label="Анімація шапки"></button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">
+            <img src="./UI/icon_slotanimation.png" alt="" />
+            <span>анімація барабанів</span>
+          </div>
+          <button type="button" class="switch-btn on" id="settingDrumAnimToggle" role="switch" aria-checked="true" aria-label="Анімація барабанів"></button>
+        </div>
+      </div>
+      <div class="settings-version font-hand">v.0.3</div>
+      <button type="button" class="modal-ok-btn" id="settingsOkBtn">Зрозуміло</button>
+    </div>
+  </div>
+
+  <!-- About Author Modal (Mockup 3) -->
+  <div class="modal-backdrop" id="authorModal" role="dialog" aria-modal="true" aria-labelledby="authorModalTitle">
+    <div class="modal-card author-modal-card">
+      <div class="author-floaters" aria-hidden="true">
+        <img src="./UI/heart.png" class="author-floater" style="top:8%; left:8%; width:22px; animation-delay:0s;" alt="" />
+        <img src="./UI/ratingstar.png" class="author-floater" style="top:10%; left:26%; width:26px; animation-delay:1.1s;" alt="" />
+        <img src="./UI/heart.png" class="author-floater" style="top:12%; right:26%; width:18px; animation-delay:2.2s;" alt="" />
+        <img src="./UI/ratingstar.png" class="author-floater" style="top:34%; left:10%; width:18px; animation-delay:0.6s;" alt="" />
+        <img src="./UI/ratingstar.png" class="author-floater" style="top:38%; right:10%; width:22px; animation-delay:1.8s;" alt="" />
+        <img src="./UI/heart.png" class="author-floater" style="bottom:32%; left:6%; width:20px; animation-delay:2.7s;" alt="" />
+        <img src="./UI/ratingstar.png" class="author-floater" style="bottom:30%; right:8%; width:24px; animation-delay:0.9s;" alt="" />
+        <img src="./UI/heart.png" class="author-floater" style="bottom:14%; left:16%; width:22px; animation-delay:1.5s;" alt="" />
+        <img src="./UI/ratingstar.png" class="author-floater" style="bottom:12%; right:16%; width:20px; animation-delay:2.4s;" alt="" />
+      </div>
+      <button type="button" class="modal-close-x" id="authorCloseX" aria-label="Закрити" style="position:absolute; top:14px; right:14px; z-index:2;">✕</button>
+      <div class="author-content">
+        <img src="./UI/aboutme.png" class="author-avatar" alt="EvilTorn" />
+        <h2 class="author-credit font-hand" id="authorModalTitle">зроблено бай <span>EvilTorn</span></h2>
+        <div class="author-socials-wrap">
+          <div style="display:flex; flex-direction:column; align-items:center;">
+            <img src="./UI/%D0%BC%D0%BE%D1%97%20%D1%81%D0%BE%D1%86%D0%BC%D0%B5%D1%80%D0%B5%D0%B6%D1%96.png" class="author-socials-label" alt="мої соцмережі" />
+            <img src="./UI/pink%20arrow.png" class="author-arrow-left" alt="" />
+          </div>
+          <nav class="author-socials-row" id="authorSocialsNav" aria-label="Соціальні мережі автора"></nav>
+        </div>
+        <p class="author-support-title font-hand">підтримати <span>мене</span> фінансово</p>
+        <div class="author-mono-row">
+          <img src="./UI/icon_monopay.png" class="mono-paw" alt="" />
+          <span>посилання на монобанку</span>
+          <img src="./UI/pink%20arrow.png" class="mono-arrow" alt="" />
+        </div>
+        <button type="button" class="author-donate-btn" id="authorDonateBtn" aria-label="Автор красунчик так тримать">
+          <img src="./UI/%D0%90%D0%B2%D1%82%D0%BE%D1%80%20%D0%BA%D1%80%D0%B0%D1%81%D1%83%D0%BD%D1%87%D0%B8%D0%BA%20%D1%82%D0%B0%D0%BA%20%D1%82%D1%80%D0%B8%D0%BC%D0%B0%D1%82%D1%8C.png" alt="АВТОР КРАСУНЧИК ТАК ТРИМАТЬ" />
         </button>
-        <button type="button" class="modal-ok-btn" id="aboutOkBtn">Повернутися до барабана</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Modal (Mockup 4) -->
+  <div class="modal-backdrop" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="feedbackModalTitle">
+    <div class="modal-card feedback-modal-card">
+      <div class="modal-top">
+        <span class="modal-badge"><img src="./UI/feedback.png" alt="" /> зворотній зв’язок</span>
+        <button type="button" class="modal-close-x" id="feedbackCloseX" aria-label="Закрити">✕</button>
+      </div>
+      <div id="feedbackFormView">
+        <h2 class="modal-title font-hand" id="feedbackModalTitle" style="font-size:17px; margin-bottom:4px;"><span style="color:#ff4f9a;">Артотрон</span> - твій кишеньковий арт ідейник.</h2>
+        <p class="modal-desc font-hand" style="font-size:14.5px; text-align:center; margin-bottom:8px;">Буду дуже вдячний за ваш відгук і зворотній зв’язок.</p>
+        <div class="feedback-ratings font-hand" id="feedbackRatings"></div>
+        <textarea class="feedback-textarea font-hand" id="feedbackText" placeholder="Є побажання або коментар? напиши мені!"></textarea>
+        <button type="button" class="modal-ok-btn font-hand" id="feedbackSubmitBtn" style="font-size:16px; height:48px;">НАДІСЛАТИ ВІДГУК</button>
+      </div>
+      <div id="feedbackThanksView" class="feedback-thanks" style="display:none;">
+        <div class="feedback-thanks-icon">💖</div>
+        <h2 class="modal-title font-hand" style="font-size:21px; margin-bottom:8px; color:#ff4f9a;">ДЯКУЮ ЗА ВІДГУК!</h2>
+        <p class="modal-desc" style="margin-bottom:16px;">Твоя оцінка та ідеї допомагають робити Artotron ще кращим ✨</p>
+        <button type="button" class="modal-ok-btn font-hand" id="feedbackDoneBtn" style="font-size:15px; height:48px;">ПОВЕРНУТИСЯ ДО АРТОТРОНУ</button>
       </div>
     </div>
   </div>
@@ -1324,8 +1882,20 @@
         name: 'TikTok',
         url: 'https://www.tiktok.com/@eviltornsberg',
         svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>'
+      },
+      {
+        name: 'Threads',
+        url: 'https://www.threads.net/@eviltornsberg',
+        svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32l-1.757-1.18c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221Z"/></svg>'
       }
     ];
+
+    // Посилання на Монобанку та окремого Telegram-бота для відгуків:
+    const MONOBANK_URL = 'https://send.monobank.ua/'; // TODO: встав точне посилання на свою банку
+    const FEEDBACK_BOT_CONFIG = {
+      botToken: '', // Встав токен від @BotFather для бота відгуків
+      chatId: ''    // Встав свій Telegram ID або ID каналу/групи (наприклад, '-100...')
+    };
 
     const CATEGORY_META = [
       '01 ПЕРСОНАЖ / ХТО?',
@@ -2587,18 +3157,21 @@
       return state.cat3Mode === 'palette' ? p.palettes : p.styles;
     }
 
-    const socialsNav = document.getElementById('socialsNav');
+    const authorSocialsNav = document.getElementById('authorSocialsNav');
     const viewport0 = document.getElementById('viewport-0');
     const articleToggleBtn = document.getElementById('articleToggleBtn');
     const lockedCountEl = document.getElementById('lockedCount');
     const lockedPillEl = document.getElementById('lockedPill');
     const spinAllBtn = document.getElementById('spinAllBtn');
     const copyBtn = document.getElementById('copyBtn');
-    const soundToggleBtn = document.getElementById('soundToggleBtn');
-    const soundIconImg = document.getElementById('soundIconImg');
     const heroVideoWrap = document.getElementById('heroVideoWrap');
     const titleAnimVideo = document.getElementById('titleAnimVideo');
     const toastEl = document.getElementById('toast');
+
+    const appSettings = {
+      headerAnim: localStorage.getItem('artotron_header_anim') !== '0',
+      drumAnim: localStorage.getItem('artotron_drum_anim') !== '0'
+    };
 
     if (titleAnimVideo && heroVideoWrap) {
       titleAnimVideo.addEventListener('playing', () => {
@@ -2617,7 +3190,7 @@
     }
 
     function playTitleAnimation() {
-      if (!titleAnimVideo || !heroVideoWrap) return;
+      if (!appSettings.headerAnim || !titleAnimVideo || !heroVideoWrap) return;
       try {
         const startPlay = () => {
           titleAnimVideo.play().catch(() => {
@@ -2800,8 +3373,11 @@
 
     function updateSoundUI() {
       const on = SoundFX.isEnabled();
-      soundIconImg.src = on ? './UI/sound%20o%D1%82.png' : './UI/sound%20off.png';
-      soundToggleBtn.classList.toggle('muted', !on);
+      const sw = document.getElementById('settingSoundToggle');
+      if (sw) {
+        sw.classList.toggle('on', on);
+        sw.setAttribute('aria-checked', on ? 'true' : 'false');
+      }
     }
 
     function triggerHaptic(style = 'medium') {
@@ -2836,10 +3412,11 @@
     }
 
     function renderSocials() {
-      socialsNav.innerHTML = '';
+      if (!authorSocialsNav) return;
+      authorSocialsNav.innerHTML = '';
       AUTHOR_SOCIALS.forEach((item) => {
         const a = document.createElement('a');
-        a.className = 'social-btn';
+        a.className = 'author-social-btn';
         a.href = item.url;
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
@@ -2850,7 +3427,7 @@
           e.preventDefault();
           openExternalUrl(item);
         });
-        socialsNav.appendChild(a);
+        authorSocialsNav.appendChild(a);
       });
     }
 
@@ -2995,6 +3572,25 @@
           const deltaArtMod = (targetArtMod - startArtMod + artLen) % artLen || artLen;
           const fullArtTurns = Math.max(1, Math.floor(extraItems / artLen)) * artLen;
           targetArtPos = startArtPos + fullArtTurns + deltaArtMod;
+        }
+
+        if (!appSettings.drumAnim) {
+          state.positions[catIdx] = targetPos;
+          if (spinArticle) {
+            state.articlePos = targetArtPos;
+            renderArticleDrum();
+          }
+          if (catIdx === 1) state.cat2Positions[state.cat2Mode] = targetPos;
+          if (catIdx === 2) state.cat3Positions[state.cat3Mode] = targetPos;
+          renderDrum(catIdx);
+          state.spinning[catIdx] = false;
+          card.classList.remove('is-spinning');
+          card.classList.add('landed');
+          refreshBtn.classList.remove('spinning');
+          SoundFX.land(catIdx);
+          updateLockUI();
+          resolve();
+          return;
         }
 
         const startTime = performance.now();
@@ -3230,12 +3826,6 @@
         SoundFX.unlock();
         spinCategory(idx, 1250, 20);
       });
-    });
-
-    soundToggleBtn.addEventListener('click', () => {
-      triggerHaptic('medium');
-      SoundFX.toggle();
-      updateSoundUI();
     });
 
     modalCloseX.addEventListener('click', closeInfoModal);
@@ -3514,31 +4104,189 @@
     const aboutModal = document.getElementById('aboutModal');
     const aboutCloseX = document.getElementById('aboutCloseX');
     const aboutOkBtn = document.getElementById('aboutOkBtn');
-    const feedbackBtn = document.getElementById('feedbackBtn');
 
-    function openAboutModal() {
-      triggerHaptic('medium');
-      SoundFX.pop();
-      aboutModal.classList.add('open');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const settingsCloseX = document.getElementById('settingsCloseX');
+    const settingsOkBtn = document.getElementById('settingsOkBtn');
+    const settingSoundToggle = document.getElementById('settingSoundToggle');
+    const settingHeaderAnimToggle = document.getElementById('settingHeaderAnimToggle');
+    const settingDrumAnimToggle = document.getElementById('settingDrumAnimToggle');
+
+    const authorBtn = document.getElementById('authorBtn');
+    const authorModal = document.getElementById('authorModal');
+    const authorCloseX = document.getElementById('authorCloseX');
+    const authorDonateBtn = document.getElementById('authorDonateBtn');
+
+    const feedbackOpenBtn = document.getElementById('feedbackOpenBtn');
+    const feedbackModal = document.getElementById('feedbackModal');
+    const feedbackCloseX = document.getElementById('feedbackCloseX');
+    const feedbackRatingsEl = document.getElementById('feedbackRatings');
+    const feedbackTextEl = document.getElementById('feedbackText');
+    const feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
+    const feedbackFormView = document.getElementById('feedbackFormView');
+    const feedbackThanksView = document.getElementById('feedbackThanksView');
+    const feedbackDoneBtn = document.getElementById('feedbackDoneBtn');
+
+    function bindBackdropModal(triggerEl, modalEl, closeEls, onOpen) {
+      if (triggerEl && modalEl) {
+        triggerEl.addEventListener('click', () => {
+          triggerHaptic('medium');
+          SoundFX.pop();
+          if (onOpen) onOpen();
+          modalEl.classList.add('open');
+        });
+      }
+      closeEls.forEach((el) => {
+        if (el) el.addEventListener('click', () => modalEl.classList.remove('open'));
+      });
+      if (modalEl) {
+        modalEl.addEventListener('click', (e) => {
+          if (e.target === modalEl) modalEl.classList.remove('open');
+        });
+      }
     }
 
-    function closeAboutModal() {
-      aboutModal.classList.remove('open');
+    function updateSettingsUI() {
+      updateSoundUI();
+      if (settingHeaderAnimToggle) {
+        settingHeaderAnimToggle.classList.toggle('on', appSettings.headerAnim);
+        settingHeaderAnimToggle.setAttribute('aria-checked', appSettings.headerAnim ? 'true' : 'false');
+      }
+      if (settingDrumAnimToggle) {
+        settingDrumAnimToggle.classList.toggle('on', appSettings.drumAnim);
+        settingDrumAnimToggle.setAttribute('aria-checked', appSettings.drumAnim ? 'true' : 'false');
+      }
     }
 
-    if (aboutBtn) aboutBtn.addEventListener('click', openAboutModal);
-    if (aboutCloseX) aboutCloseX.addEventListener('click', closeAboutModal);
-    if (aboutOkBtn) aboutOkBtn.addEventListener('click', closeAboutModal);
-    if (aboutModal) {
-      aboutModal.addEventListener('click', (e) => {
-        if (e.target === aboutModal) closeAboutModal();
+    if (settingSoundToggle) {
+      settingSoundToggle.addEventListener('click', () => {
+        triggerHaptic('medium');
+        SoundFX.toggle();
+        updateSettingsUI();
       });
     }
-    if (feedbackBtn) {
-      feedbackBtn.addEventListener('click', () => {
-        openExternalUrl({ url: 'https://t.me/zloytorn' });
+    if (settingHeaderAnimToggle) {
+      settingHeaderAnimToggle.addEventListener('click', () => {
+        triggerHaptic('medium');
+        SoundFX.pop();
+        appSettings.headerAnim = !appSettings.headerAnim;
+        localStorage.setItem('artotron_header_anim', appSettings.headerAnim ? '1' : '0');
+        updateSettingsUI();
       });
     }
+    if (settingDrumAnimToggle) {
+      settingDrumAnimToggle.addEventListener('click', () => {
+        triggerHaptic('medium');
+        SoundFX.pop();
+        appSettings.drumAnim = !appSettings.drumAnim;
+        localStorage.setItem('artotron_drum_anim', appSettings.drumAnim ? '1' : '0');
+        updateSettingsUI();
+      });
+    }
+
+    if (authorDonateBtn) {
+      authorDonateBtn.addEventListener('click', () => {
+        openExternalUrl({ url: MONOBANK_URL });
+      });
+    }
+
+    const FEEDBACK_CATEGORIES = [
+      { key: 'func', label: 'Функціонал' },
+      { key: 'ux', label: 'Зручність' },
+      { key: 'useful', label: 'Корисність' },
+      { key: 'stability', label: 'Дієздатність' },
+      { key: 'mood', label: 'Ваш настрій?' }
+    ];
+    const feedbackScores = { func: 5, ux: 5, useful: 5, stability: 5, mood: 5 };
+
+    function renderFeedbackStars() {
+      if (!feedbackRatingsEl) return;
+      feedbackRatingsEl.innerHTML = '';
+      FEEDBACK_CATEGORIES.forEach((cat) => {
+        const row = document.createElement('div');
+        row.className = 'feedback-rate-row';
+
+        const lbl = document.createElement('div');
+        lbl.className = 'feedback-rate-label';
+        lbl.textContent = cat.label;
+
+        const box = document.createElement('div');
+        box.className = 'feedback-stars-box';
+
+        for (let star = 1; star <= 5; star++) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'star-btn' + (star <= feedbackScores[cat.key] ? ' filled' : '');
+          btn.setAttribute('aria-label', `${cat.label}: ${star} з 5`);
+          btn.innerHTML = '<img src="./UI/ratingstar.png" alt="★" />';
+          btn.addEventListener('click', () => {
+            triggerHaptic('light');
+            SoundFX.pop();
+            feedbackScores[cat.key] = star;
+            Array.from(box.children).forEach((child, idx) => {
+              child.classList.toggle('filled', idx < star);
+            });
+          });
+          box.appendChild(btn);
+        }
+
+        row.appendChild(lbl);
+        row.appendChild(box);
+        feedbackRatingsEl.appendChild(row);
+      });
+    }
+
+    if (feedbackSubmitBtn) {
+      feedbackSubmitBtn.addEventListener('click', async () => {
+        triggerHaptic('medium');
+        SoundFX.pop();
+        feedbackSubmitBtn.disabled = true;
+
+        const user = tg?.initDataUnsafe?.user;
+        const userTag = user
+          ? `${user.first_name || ''} ${user.last_name || ''}`.trim() + (user.username ? ` (@${user.username})` : ` (id:${user.id})`)
+          : 'Гість (браузер)';
+        const comment = (feedbackTextEl?.value || '').trim();
+        const starsLine = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
+
+        const messageText = [
+          '📝 Новий відгук Artotron',
+          `👤 Від: ${userTag}`,
+          '',
+          ...FEEDBACK_CATEGORIES.map((c) => `• ${c.label}: ${starsLine(feedbackScores[c.key])} (${feedbackScores[c.key]}/5)`),
+          '',
+          comment ? `💬 Коментар:\n${comment}` : '💬 Коментар: (без тексту)'
+        ].join('\n');
+
+        if (FEEDBACK_BOT_CONFIG.botToken && FEEDBACK_BOT_CONFIG.chatId) {
+          try {
+            await fetch(`https://api.telegram.org/bot${FEEDBACK_BOT_CONFIG.botToken}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: FEEDBACK_BOT_CONFIG.chatId,
+                text: messageText
+              })
+            });
+          } catch (_) {}
+        }
+
+        feedbackSubmitBtn.disabled = false;
+        if (feedbackFormView) feedbackFormView.style.display = 'none';
+        if (feedbackThanksView) feedbackThanksView.style.display = 'block';
+        if (feedbackTextEl) feedbackTextEl.value = '';
+      });
+    }
+
+    bindBackdropModal(aboutBtn, aboutModal, [aboutCloseX, aboutOkBtn]);
+    bindBackdropModal(settingsBtn, settingsModal, [settingsCloseX, settingsOkBtn], updateSettingsUI);
+    bindBackdropModal(authorBtn, authorModal, [authorCloseX]);
+    bindBackdropModal(feedbackOpenBtn, feedbackModal, [feedbackCloseX, feedbackDoneBtn], () => {
+      if (feedbackFormView) feedbackFormView.style.display = 'block';
+      if (feedbackThanksView) feedbackThanksView.style.display = 'none';
+      renderFeedbackStars();
+    });
 
     function openStatsModal() {
       triggerHaptic('medium');
@@ -3587,7 +4335,10 @@
         closeInfoModal();
         closePresetModal();
         closeStatsModal();
-        closeAboutModal();
+        if (aboutModal) aboutModal.classList.remove('open');
+        if (settingsModal) settingsModal.classList.remove('open');
+        if (authorModal) authorModal.classList.remove('open');
+        if (feedbackModal) feedbackModal.classList.remove('open');
       }
     });
 
@@ -3615,7 +4366,7 @@
       renderDrum(1);
       renderDrum(2);
       updateLockUI();
-      updateSoundUI();
+      updateSettingsUI();
       StatsTracker.trackBoot();
     }
 
