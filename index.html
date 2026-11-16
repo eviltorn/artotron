@@ -1700,7 +1700,7 @@
             <img src="./UI/feedback.png" alt="Відгук" />
           </button>
           <button type="button" class="top-icon-btn" id="achBtn" aria-label="Ачівки" title="Ачівки">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="#ffffff" aria-hidden="true">
               <path d="M18 4h2a1 1 0 0 1 1 1v2a4 4 0 0 1-3.44 3.96A6.01 6.01 0 0 1 13 14.92V17h3a1 1 0 0 1 1 1v2H7v-2a1 1 0 0 1 1-1h3v-2.08a6.01 6.01 0 0 1-4.56-3.96A4 4 0 0 1 3 7V5a1 1 0 0 1 1-1h2V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1Zm0 2v2.9a2 2 0 0 0 1-1.73V6h-1ZM6 6H5v1.17A2 2 0 0 0 6 8.9V6Zm6 1.2 1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34L12 7.2Z"/>
             </svg>
           </button>
@@ -4549,16 +4549,16 @@
         { id: 'opportunist', name: 'Опортуніст', desc: 'Спробувати всі сеттінги Артотрону', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm0 5.5a3.5 3.5 0 0 1 3.5 3.5v4h-1.8v6h-3.4v-6H8.5v-4A3.5 3.5 0 0 1 12 7.5Zm-7.5 1L7 6l.5 3.2-1.2-.5-1.5 2.5-1.4-.8 1.5-2.5-1.4-.4Zm15 0L17 6l-.5 3.2 1.2-.5 1.5 2.5 1.4-.8-1.5-2.5 1.4-.4Z"/></svg>', progress: (d) => `${d.visitedPresets.length} / ${ALL_PRESET_COUNT}` },
         { id: 'secret', name: 'Секретка', desc: 'Знайти й подивитися приховану статистику', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.1 15.2c0-2.1.7-3.2 2.1-4.3 1.2-.9 1.8-1.6 1.8-2.6 0-1.3-1-2.2-2.6-2.2-1.4 0-2.4.7-2.9 1.9l-2.4-1C7.9 4.7 9.9 3.5 12.5 3.5c3.2 0 5.3 1.8 5.3 4.6 0 1.9-.9 3.2-2.5 4.4-1.1.8-1.5 1.4-1.5 2.7v.5h-2.7v-.5Zm-.3 3.3a1.7 1.7 0 1 1 3.4 0 1.7 1.7 0 0 1-3.4 0Z"/></svg>', progress: (d) => d.statsViewed ? 'Знайдено!' : 'Таємниця...' },
         { id: 'spin50', name: 'Кручу-верчу', desc: 'Зробити 50 обертів барабанів', mask: './UI/dice.png', progress: (d) => `${Math.min(d.totalSpins, 50)} / 50` },
-        { id: 'char_mode', name: 'Персонажник', desc: '100 спінів у моді персонажів (скоро)', mask: './UI/character.png', soon: true },
-        { id: 'env_mode', name: 'Мандрівник', desc: '100 спінів у моді оточення (скоро)', mask: './UI/landscape.png', soon: true },
-        { id: 'winner', name: 'Переможець', desc: 'Зібрати всі доступні ачівки (скоро)', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 4h2a1 1 0 0 1 1 1v2a4 4 0 0 1-3.44 3.96A6.01 6.01 0 0 1 13 14.92V17h3a1 1 0 0 1 1 1v2H7v-2a1 1 0 0 1 1-1h3v-2.08a6.01 6.01 0 0 1-4.56-3.96A4 4 0 0 1 3 7V5a1 1 0 0 1 1-1h2V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1Z"/></svg>', soon: true },
+        { id: 'char_mode', name: 'Персонажник', desc: '100 спінів у моді персонажів', mask: './UI/character.png', soon: true },
+        { id: 'env_mode', name: 'Мандрівник', desc: '100 спінів у моді оточення', mask: './UI/landscape.png', soon: true },
+        { id: 'winner', name: 'Переможець', desc: 'Зібрати всі доступні ачівки', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 4h2a1 1 0 0 1 1 1v2a4 4 0 0 1-3.44 3.96A6.01 6.01 0 0 1 13 14.92V17h3a1 1 0 0 1 1 1v2H7v-2a1 1 0 0 1 1-1h3v-2.08a6.01 6.01 0 0 1-4.56-3.96A4 4 0 0 1 3 7V5a1 1 0 0 1 1-1h2V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1Z"/></svg>', soon: true },
         { id: 'star5', name: 'Зірка', desc: 'Надіслати 5 відгуків по 5 зірок у всіх пунктах', mask: './UI/ratingstar.png', progress: (d) => `${Math.min(d.fiveStarFeedbackCount, 5)} / 5` },
         { id: 'friend', name: 'Друг', desc: 'Натиснути на всі соцмережі в «Про автора»', mask: './UI/aboutautor_icon.png', progress: (d) => `${d.socialClicks.length} / 4` },
         { id: 'necromancer', name: 'Некромант', desc: 'Понад 100 спінів у Фентезі, Міському фентезі, Вампірах, DnD або Фольклорі', mask: './UI/deadline.png', progress: (d) => `${Math.min(sumPresets(d, ['fantasy', 'urban_fantasy', 'vampires', 'dnd', 'folklore']), 101)} / 101` },
         { id: 'helper', name: 'Помічник', desc: 'Надіслати відгук через форму зворотного зв’язку', mask: './UI/feedback.png', progress: (d) => `${Math.min(d.feedbackCount, 1)} / 1` },
         { id: 'first_spin', name: 'Перший спін', desc: 'Крутанути барабани вперше', mask: './UI/reroll.png', progress: (d) => `${Math.min(d.totalSpins, 1)} / 1` },
         { id: 'kitty', name: 'Котик', desc: 'Фінансово підтримати автора на Монобанку', mask: './UI/icon_monopay.png', progress: (d) => d.donated ? 'Дякую! 🐾' : '0 / 1' },
-        { id: 'deadliner', name: 'Дедлайнер', desc: 'Попрацювати 10 разів з увімкненим дедлайном (скоро)', mask: './UI/deadliner.png', soon: true },
+        { id: 'deadliner', name: 'Дедлайнер', desc: 'Попрацювати 10 разів з увімкненим дедлайном', mask: './UI/deadliner.png', soon: true },
         { id: 'chosen', name: 'Обраний', desc: 'Понад 100 спінів у Постапокаліпсисі або Сталкері', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a9 9 0 1 0 9 9 9 9 0 0 0-9-9Zm-3 7.5a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Zm6 0a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Zm-6.4 5h6.8a3.8 3.8 0 0 1-6.8 0Z"/></svg>', progress: (d) => `${Math.min(sumPresets(d, ['postapoc', 'stalker']), 101)} / 101` },
         { id: 'tesla', name: 'Тесла', desc: 'Понад 100 спінів у Фантастиці, Кіберпанку або Стімпанку', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.5 13.5H11L10 22l9.5-12H13V2Z"/></svg>', progress: (d) => `${Math.min(sumPresets(d, ['scifi', 'cyberpunk', 'steampunk']), 101)} / 101` },
         { id: 'profi', name: 'Профі', desc: 'Скопіювати промпт кнопкою «Копіювати» 25 разів', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2Zm0 3h6V5H9v1Z"/></svg>', progress: (d) => `${Math.min(d.copyCount, 25)} / 25` },
