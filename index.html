@@ -1878,6 +1878,10 @@
           <span class="stats-val" id="statGlobalCopies">…</span>
           <span class="stats-lbl">Скопійованих завдань</span>
         </div>
+        <div class="stats-tile" style="grid-column: 1 / -1;">
+          <span class="stats-val" id="statGlobalReturning">…</span>
+          <span class="stats-lbl">Повернулися повторно (без автора)</span>
+        </div>
       </div>
 
       <div class="stats-section-label">Твій пристрій</div>
@@ -4217,11 +4221,13 @@
     // =========================================================================
     const StatsTracker = (() => {
       const API_BASE = 'https://countapi.mileshilliard.com/api/v1';
+      const AUTHOR_TG_ID = 358717650;
       const KEYS = {
         users: 'artotron_eviltorn_users_v1',
         opens: 'artotron_eviltorn_opens_v1',
         spins: 'artotron_eviltorn_spins_v1',
-        copies: 'artotron_eviltorn_copies_v1'
+        copies: 'artotron_eviltorn_copies_v1',
+        returning: 'artotron_eviltorn_returning_v1'
       };
       const LOCAL_KEY = 'artotron_local_stats_v1';
 
@@ -4263,11 +4269,19 @@
 
       function trackBoot() {
         try {
-          if (!localStorage.getItem('artotron_stat_user_v1')) {
+          const isNewSession = !sessionStorage.getItem('artotron_stat_open_v1');
+          const hasVisitedBefore = Boolean(localStorage.getItem('artotron_stat_user_v1'));
+          const isAuthor = Number(tg?.initDataUnsafe?.user?.id) === AUTHOR_TG_ID;
+
+          if (!hasVisitedBefore) {
             localStorage.setItem('artotron_stat_user_v1', '1');
             hitRemote(KEYS.users);
+          } else if (isNewSession && !isAuthor && !localStorage.getItem('artotron_stat_returning_v1')) {
+            localStorage.setItem('artotron_stat_returning_v1', '1');
+            hitRemote(KEYS.returning);
           }
-          if (!sessionStorage.getItem('artotron_stat_open_v1')) {
+
+          if (isNewSession) {
             sessionStorage.setItem('artotron_stat_open_v1', '1');
             hitRemote(KEYS.opens);
           }
@@ -4311,19 +4325,21 @@
         }
         document.getElementById('statFavPreset').textContent = `Улюблений сетінг: ${favText}`;
 
-        const ids = ['statGlobalUsers', 'statGlobalOpens', 'statGlobalSpins', 'statGlobalCopies'];
+        const ids = ['statGlobalUsers', 'statGlobalOpens', 'statGlobalSpins', 'statGlobalCopies', 'statGlobalReturning'];
         ids.forEach((id) => { document.getElementById(id).textContent = '…'; });
 
-        const [users, opens, spins, copies] = await Promise.all([
+        const [users, opens, spins, copies, returning] = await Promise.all([
           getRemote(KEYS.users),
           getRemote(KEYS.opens),
           getRemote(KEYS.spins),
-          getRemote(KEYS.copies)
+          getRemote(KEYS.copies),
+          getRemote(KEYS.returning)
         ]);
         document.getElementById('statGlobalUsers').textContent = formatVal(users);
         document.getElementById('statGlobalOpens').textContent = formatVal(opens);
         document.getElementById('statGlobalSpins').textContent = formatVal(spins);
         document.getElementById('statGlobalCopies').textContent = formatVal(copies);
+        document.getElementById('statGlobalReturning').textContent = formatVal(returning);
       }
 
       return { trackBoot, recordSpin, recordCopy, recordPreset, renderStatsModal };
