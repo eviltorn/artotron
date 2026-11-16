@@ -1122,6 +1122,38 @@
       background: #ff4f6e;
     }
 
+    .setting-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .notify-time-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: #101015;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 12px;
+      text-align: center;
+      cursor: pointer;
+      outline: none;
+      transition: opacity 0.2s ease, border-color 0.2s ease;
+    }
+
+    .notify-time-select:focus {
+      border-color: rgba(255, 46, 147, 0.55);
+    }
+
+    .notify-time-select.is-off {
+      opacity: 0.45;
+    }
+
     .settings-version {
       text-align: center;
       color: #ff4f9a;
@@ -1974,6 +2006,32 @@
             <span>анімація барабанів</span>
           </div>
           <button type="button" class="switch-btn on" id="settingDrumAnimToggle" role="switch" aria-checked="true" aria-label="Анімація барабанів"></button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">
+            <img src="./UI/bell.png" alt="" />
+            <span>сповіщення</span>
+          </div>
+          <div class="setting-controls">
+            <select id="settingNotifyTime" class="notify-time-select is-off" aria-label="Час нагадування">
+              <option value="9">09:00</option>
+              <option value="10">10:00</option>
+              <option value="11">11:00</option>
+              <option value="12">12:00</option>
+              <option value="13">13:00</option>
+              <option value="14">14:00</option>
+              <option value="15">15:00</option>
+              <option value="16">16:00</option>
+              <option value="17">17:00</option>
+              <option value="18" selected>18:00</option>
+              <option value="19">19:00</option>
+              <option value="20">20:00</option>
+              <option value="21">21:00</option>
+              <option value="22">22:00</option>
+              <option value="23">23:00</option>
+            </select>
+            <button type="button" class="switch-btn" id="settingNotifyToggle" role="switch" aria-checked="false" aria-label="Сповіщення"></button>
+          </div>
         </div>
       </div>
       <div class="settings-version font-hand">v.0.3</div>
@@ -4360,6 +4418,8 @@
     const settingSoundToggle = document.getElementById('settingSoundToggle');
     const settingHeaderAnimToggle = document.getElementById('settingHeaderAnimToggle');
     const settingDrumAnimToggle = document.getElementById('settingDrumAnimToggle');
+    const settingNotifyToggle = document.getElementById('settingNotifyToggle');
+    const settingNotifyTime = document.getElementById('settingNotifyTime');
 
     const authorBtn = document.getElementById('authorBtn');
     const authorModal = document.getElementById('authorModal');
@@ -4406,6 +4466,15 @@
         settingDrumAnimToggle.classList.toggle('on', appSettings.drumAnim);
         settingDrumAnimToggle.setAttribute('aria-checked', appSettings.drumAnim ? 'true' : 'false');
       }
+      if (settingNotifyToggle) {
+        const notifyOn = Boolean(appSettings.notifyEnabled);
+        settingNotifyToggle.classList.toggle('on', notifyOn);
+        settingNotifyToggle.setAttribute('aria-checked', notifyOn ? 'true' : 'false');
+      }
+      if (settingNotifyTime) {
+        settingNotifyTime.value = String(appSettings.notifyHour ?? 18);
+        settingNotifyTime.classList.toggle('is-off', !appSettings.notifyEnabled);
+      }
       if (typeof Achievements !== 'undefined') Achievements.checkOptimizer();
     }
 
@@ -4432,6 +4501,55 @@
         appSettings.drumAnim = !appSettings.drumAnim;
         localStorage.setItem('artotron_drum_anim', appSettings.drumAnim ? '1' : '0');
         updateSettingsUI();
+      });
+    }
+
+    const REMINDER_API_URL = '';
+
+    appSettings.notifyEnabled = localStorage.getItem('artotron_notify_enabled') === '1';
+    appSettings.notifyHour = Number(localStorage.getItem('artotron_notify_hour') || 18);
+
+    async function syncReminderSettings() {
+      localStorage.setItem('artotron_notify_enabled', appSettings.notifyEnabled ? '1' : '0');
+      localStorage.setItem('artotron_notify_hour', String(appSettings.notifyHour));
+      if (!REMINDER_API_URL) return;
+      const userId = tg?.initDataUnsafe?.user?.id;
+      if (!userId) return;
+      try {
+        await fetch(REMINDER_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            enabled: appSettings.notifyEnabled,
+            hour: appSettings.notifyHour,
+            tzOffset: -new Date().getTimezoneOffset()
+          })
+        });
+      } catch (_) {}
+    }
+
+    if (settingNotifyToggle) {
+      settingNotifyToggle.addEventListener('click', () => {
+        triggerHaptic('medium');
+        SoundFX.pop();
+        appSettings.notifyEnabled = !appSettings.notifyEnabled;
+        updateSettingsUI();
+        syncReminderSettings();
+        const hh = String(appSettings.notifyHour).padStart(2, '0');
+        showToast(appSettings.notifyEnabled ? `🔔 Нагадування увімкнено (${hh}:00)` : '🔕 Нагадування вимкнено');
+      });
+    }
+    if (settingNotifyTime) {
+      settingNotifyTime.addEventListener('change', () => {
+        triggerHaptic('light');
+        SoundFX.pop();
+        appSettings.notifyHour = Number(settingNotifyTime.value) || 18;
+        if (!appSettings.notifyEnabled) appSettings.notifyEnabled = true;
+        updateSettingsUI();
+        syncReminderSettings();
+        const hh = String(appSettings.notifyHour).padStart(2, '0');
+        showToast(`🔔 Нагадування щодня о ${hh}:00`);
       });
     }
 
