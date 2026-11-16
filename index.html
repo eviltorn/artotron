@@ -63,7 +63,6 @@
 
     .app-shell {
       position: relative;
-      z-index: 1;
       max-width: 460px;
       min-height: 100dvh;
       margin: 0 auto;
@@ -90,7 +89,6 @@
       align-items: center;
       overflow: visible;
       position: relative;
-      z-index: 1;
     }
 
     .hero-video {
@@ -108,18 +106,22 @@
 
     .hero-poster {
       opacity: 1;
+      visibility: visible;
     }
 
     .hero-video-layer {
       opacity: 0;
+      visibility: hidden;
     }
 
     .hero-video-wrap.is-playing .hero-poster {
       opacity: 0;
+      visibility: hidden;
     }
 
     .hero-video-wrap.is-playing .hero-video-layer {
       opacity: 1;
+      visibility: visible;
     }
 
     /* Row: Socials Left + Sound & Copy Right */
