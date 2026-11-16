@@ -1595,6 +1595,21 @@
       flex-shrink: 0;
     }
 
+    .preset-mask-icon {
+      width: 15px;
+      height: 15px;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      background: #ffffff;
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+
     .preset-icon-svg {
       width: 16px;
       height: 16px;
@@ -2223,10 +2238,6 @@
         <div class="whatsnew-item">
           <span class="whatsnew-item-icon"><img src="./UI/feedback.png" alt="" /></span>
           <div><strong>Зворотній зв’язок і про автора</strong>Оцінюй Артотрон зірочками та пиши ідеї прямо автору.</div>
-        </div>
-        <div class="whatsnew-item">
-          <span class="whatsnew-item-icon"><img src="./UI/dice.png" alt="" /></span>
-          <div><strong>Рідні іконки</strong>Оновили іконки тем і кнопок у єдиному стилі.</div>
         </div>
       </div>
       <button type="button" class="modal-ok-btn font-hand" id="whatsNewOkBtn" style="font-size:15px; height:48px;">КРУТО, ПОЇХАЛИ!</button>
@@ -4270,7 +4281,7 @@
     function renderPresetIcon(id, fallbackEmoji = '🎲') {
       const entry = PRESET_ICON_MAP[id];
       if (!entry) return `<span>${fallbackEmoji}</span>`;
-      if (entry.img) return `<img src="${entry.img}" class="pill-ui-icon" alt="" />`;
+      if (entry.img) return `<span class="preset-mask-icon" style="-webkit-mask-image:url('${entry.img}');mask-image:url('${entry.img}');" aria-hidden="true"></span>`;
       return entry.svg;
     }
 
