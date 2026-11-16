@@ -1740,7 +1740,7 @@
         </div>
         <div class="utility-actions">
           <button type="button" class="top-icon-btn" id="copyBtn" aria-label="Скопіювати завдання" title="Скопіювати завдання">
-            <img src="./UI/copy.png" alt="Скопіювати" />
+            <img src="./UI/copy2.png" alt="Скопіювати" />
           </button>
           <button type="button" class="top-icon-btn" id="aboutBtn" aria-label="Про Artotron" title="Про Artotron">
             <img src="./UI/info.png" alt="Інфо" />
@@ -4696,7 +4696,7 @@
         { id: 'chosen', name: 'Обраний', desc: 'Понад 100 спінів у Постапокаліпсисі або Сталкері', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a9 9 0 1 0 9 9 9 9 0 0 0-9-9Zm-3 7.5a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Zm6 0a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Zm-6.4 5h6.8a3.8 3.8 0 0 1-6.8 0Z"/></svg>', progress: (d) => `${Math.min(sumPresets(d, ['postapoc', 'stalker']), 101)} / 101` },
         { id: 'tesla', name: 'Тесла', desc: 'Понад 100 спінів у Фантастиці, Кіберпанку або Стімпанку', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.5 13.5H11L10 22l9.5-12H13V2Z"/></svg>', progress: (d) => `${Math.min(sumPresets(d, ['scifi', 'cyberpunk', 'steampunk']), 101)} / 101` },
         { id: 'profi', name: 'Профі', desc: 'Скопіювати промпт кнопкою «Копіювати» 25 разів', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2Zm0 3h6V5H9v1Z"/></svg>', progress: (d) => `${Math.min(d.copyCount, 25)} / 25` },
-        { id: 'copywriter', name: 'Копірайтер', desc: 'Скопіювати промпт кнопкою «Копіювати» 10 разів', mask: './UI/copy.png', progress: (d) => `${Math.min(d.copyCount, 10)} / 10` },
+        { id: 'copywriter', name: 'Копірайтер', desc: 'Скопіювати промпт кнопкою «Копіювати» 10 разів', mask: './UI/copy2.png', progress: (d) => `${Math.min(d.copyCount, 10)} / 10` },
         { id: 'ecologist', name: 'Еколог', desc: 'Заблокувавши 1 і 3 слот, прокрутити тільки «Місце» понад 25 разів', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 4.5C12 4.5 6.5 8.2 5 15.2c-.3 1.4.2 2.8 1.2 3.6.9-.8 2.4-2.2 4.3-4.1l-1.2-1.2C11.4 11.4 14 9.6 16.5 8.5c-2.2 1.8-4.2 3.9-5.8 6l-1.1 1.1c2.4 1.1 5.2.8 7.3-1.3 2.4-2.4 3-6.1 2.6-9.8Z"/></svg>', progress: (d) => `${Math.min(d.ecologistSpins, 26)} / 26` },
         { id: 'romantic', name: 'Романтик', desc: 'Понад 100 спінів у Романтиці, Школі, Міському фентезі або Тваринах', mask: './UI/heart.png', progress: (d) => `${Math.min(sumPresets(d, ['romance', 'school', 'urban_fantasy', 'animals']), 101)} / 101` },
         { id: 'junior', name: 'Джун', desc: 'Заходити й крутити барабан 2 дні підряд', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 11h-5v-2h3V6h2Z"/></svg>', progress: (d) => `Стрік: ${Math.min(d.streakDays, 2)} / 2 дн.` },
