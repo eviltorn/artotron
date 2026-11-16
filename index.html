@@ -91,7 +91,6 @@
       overflow: visible;
       position: relative;
       z-index: 1;
-      isolation: isolate;
     }
 
     .hero-video {
@@ -105,7 +104,6 @@
       mix-blend-mode: screen;
       transform: translate3d(0, -14%, 0) scale(2.35);
       transform-origin: center center;
-      will-change: transform, opacity;
     }
 
     .hero-poster {
@@ -728,21 +726,23 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(8, 8, 12, 0.76);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(8, 8, 12, 0.86);
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
       z-index: 100;
       opacity: 0;
+      visibility: hidden;
       pointer-events: none;
-      transition: opacity 0.22s ease;
+      transition: opacity 0.18s ease, visibility 0.18s ease;
     }
 
     .modal-backdrop.open {
       opacity: 1;
+      visibility: visible;
       pointer-events: auto;
     }
 
@@ -754,12 +754,22 @@
       border-radius: 22px;
       padding: 20px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(255, 46, 147, 0.14);
-      transform: scale(0.92) translateY(10px);
-      transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: translate3d(0, 12px, 0);
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .modal-backdrop.open .modal-card {
-      transform: scale(1) translateY(0);
+      transform: translate3d(0, 0, 0);
+    }
+
+    #feedbackModal.modal-backdrop {
+      align-items: flex-start;
+      padding-top: max(18px, 5vh);
+      padding-bottom: 24px;
+    }
+
+    #feedbackModal .modal-card {
+      margin: auto 0;
     }
 
     .modal-top {
@@ -978,11 +988,14 @@
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border-subtle);
       border-radius: 12px;
-      padding: 8px 12px;
-      font-size: 13px;
+      padding: 8px 10px;
+      font-size: clamp(11px, 3.15vw, 13px);
       line-height: 1.35;
       color: #fff;
       font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .info-pill-row .pink {
@@ -1182,8 +1195,8 @@
 
     .author-socials-float {
       position: absolute;
-      left: 2px;
-      top: -12px;
+      left: -2px;
+      top: -32px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1363,18 +1376,23 @@
       transition: transform 0.12s ease;
     }
 
-    .star-btn img {
+    .star-icon {
       width: 22px;
       height: 22px;
-      object-fit: contain;
-      opacity: 0.22;
-      filter: grayscale(1);
-      transition: opacity 0.15s ease, filter 0.15s ease, transform 0.15s ease;
+      display: block;
+      background: rgba(255, 255, 255, 0.18);
+      -webkit-mask: url('./UI/ratingstar.png') center / contain no-repeat;
+      mask: url('./UI/ratingstar.png') center / contain no-repeat;
+      transition: background 0.15s ease, filter 0.15s ease, transform 0.15s ease;
     }
 
-    .star-btn.filled img {
-      opacity: 1;
-      filter: none;
+    .star-btn.filled .star-icon {
+      background: #ffffff;
+    }
+
+    .feedback-stars-box.all-five .star-btn.filled .star-icon {
+      background: #ff2e93;
+      filter: drop-shadow(0 0 6px rgba(255, 46, 147, 0.55));
     }
 
     .star-btn:active {
@@ -1757,10 +1775,10 @@
       <h2 class="modal-title font-hand" id="aboutModalTitle" style="font-size:18px; margin-bottom:4px;"><span style="color:#ff4f9a;">Артотрон</span> - твій кишеньковий арт ідейник.</h2>
       <p class="modal-desc font-hand" style="font-size:14.5px; margin-bottom:10px;">Давай розберемося як цим користуватися і що натискать щоб було по-кайфу:</p>
       <div class="info-pills-list font-hand">
-        <div class="info-pill-row"><span class="pink">1. Хто?</span> — Обирає тобі персонажа</div>
-        <div class="info-pill-row"><span class="info-pill-chip">+ артикул</span> <span class="pink">— Дає роль цьому персонажу</span></div>
-        <div class="info-pill-row"><span class="pink">2. Місце / Дія</span> — Задає локацію або дію</div>
-        <div class="info-pill-row"><span class="pink">3. Стиль / Палітра</span> — техніка малювання або готова палітра</div>
+        <div class="info-pill-row"><span class="pink">1. Хто?</span> - Обирає тобі персонажа</div>
+        <div class="info-pill-row"><span class="info-pill-chip">+ артикул</span> <span class="pink">- Дає роль цьому персонажу</span></div>
+        <div class="info-pill-row"><span class="pink">2. Місце / Дія</span> - Задає локацію або дію</div>
+        <div class="info-pill-row"><span class="pink">3. Стиль / Палітра</span> - техніка або готова палітра</div>
       </div>
       <div class="info-legend-grid font-hand">
         <div class="info-legend-item">
@@ -1783,9 +1801,9 @@
           <span class="info-legend-icon"><img src="./UI/lock.png" alt="Замок" /></span>
           <span>Заблокує саме цей слот</span>
         </div>
-        <div class="info-legend-item is-disabled">
-          <span class="info-legend-icon"><img src="./UI/deadline.png" alt="Дедлайн" /></span>
-          <span>Увімкнення дедлайну (скоро)</span>
+        <div class="info-legend-item">
+          <span class="info-legend-icon"><img src="./UI/dice.png" alt="Сеттінг" /></span>
+          <span>Міняйте сеттінг Артотрону</span>
         </div>
       </div>
       <button type="button" class="modal-ok-btn font-hand" id="aboutOkBtn" style="font-size:15px; line-height:1.15; height:50px;">ВСЕ ЗРОЗУМІЛО<br/>ПОВЕРНУТИСЯ ДО АРТОТРОНУ</button>
@@ -4228,7 +4246,7 @@
       { key: 'stability', label: 'Дієздатність' },
       { key: 'mood', label: 'Ваш настрій?' }
     ];
-    const feedbackScores = { func: 5, ux: 5, useful: 5, stability: 5, mood: 5 };
+    const feedbackScores = { func: 1, ux: 1, useful: 1, stability: 1, mood: 4 };
 
     function renderFeedbackStars() {
       if (!feedbackRatingsEl) return;
@@ -4242,18 +4260,19 @@
         lbl.textContent = cat.label;
 
         const box = document.createElement('div');
-        box.className = 'feedback-stars-box';
+        box.className = 'feedback-stars-box' + (feedbackScores[cat.key] === 5 ? ' all-five' : '');
 
         for (let star = 1; star <= 5; star++) {
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'star-btn' + (star <= feedbackScores[cat.key] ? ' filled' : '');
           btn.setAttribute('aria-label', `${cat.label}: ${star} з 5`);
-          btn.innerHTML = '<img src="./UI/ratingstar.png" alt="★" />';
+          btn.innerHTML = '<span class="star-icon" aria-hidden="true"></span>';
           btn.addEventListener('click', () => {
             triggerHaptic('light');
             SoundFX.pop();
             feedbackScores[cat.key] = star;
+            box.classList.toggle('all-five', star === 5);
             Array.from(box.children).forEach((child, idx) => {
               child.classList.toggle('filled', idx < star);
             });
@@ -4264,6 +4283,14 @@
         row.appendChild(lbl);
         row.appendChild(box);
         feedbackRatingsEl.appendChild(row);
+      });
+    }
+
+    if (feedbackTextEl) {
+      feedbackTextEl.addEventListener('focus', () => {
+        setTimeout(() => {
+          feedbackTextEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }, 250);
       });
     }
 
