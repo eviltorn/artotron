@@ -1426,6 +1426,133 @@
       margin-bottom: 10px;
     }
 
+    /* Achievements Modal */
+    .ach-modal-card {
+      max-width: 372px;
+      padding: 18px 14px 16px;
+    }
+
+    .ach-counter {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ff4f9a;
+      margin: 2px 0 10px;
+    }
+
+    .ach-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      max-height: 54dvh;
+      overflow-y: auto;
+      padding: 2px;
+    }
+
+    .ach-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 7px 3px 6px;
+      cursor: pointer;
+      color: rgba(178, 182, 198, 0.55);
+      transition: transform 0.12s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .ach-tile:active {
+      transform: scale(0.93);
+    }
+
+    .ach-tile.is-soon {
+      opacity: 0.36;
+    }
+
+    .ach-tile.unlocked {
+      background: rgba(255, 46, 147, 0.11);
+      border-color: rgba(255, 46, 147, 0.38);
+      color: #ff4f9a;
+    }
+
+    .ach-tile.selected {
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+
+    .ach-tile-icon {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .ach-mask-icon {
+      width: 26px;
+      height: 26px;
+      display: block;
+      background: currentColor;
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+
+    .ach-tile-icon svg {
+      width: 26px;
+      height: 26px;
+      display: block;
+    }
+
+    .ach-tile.unlocked .ach-tile-icon {
+      filter: drop-shadow(0 0 6px rgba(255, 46, 147, 0.45));
+    }
+
+    .ach-tile-name {
+      font-size: 9px;
+      line-height: 1.1;
+      font-weight: 700;
+      text-align: center;
+      word-break: break-word;
+      color: rgba(220, 222, 232, 0.58);
+    }
+
+    .ach-tile.unlocked .ach-tile-name {
+      color: #ff4f9a;
+    }
+
+    .ach-detail-box {
+      margin-top: 10px;
+      background: #121218;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 9px 11px;
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--text-secondary);
+      text-align: center;
+      min-height: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .ach-detail-title {
+      font-weight: 700;
+      font-size: 12.5px;
+      color: #fff;
+    }
+
+    .ach-detail-title.unlocked {
+      color: #ff4f9a;
+    }
+
     .preset-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1571,6 +1698,11 @@
           </button>
           <button type="button" class="top-icon-btn" id="feedbackOpenBtn" aria-label="Зворотній зв’язок" title="Зворотній зв’язок">
             <img src="./UI/feedback.png" alt="Відгук" />
+          </button>
+          <button type="button" class="top-icon-btn" id="achBtn" aria-label="Ачівки" title="Ачівки">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M18 4h2a1 1 0 0 1 1 1v2a4 4 0 0 1-3.44 3.96A6.01 6.01 0 0 1 13 14.92V17h3a1 1 0 0 1 1 1v2H7v-2a1 1 0 0 1 1-1h3v-2.08a6.01 6.01 0 0 1-4.56-3.96A4 4 0 0 1 3 7V5a1 1 0 0 1 1-1h2V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1Zm0 2v2.9a2 2 0 0 0 1-1.73V6h-1ZM6 6H5v1.17A2 2 0 0 0 6 8.9V6Zm6 1.2 1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34L12 7.2Z"/>
+            </svg>
           </button>
         </div>
         <div class="utility-actions">
@@ -1901,6 +2033,29 @@
         <h2 class="modal-title font-hand" style="font-size:21px; margin-bottom:8px; color:#ff4f9a;">ДЯКУЮ ЗА ВІДГУК!</h2>
         <p class="modal-desc" style="margin-bottom:16px;">Твоя оцінка та ідеї допомагають робити Artotron ще кращим ✨</p>
         <button type="button" class="modal-ok-btn font-hand" id="feedbackDoneBtn" style="font-size:15px; height:48px;">ПОВЕРНУТИСЯ ДО АРТОТРОНУ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievements Modal -->
+  <div class="modal-backdrop" id="achModal" role="dialog" aria-modal="true" aria-labelledby="achModalTitle">
+    <div class="modal-card ach-modal-card">
+      <div class="modal-top">
+        <span class="modal-badge">
+          <svg viewBox="0 0 24 24" fill="#ff4f9a" style="width:14px;height:14px;margin-right:4px;" aria-hidden="true">
+            <path d="M18 4h2a1 1 0 0 1 1 1v2a4 4 0 0 1-3.44 3.96A6.01 6.01 0 0 1 13 14.92V17h3a1 1 0 0 1 1 1v2H7v-2a1 1 0 0 1 1-1h3v-2.08a6.01 6.01 0 0 1-4.56-3.96A4 4 0 0 1 3 7V5a1 1 0 0 1 1-1h2V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1Zm0 2v2.9a2 2 0 0 0 1-1.73V6h-1ZM6 6H5v1.17A2 2 0 0 0 6 8.9V6Z"/>
+          </svg>
+          ачівки
+        </span>
+        <button type="button" class="modal-close-x" id="achCloseX" aria-label="Закрити">✕</button>
+      </div>
+      <h2 class="modal-title font-hand" id="achModalTitle" style="font-size:17px; line-height:1.25; text-align:center; margin-bottom:4px;"><span style="color:#ff4f9a;">Артотрон</span> - твій кишеньковий<br/>арт-ідейник.</h2>
+      <p class="modal-desc font-hand" style="font-size:13px; line-height:1.3; text-align:center; margin-bottom:2px;">Просто так крутити ролли не прикольно..<br/>Гоу виконувати завдання!</p>
+      <div class="ach-counter font-hand" id="achCounter">Здобуто 0 / 26</div>
+      <div class="ach-grid" id="achGrid"></div>
+      <div class="ach-detail-box" id="achDetailBox">
+        <div class="ach-detail-title">Натисни на ачівку</div>
+        <div>Щоб побачити умову та свій прогрес</div>
       </div>
     </div>
   </div>
@@ -3484,6 +3639,7 @@
         a.innerHTML = item.svg;
         a.addEventListener('click', (e) => {
           e.preventDefault();
+          if (typeof Achievements !== 'undefined') Achievements.recordSocial(item.name);
           openExternalUrl(item);
         });
         authorSocialsNav.appendChild(a);
@@ -3727,6 +3883,13 @@
       spinAllBtn.classList.add('shimmer');
       playTitleAnimation();
       StatsTracker.recordSpin();
+      if (typeof Achievements !== 'undefined') {
+        Achievements.recordSpin(
+          state.preset,
+          state.locked.filter(Boolean).length,
+          state.locked[0] && state.locked[2] && !state.locked[1] && state.cat2Mode === 'place'
+        );
+      }
 
       const promises = unlocked.map((catIdx, order) => {
         const delay = order * 80;
@@ -3850,6 +4013,7 @@
         SoundFX.pop();
         copyBtn.classList.add('copied');
         StatsTracker.recordCopy();
+        if (typeof Achievements !== 'undefined') Achievements.recordCopy();
         showToast('✅ Завдання скопійовано в буфер обміну');
         setTimeout(() => {
           copyBtn.classList.remove('copied');
@@ -3883,6 +4047,13 @@
         if (state.locked[idx] || state.spinning[idx]) return;
         triggerHaptic('medium');
         SoundFX.unlock();
+        if (typeof Achievements !== 'undefined') {
+          Achievements.recordSpin(
+            state.preset,
+            state.locked.filter(Boolean).length,
+            idx === 1 && state.locked[0] && state.locked[2] && state.cat2Mode === 'place'
+          );
+        }
         spinCategory(idx, 1250, 20);
       });
     });
@@ -3964,6 +4135,7 @@
       renderDrum(2);
       closePresetModal();
       StatsTracker.recordPreset(id);
+      if (typeof Achievements !== 'undefined') Achievements.recordPreset(id);
       showToast(`${p.emoji} Сетінг: ${p.name}`, { top: true });
       handleSpinAll();
     }
@@ -4217,6 +4389,7 @@
         settingDrumAnimToggle.classList.toggle('on', appSettings.drumAnim);
         settingDrumAnimToggle.setAttribute('aria-checked', appSettings.drumAnim ? 'true' : 'false');
       }
+      if (typeof Achievements !== 'undefined') Achievements.checkOptimizer();
     }
 
     if (settingSoundToggle) {
@@ -4248,6 +4421,7 @@
     if (authorMonoLink) {
       authorMonoLink.addEventListener('click', (e) => {
         e.preventDefault();
+        if (typeof Achievements !== 'undefined') Achievements.recordDonate();
         openExternalUrl({ url: MONOBANK_URL });
       });
     }
@@ -4343,6 +4517,7 @@
         }
 
         feedbackSubmitBtn.disabled = false;
+        if (typeof Achievements !== 'undefined') Achievements.recordFeedback(feedbackScores);
         if (feedbackFormView) feedbackFormView.style.display = 'none';
         if (feedbackThanksView) feedbackThanksView.style.display = 'block';
         if (feedbackTextEl) feedbackTextEl.value = '';
@@ -4358,11 +4533,254 @@
       renderFeedbackStars();
     });
 
+    const achBtn = document.getElementById('achBtn');
+    const achModal = document.getElementById('achModal');
+    const achCloseX = document.getElementById('achCloseX');
+    const achGrid = document.getElementById('achGrid');
+    const achCounter = document.getElementById('achCounter');
+    const achDetailBox = document.getElementById('achDetailBox');
+
+    const Achievements = (() => {
+      const STORAGE_KEY = 'artotron_achievements_v1';
+      const ALL_PRESET_COUNT = (typeof PRESET_ORDER !== 'undefined' && Array.isArray(PRESET_ORDER)) ? PRESET_ORDER.length : 16;
+
+      const DEFS = [
+        { id: 'optimizer', name: 'Оптимізатор', desc: 'Вимкнути в налаштуваннях усе, що можна вимкнути', mask: './UI/icon_slotanimation.png', progress: (d) => `${[!SoundFX.enabled, !appSettings.headerAnim, !appSettings.drumAnim].filter(Boolean).length} / 3 вимкнено` },
+        { id: 'opportunist', name: 'Опортуніст', desc: 'Спробувати всі сеттінги Артотрону', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm0 5.5a3.5 3.5 0 0 1 3.5 3.5v4h-1.8v6h-3.4v-6H8.5v-4A3.5 3.5 0 0 1 12 7.5Zm-7.5 1L7 6l.5 3.2-1.2-.5-1.5 2.5-1.4-.8 1.5-2.5-1.4-.4Zm15 0L17 6l-.5 3.2 1.2-.5 1.5 2.5 1.4-.8-1.5-2.5 1.4-.4Z"/></svg>', progress: (d) => `${d.visitedPresets.length} / ${ALL_PRESET_COUNT}` },
+        { id: 'secret', name: 'Секретка', desc: 'Знайти й подивитися приховану статистику', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.1 15.2c0-2.1.7-3.2 2.1-4.3 1.2-.9 1.8-1.6 1.8-2.6 0-1.3-1-2.2-2.6-2.2-1.4 0-2.4.7-2.9 1.9l-2.4-1C7.9 4.7 9.9 3.5 12.5 3.5c3.2 0 5.3 1.8 5.3 4.6 0 1.9-.9 3.2-2.5 4.4-1.1.8-1.5 1.4-1.5 2.7v.5h-2.7v-.5Zm-.3 3.3a1.7 1.7 0 1 1 3.4 0 1.7 1.7 0 0 1-3.4 0Z"/></svg>', progress: (d) => d.statsViewed ? 'Знайдено!' : 'Таємниця...' },
+        { id: 'spin50', name: 'Кручу-верчу', desc: 'Зробити 50 обертів барабанів', mask: './UI/dice.png', progress: (d) => `${Math.min(d.totalSpins, 50)} / 50` },
+        { id: 'char_mode', name: 'Персонажник', desc: '100 спінів у моді персонажів (скоро)', mask: './UI/character.png', soon: true },
+        { id: 'env_mode', name: 'Мандрівник', desc: '100 спінів у моді оточення (скоро)', mask: './UI/landscape.png', soon: true },
+        { id: 'winner', name: 'Переможець', desc: 'Зібрати всі доступні ачівки (скоро)', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 4h2a1 1 0 0 1 1 1v2a4 4 0 0 1-3.44 3.96A6.01 6.01 0 0 1 13 14.92V17h3a1 1 0 0 1 1 1v2H7v-2a1 1 0 0 1 1-1h3v-2.08a6.01 6.01 0 0 1-4.56-3.96A4 4 0 0 1 3 7V5a1 1 0 0 1 1-1h2V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1Z"/></svg>', soon: true },
+        { id: 'star5', name: 'Зірка', desc: 'Надіслати 5 відгуків по 5 зірок у всіх пунктах', mask: './UI/ratingstar.png', progress: (d) => `${Math.min(d.fiveStarFeedbackCount, 5)} / 5` },
+        { id: 'friend', name: 'Друг', desc: 'Натиснути на всі соцмережі в «Про автора»', mask: './UI/aboutautor_icon.png', progress: (d) => `${d.socialClicks.length} / 4` },
+        { id: 'necromancer', name: 'Некромант', desc: 'Понад 100 спінів у Фентезі, Міському фентезі, Вампірах, DnD або Фольклорі', mask: './UI/deadline.png', progress: (d) => `${Math.min(sumPresets(d, ['fantasy', 'urban_fantasy', 'vampires', 'dnd', 'folklore']), 101)} / 101` },
+        { id: 'helper', name: 'Помічник', desc: 'Надіслати відгук через форму зворотного зв’язку', mask: './UI/feedback.png', progress: (d) => `${Math.min(d.feedbackCount, 1)} / 1` },
+        { id: 'first_spin', name: 'Перший спін', desc: 'Крутанути барабани вперше', mask: './UI/reroll.png', progress: (d) => `${Math.min(d.totalSpins, 1)} / 1` },
+        { id: 'kitty', name: 'Котик', desc: 'Фінансово підтримати автора на Монобанку', mask: './UI/icon_monopay.png', progress: (d) => d.donated ? 'Дякую! 🐾' : '0 / 1' },
+        { id: 'deadliner', name: 'Дедлайнер', desc: 'Попрацювати 10 разів з увімкненим дедлайном (скоро)', mask: './UI/deadliner.png', soon: true },
+        { id: 'chosen', name: 'Обраний', desc: 'Понад 100 спінів у Постапокаліпсисі або Сталкері', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a9 9 0 1 0 9 9 9 9 0 0 0-9-9Zm-3 7.5a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Zm6 0a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Zm-6.4 5h6.8a3.8 3.8 0 0 1-6.8 0Z"/></svg>', progress: (d) => `${Math.min(sumPresets(d, ['postapoc', 'stalker']), 101)} / 101` },
+        { id: 'tesla', name: 'Тесла', desc: 'Понад 100 спінів у Фантастиці, Кіберпанку або Стімпанку', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.5 13.5H11L10 22l9.5-12H13V2Z"/></svg>', progress: (d) => `${Math.min(sumPresets(d, ['scifi', 'cyberpunk', 'steampunk']), 101)} / 101` },
+        { id: 'profi', name: 'Профі', desc: 'Скопіювати промпт кнопкою «Копіювати» 25 разів', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2Zm0 3h6V5H9v1Z"/></svg>', progress: (d) => `${Math.min(d.copyCount, 25)} / 25` },
+        { id: 'copywriter', name: 'Копірайтер', desc: 'Скопіювати промпт кнопкою «Копіювати» 10 разів', mask: './UI/copy.png', progress: (d) => `${Math.min(d.copyCount, 10)} / 10` },
+        { id: 'ecologist', name: 'Еколог', desc: 'Заблокувавши 1 і 3 слот, прокрутити тільки «Місце» понад 25 разів', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 4.5C12 4.5 6.5 8.2 5 15.2c-.3 1.4.2 2.8 1.2 3.6.9-.8 2.4-2.2 4.3-4.1l-1.2-1.2C11.4 11.4 14 9.6 16.5 8.5c-2.2 1.8-4.2 3.9-5.8 6l-1.1 1.1c2.4 1.1 5.2.8 7.3-1.3 2.4-2.4 3-6.1 2.6-9.8Z"/></svg>', progress: (d) => `${Math.min(d.ecologistSpins, 26)} / 26` },
+        { id: 'romantic', name: 'Романтик', desc: 'Понад 100 спінів у Романтиці, Школі, Міському фентезі або Тваринах', mask: './UI/heart.png', progress: (d) => `${Math.min(sumPresets(d, ['romance', 'school', 'urban_fantasy', 'animals']), 101)} / 101` },
+        { id: 'junior', name: 'Джун', desc: 'Заходити й крутити барабан 2 дні підряд', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm1 11h-5v-2h3V6h2Z"/></svg>', progress: (d) => `Стрік: ${Math.min(d.streakDays, 2)} / 2 дн.` },
+        { id: 'middle', name: 'Мідл', desc: 'Заходити й крутити барабан 7 днів підряд', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h12v2l-4 5 4 5v2H6v-2l4-5-4-5V2Zm2.5 2 3.5 4.2L15.5 4h-7Zm0 16h7L12 15.8 8.5 20Z"/></svg>', progress: (d) => `Стрік: ${Math.min(d.streakDays, 7)} / 7 дн.` },
+        { id: 'senior', name: 'Сіньор', desc: 'Заходити й крутити барабан 14 днів підряд', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 19h18L12 3Zm0 4.2 2.2 3.8H9.8L12 7.2Zm-3.3 5.8h6.6l1.3 2.2H7.4l1.3-2.2Zm-2.4 4.2h11.4l.8 1.3H5.5l.8-1.3Z"/></svg>', progress: (d) => `Стрік: ${Math.min(d.streakDays, 14)} / 14 дн.` },
+        { id: 'artotron', name: 'Артотрон', desc: 'Заходити й крутити барабан 30 днів підряд', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 4h11a2 2 0 0 1 2 2v5.2l2.4-2.1 1.1 1.3-3.5 3.1V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm5.5 5a4.2 4.2 0 0 0-3.8 2.5 4.2 4.2 0 0 0 7.6 0A4.2 4.2 0 0 0 10.5 9Zm0 1.4a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z"/></svg>', progress: (d) => `Стрік: ${Math.min(d.streakDays, 30)} / 30 дн.` },
+        { id: 'curse', name: 'Прокляття', desc: 'Понад 100 обертів у сеттінгу «Жахи»', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 2.2a7.8 7.8 0 0 1 6.7 3.8H5.3A7.8 7.8 0 0 1 12 4.2Zm-7.6 6h15.2l-3.8 2.8 1.5 4.6L12 14.8l-5.3 2.8 1.5-4.6Z"/></svg>', progress: (d) => `${Math.min(sumPresets(d, ['horror']), 101)} / 101` },
+        { id: 'perfectionist', name: 'Перфекціоніст', desc: 'Заблокувати 2 слоти й докручувати 3-й понад 10 разів', mask: './UI/lock2.png', progress: (d) => `${Math.min(d.perfectionistSpins, 11)} / 11` }
+      ];
+
+      function sumPresets(d, ids) {
+        return ids.reduce((acc, k) => acc + (d.presetSpins[k] || 0), 0);
+      }
+
+      function todayStr(offsetDays = 0) {
+        const dt = new Date(Date.now() + offsetDays * 86400000);
+        const y = dt.getFullYear();
+        const m = String(dt.getMonth() + 1).padStart(2, '0');
+        const day = String(dt.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+
+      function load() {
+        const base = {
+          unlocked: {},
+          totalSpins: 0,
+          visitedPresets: [state.preset || 'all'],
+          presetSpins: {},
+          copyCount: 0,
+          feedbackCount: 0,
+          fiveStarFeedbackCount: 0,
+          socialClicks: [],
+          donated: false,
+          statsViewed: false,
+          perfectionistSpins: 0,
+          ecologistSpins: 0,
+          streakDays: 0,
+          lastSpinDate: ''
+        };
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return base;
+          const parsed = JSON.parse(raw);
+          return {
+            ...base,
+            ...parsed,
+            unlocked: { ...(parsed.unlocked || {}) },
+            presetSpins: { ...(parsed.presetSpins || {}) },
+            visitedPresets: Array.isArray(parsed.visitedPresets) ? parsed.visitedPresets : base.visitedPresets,
+            socialClicks: Array.isArray(parsed.socialClicks) ? parsed.socialClicks : []
+          };
+        } catch (_) {
+          return base;
+        }
+      }
+
+      const data = load();
+      let selectedId = null;
+
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (_) {}
+      }
+
+      function unlock(id) {
+        if (data.unlocked[id]) return false;
+        const def = DEFS.find((x) => x.id === id);
+        if (!def || def.soon) return false;
+        data.unlocked[id] = Date.now();
+        save();
+        showToast(`🏆 Ачівка: «${def.name}»!`, { top: true });
+        return true;
+      }
+
+      function evaluate() {
+        if (data.totalSpins >= 1) unlock('first_spin');
+        if (data.totalSpins >= 50) unlock('spin50');
+        if (data.visitedPresets.length >= ALL_PRESET_COUNT) unlock('opportunist');
+        if (data.perfectionistSpins > 10) unlock('perfectionist');
+        if (data.ecologistSpins > 25) unlock('ecologist');
+        if (data.copyCount >= 10) unlock('copywriter');
+        if (data.copyCount >= 25) unlock('profi');
+        if (data.feedbackCount >= 1) unlock('helper');
+        if (data.fiveStarFeedbackCount >= 5) unlock('star5');
+        if (data.donated) unlock('kitty');
+        if (data.statsViewed) unlock('secret');
+        if (data.socialClicks.length >= 4) unlock('friend');
+        if (!SoundFX.enabled && !appSettings.headerAnim && !appSettings.drumAnim) unlock('optimizer');
+        if (sumPresets(data, ['fantasy', 'urban_fantasy', 'vampires', 'dnd', 'folklore']) > 100) unlock('necromancer');
+        if (sumPresets(data, ['postapoc', 'stalker']) > 100) unlock('chosen');
+        if (sumPresets(data, ['romance', 'school', 'urban_fantasy', 'animals']) > 100) unlock('romantic');
+        if (sumPresets(data, ['scifi', 'cyberpunk', 'steampunk']) > 100) unlock('tesla');
+        if (sumPresets(data, ['horror']) > 100) unlock('curse');
+        if (data.streakDays >= 2) unlock('junior');
+        if (data.streakDays >= 7) unlock('middle');
+        if (data.streakDays >= 14) unlock('senior');
+        if (data.streakDays >= 30) unlock('artotron');
+      }
+
+      function renderDetail(def) {
+        if (!achDetailBox || !def) return;
+        const isUnlocked = Boolean(data.unlocked[def.id]);
+        const prog = def.soon ? 'В розробці (скоро)' : (isUnlocked ? '✅ Здобуто!' : (def.progress ? def.progress(data) : '🔒 Ще не відкрито'));
+        achDetailBox.innerHTML = `
+          <div class="ach-detail-title ${isUnlocked ? 'unlocked' : ''}">${def.name}</div>
+          <div>${def.desc}</div>
+          <div style="font-size:11px; color:${isUnlocked ? '#ff4f9a' : 'rgba(255,255,255,0.55)'}; margin-top:2px;">${prog}</div>
+        `;
+      }
+
+      function renderGrid() {
+        if (!achGrid) return;
+        const unlockedCount = DEFS.filter((d) => Boolean(data.unlocked[d.id])).length;
+        if (achCounter) achCounter.textContent = `Здобуто ${unlockedCount} / ${DEFS.length}`;
+        achGrid.innerHTML = '';
+        DEFS.forEach((def) => {
+          const isUnlocked = Boolean(data.unlocked[def.id]);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'ach-tile' + (isUnlocked ? ' unlocked' : '') + (def.soon ? ' is-soon' : '') + (selectedId === def.id ? ' selected' : '');
+          const iconHtml = def.mask
+            ? `<span class="ach-mask-icon" style="-webkit-mask-image:url('${def.mask}');mask-image:url('${def.mask}');"></span>`
+            : def.svg;
+          btn.innerHTML = `<span class="ach-tile-icon">${iconHtml}</span><span class="ach-tile-name font-hand">${def.name}</span>`;
+          btn.addEventListener('click', () => {
+            triggerHaptic('light');
+            SoundFX.pop();
+            selectedId = def.id;
+            achGrid.querySelectorAll('.ach-tile').forEach((el) => el.classList.remove('selected'));
+            btn.classList.add('selected');
+            renderDetail(def);
+          });
+          achGrid.appendChild(btn);
+        });
+      }
+
+      function updateStreak() {
+        const today = todayStr(0);
+        if (data.lastSpinDate === today) return;
+        const yesterday = todayStr(-1);
+        data.streakDays = (data.lastSpinDate === yesterday) ? (data.streakDays + 1) : 1;
+        data.lastSpinDate = today;
+      }
+
+      return {
+        init() {
+          if (!data.visitedPresets.includes(state.preset)) {
+            data.visitedPresets.push(state.preset);
+          }
+          evaluate();
+          save();
+        },
+        recordSpin(presetId, lockedCount, isEcoPlaceSpin) {
+          data.totalSpins += 1;
+          if (presetId) {
+            data.presetSpins[presetId] = (data.presetSpins[presetId] || 0) + 1;
+            if (!data.visitedPresets.includes(presetId)) data.visitedPresets.push(presetId);
+          }
+          if (lockedCount === 2) data.perfectionistSpins += 1;
+          if (isEcoPlaceSpin) data.ecologistSpins += 1;
+          updateStreak();
+          evaluate();
+          save();
+        },
+        recordPreset(presetId) {
+          if (presetId && !data.visitedPresets.includes(presetId)) {
+            data.visitedPresets.push(presetId);
+          }
+          evaluate();
+          save();
+        },
+        recordCopy() {
+          data.copyCount += 1;
+          evaluate();
+          save();
+        },
+        recordFeedback(scores) {
+          data.feedbackCount += 1;
+          if (scores && Object.values(scores).every((v) => v === 5)) {
+            data.fiveStarFeedbackCount += 1;
+          }
+          evaluate();
+          save();
+        },
+        recordSocial(name) {
+          if (name && !data.socialClicks.includes(name)) {
+            data.socialClicks.push(name);
+          }
+          evaluate();
+          save();
+        },
+        recordDonate() {
+          data.donated = true;
+          evaluate();
+          save();
+        },
+        recordStats() {
+          data.statsViewed = true;
+          evaluate();
+          save();
+        },
+        checkOptimizer() {
+          evaluate();
+          save();
+        },
+        renderGrid
+      };
+    })();
+
+    bindBackdropModal(achBtn, achModal, [achCloseX], () => Achievements.renderGrid());
+
     function openStatsModal() {
       triggerHaptic('medium');
       SoundFX.pop();
       statsModal.classList.add('open');
       StatsTracker.renderStatsModal();
+      Achievements.recordStats();
     }
 
     function closeStatsModal() {
@@ -4409,6 +4827,7 @@
         if (settingsModal) settingsModal.classList.remove('open');
         if (authorModal) authorModal.classList.remove('open');
         if (feedbackModal) feedbackModal.classList.remove('open');
+        if (achModal) achModal.classList.remove('open');
       }
     });
 
@@ -4416,6 +4835,7 @@
       renderSocials();
       renderPresetGrid();
       initDrumNodes();
+      Achievements.init();
       updateArticleModeUI();
       updateCat2ModeUI();
       updateCat3ModeUI();
