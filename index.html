@@ -1430,6 +1430,78 @@
       transform: scale(0.86);
     }
 
+    .feedback-attach-wrap {
+      margin-bottom: 12px;
+    }
+
+    .feedback-attach-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .feedback-attach-btn {
+      background: #101015;
+      border: 1px dashed rgba(255, 46, 147, 0.45);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 8px 11px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .feedback-attach-btn:active {
+      background: rgba(255, 46, 147, 0.12);
+    }
+
+    .feedback-previews {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .feedback-thumb {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: #101015;
+      flex-shrink: 0;
+    }
+
+    .feedback-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .feedback-thumb-del {
+      position: absolute;
+      top: 1px;
+      right: 1px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(12, 12, 16, 0.85);
+      color: #fff;
+      font-size: 10px;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
     .feedback-textarea {
       width: 100%;
       min-height: 82px;
@@ -2182,7 +2254,14 @@
         <h2 class="modal-title font-hand" id="feedbackModalTitle" style="font-size:17.5px; line-height:1.25; text-align:center; margin-bottom:6px;"><span style="color:#ff4f9a;">Артотрон</span> - твій кишеньковий<br/>арт-ідейник.</h2>
         <p class="modal-desc font-hand" style="font-size:13.5px; line-height:1.35; text-align:center; margin-bottom:10px;">Буду дуже вдячний за ваш відгук<br/>і зворотній зв’язок.</p>
         <div class="feedback-ratings font-hand" id="feedbackRatings"></div>
-        <textarea class="feedback-textarea font-hand" id="feedbackText" placeholder="Є побажання або коментар? напиши мені!"></textarea>
+        <textarea class="feedback-textarea font-hand" id="feedbackText" placeholder="Є побажання або коментар? напиши мені!" style="margin-bottom:8px;"></textarea>
+        <div class="feedback-attach-wrap">
+          <input type="file" id="feedbackFilesInput" accept="image/*" multiple style="display:none;" />
+          <div class="feedback-attach-row">
+            <button type="button" class="feedback-attach-btn" id="feedbackAttachBtn">📎 Скріншоти (<span id="feedbackAttachCount">0</span>/3)</button>
+            <div class="feedback-previews" id="feedbackPreviews"></div>
+          </div>
+        </div>
         <button type="button" class="modal-ok-btn font-hand" id="feedbackSubmitBtn" style="font-size:16px; height:48px;">НАДІСЛАТИ ВІДГУК</button>
       </div>
       <div id="feedbackThanksView" class="feedback-thanks" style="display:none;">
@@ -4581,6 +4660,10 @@
     const feedbackCloseX = document.getElementById('feedbackCloseX');
     const feedbackRatingsEl = document.getElementById('feedbackRatings');
     const feedbackTextEl = document.getElementById('feedbackText');
+    const feedbackFilesInput = document.getElementById('feedbackFilesInput');
+    const feedbackAttachBtn = document.getElementById('feedbackAttachBtn');
+    const feedbackAttachCount = document.getElementById('feedbackAttachCount');
+    const feedbackPreviewsEl = document.getElementById('feedbackPreviews');
     const feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
     const feedbackFormView = document.getElementById('feedbackFormView');
     const feedbackThanksView = document.getElementById('feedbackThanksView');
@@ -4765,11 +4848,63 @@
       });
     }
 
+    let feedbackFiles = [];
+
+    function renderFeedbackPreviews() {
+      if (feedbackAttachCount) feedbackAttachCount.textContent = String(feedbackFiles.length);
+      if (!feedbackPreviewsEl) return;
+      feedbackPreviewsEl.innerHTML = '';
+      feedbackFiles.forEach((file, idx) => {
+        const url = URL.createObjectURL(file);
+        const wrap = document.createElement('div');
+        wrap.className = 'feedback-thumb';
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = `Скріншот ${idx + 1}`;
+        img.onload = () => URL.revokeObjectURL(url);
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'feedback-thumb-del';
+        del.setAttribute('aria-label', 'Видалити скріншот');
+        del.textContent = '✕';
+        del.addEventListener('click', () => {
+          triggerHaptic('light');
+          feedbackFiles.splice(idx, 1);
+          renderFeedbackPreviews();
+        });
+        wrap.appendChild(img);
+        wrap.appendChild(del);
+        feedbackPreviewsEl.appendChild(wrap);
+      });
+    }
+
+    if (feedbackAttachBtn && feedbackFilesInput) {
+      feedbackAttachBtn.addEventListener('click', () => {
+        if (feedbackFiles.length >= 3) {
+          showToast('Можна прикріпити не більше 3 скріншотів');
+          return;
+        }
+        feedbackFilesInput.click();
+      });
+      feedbackFilesInput.addEventListener('change', () => {
+        const picked = Array.from(feedbackFilesInput.files || []).filter((f) => f.type.startsWith('image/'));
+        const room = 3 - feedbackFiles.length;
+        if (picked.length > room) {
+          showToast('Максимум 3 скріншоти — зайві пропущено');
+        }
+        feedbackFiles = feedbackFiles.concat(picked.slice(0, room));
+        feedbackFilesInput.value = '';
+        renderFeedbackPreviews();
+      });
+    }
+
     if (feedbackSubmitBtn) {
       feedbackSubmitBtn.addEventListener('click', async () => {
         triggerHaptic('medium');
         SoundFX.pop();
         feedbackSubmitBtn.disabled = true;
+        const prevBtnText = feedbackSubmitBtn.textContent;
+        feedbackSubmitBtn.textContent = 'НАДСИЛАЄМО...';
 
         const user = tg?.initDataUnsafe?.user;
         const userTag = user
@@ -4788,19 +4923,57 @@
         ].join('\n');
 
         if (FEEDBACK_BOT_CONFIG.botToken && FEEDBACK_BOT_CONFIG.chatId) {
+          const base = `https://api.telegram.org/bot${FEEDBACK_BOT_CONFIG.botToken}`;
           try {
-            await fetch(`https://api.telegram.org/bot${FEEDBACK_BOT_CONFIG.botToken}/sendMessage`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                chat_id: FEEDBACK_BOT_CONFIG.chatId,
-                text: messageText
-              })
-            });
+            if (feedbackFiles.length === 0) {
+              await fetch(`${base}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: FEEDBACK_BOT_CONFIG.chatId, text: messageText })
+              });
+            } else if (feedbackFiles.length === 1) {
+              const fd = new FormData();
+              fd.append('chat_id', FEEDBACK_BOT_CONFIG.chatId);
+              fd.append('photo', feedbackFiles[0], feedbackFiles[0].name || 'screenshot.png');
+              if (messageText.length <= 1024) {
+                fd.append('caption', messageText);
+                await fetch(`${base}/sendPhoto`, { method: 'POST', body: fd });
+              } else {
+                await fetch(`${base}/sendMessage`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ chat_id: FEEDBACK_BOT_CONFIG.chatId, text: messageText })
+                });
+                await fetch(`${base}/sendPhoto`, { method: 'POST', body: fd });
+              }
+            } else {
+              const fd = new FormData();
+              fd.append('chat_id', FEEDBACK_BOT_CONFIG.chatId);
+              const sendSeparateText = messageText.length > 1024;
+              const media = feedbackFiles.map((file, idx) => {
+                const key = `photo${idx}`;
+                fd.append(key, file, file.name || `screenshot_${idx + 1}.png`);
+                const item = { type: 'photo', media: `attach://${key}` };
+                if (idx === 0 && !sendSeparateText) item.caption = messageText;
+                return item;
+              });
+              fd.append('media', JSON.stringify(media));
+              if (sendSeparateText) {
+                await fetch(`${base}/sendMessage`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ chat_id: FEEDBACK_BOT_CONFIG.chatId, text: messageText })
+                });
+              }
+              await fetch(`${base}/sendMediaGroup`, { method: 'POST', body: fd });
+            }
           } catch (_) {}
         }
 
         feedbackSubmitBtn.disabled = false;
+        feedbackSubmitBtn.textContent = prevBtnText;
+        feedbackFiles = [];
+        renderFeedbackPreviews();
         if (typeof Achievements !== 'undefined') Achievements.recordFeedback(feedbackScores);
         if (feedbackFormView) feedbackFormView.style.display = 'none';
         if (feedbackThanksView) feedbackThanksView.style.display = 'block';
