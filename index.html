@@ -5596,6 +5596,51 @@
       const rand = (min, max) => min + Math.random() * (max - min);
       const rInt = (min, max) => Math.floor(rand(min, max + 1));
 
+      function buildEdge(dir, x1, y1, x2, y2) {
+        // dir: 1 for right edge (top->bot), -1 for left edge (bot->top)
+        const modeRoll = Math.random();
+        const midY = (y1 + y2) / 2 + rand(-8, 8);
+        const clampX = (x) => Math.max(18, Math.min(266, x));
+
+        if (modeRoll < 0.24) {
+          // 1. Smooth organic Bezier curve
+          const bulge = rand(18, 56) * (Math.random() > 0.22 ? 1 : -0.55);
+          const cx = clampX((x1 + x2) / 2 + dir * bulge);
+          return `C ${cx.toFixed(1)} ${(y1 + (y2 - y1) * 0.25).toFixed(1)}, ${clampX(x2 + dir * bulge * 0.65).toFixed(1)} ${(y2 - (y2 - y1) * 0.25).toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)} `;
+        }
+        if (modeRoll < 0.46) {
+          // 2. Sharp projecting beak / horn / blade
+          const tipX = clampX(Math.max(x1, x2) * (dir > 0 ? 1 : 0) + Math.min(x1, x2) * (dir < 0 ? 1 : 0) + dir * rand(28, 68));
+          const tipY = y1 + (y2 - y1) * rand(0.28, 0.72);
+          const inX = clampX((x1 + x2) / 2 - dir * rand(4, 22));
+          const inY = tipY + (y2 - y1) * rand(0.14, 0.26);
+          return `L ${tipX.toFixed(1)} ${tipY.toFixed(1)} L ${inX.toFixed(1)} ${Math.min(66, Math.max(-2, inY)).toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)} `;
+        }
+        if (modeRoll < 0.66) {
+          // 3. Curled hook / tentacle / claw
+          const outX = clampX(((dir > 0 ? Math.max(x1, x2) : Math.min(x1, x2)) + dir * rand(32, 66)));
+          const dipY = y1 + (y2 - y1) * rand(0.6, 0.85);
+          const curlX = clampX(outX + dir * rand(6, 16));
+          const curlY = y1 + (y2 - y1) * rand(0.18, 0.48);
+          const retX = clampX((x1 + x2) / 2 + dir * rand(6, 18));
+          return `Q ${retX.toFixed(1)} ${dipY.toFixed(1)}, ${curlX.toFixed(1)} ${curlY.toFixed(1)} L ${outX.toFixed(1)} ${(dipY + rand(-4, 6)).toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)} `;
+        }
+        if (modeRoll < 0.82) {
+          // 4. Crisp mecha / armor block step
+          const stepX = clampX((dir > 0 ? Math.max(x1, x2) : Math.min(x1, x2)) + dir * rand(24, 54));
+          const yA = y1 + (y2 - y1) * rand(0.18, 0.35);
+          const yB = y1 + (y2 - y1) * rand(0.65, 0.84);
+          return `L ${stepX.toFixed(1)} ${yA.toFixed(1)} L ${stepX.toFixed(1)} ${yB.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)} `;
+        }
+        // 5. Double-pronged jagged claw / fin
+        const p1X = clampX((dir > 0 ? Math.max(x1, x2) : Math.min(x1, x2)) + dir * rand(28, 62));
+        const p1Y = y1 + (y2 - y1) * rand(0.16, 0.34);
+        const valleyX = clampX((x1 + x2) / 2 + dir * rand(-6, 14));
+        const p2X = clampX((dir > 0 ? Math.max(x1, x2) : Math.min(x1, x2)) + dir * rand(24, 56));
+        const p2Y = y1 + (y2 - y1) * rand(0.64, 0.84);
+        return `L ${p1X.toFixed(1)} ${p1Y.toFixed(1)} L ${valleyX.toFixed(1)} ${midY.toFixed(1)} L ${p2X.toFixed(1)} ${p2Y.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)} `;
+      }
+
       function genPiece(stripIdx, prevBot) {
         const isTop = stripIdx === 0;
         const isBot = stripIdx === STRIP_COUNT - 1;
@@ -5612,47 +5657,31 @@
         const yTop = isTop ? rand(6, 16) : -2;
         const yBot = isBot ? rand(48, 58) : 66;
 
-        const rightBulge = rand(16, 56) * (Math.random() > 0.25 ? 1 : -0.6);
-        const leftBulge = rand(16, 56) * (Math.random() > 0.25 ? 1 : -0.6);
-
-        const rMidX = Math.min(262, Math.max(topR + 8, (topR + botR) / 2 + rightBulge));
-        const rMidY = rand(18, 46);
-        const lMidX = Math.max(22, Math.min(topL - 8, (topL + botL) / 2 - leftBulge));
-        const lMidY = rand(18, 46);
-
         let d = `M ${topL.toFixed(1)} ${yTop.toFixed(1)} `;
         if (isTop) {
-          const peakX = rand(topL + 10, topR - 10);
+          const peakX = rand(topL + 8, topR - 8);
           const peakY = rand(0, 10);
-          d += `Q ${peakX.toFixed(1)} ${peakY.toFixed(1)}, ${topR.toFixed(1)} ${rand(6, 20).toFixed(1)} `;
+          d += Math.random() > 0.45
+            ? `L ${peakX.toFixed(1)} ${peakY.toFixed(1)} L ${topR.toFixed(1)} ${rand(6, 20).toFixed(1)} `
+            : `Q ${peakX.toFixed(1)} ${peakY.toFixed(1)}, ${topR.toFixed(1)} ${rand(6, 20).toFixed(1)} `;
         } else {
           d += `L ${topR.toFixed(1)} ${yTop.toFixed(1)} `;
         }
 
-        if (Math.random() > 0.45) {
-          const notchInX = Math.max(topR - 18, rMidX - rand(16, 36));
-          d += `C ${(topR + 24).toFixed(1)} ${(yTop + 8).toFixed(1)}, ${rMidX.toFixed(1)} ${(rMidY - 8).toFixed(1)}, ${rMidX.toFixed(1)} ${rMidY.toFixed(1)} `;
-          d += `L ${notchInX.toFixed(1)} ${(rMidY + rand(6, 14)).toFixed(1)} `;
-          d += `L ${botR.toFixed(1)} ${yBot.toFixed(1)} `;
-        } else {
-          d += `C ${rMidX.toFixed(1)} ${(yTop + 14).toFixed(1)}, ${(botR + rightBulge * 0.65).toFixed(1)} ${(yBot - 16).toFixed(1)}, ${botR.toFixed(1)} ${yBot.toFixed(1)} `;
-        }
+        d += buildEdge(1, topR, yTop, botR, yBot);
 
         if (isBot) {
+          const footX = rand(botL + 8, botR - 8);
           const footY = rand(54, 62);
-          d += `Q ${((botL + botR) / 2).toFixed(1)} ${footY.toFixed(1)}, ${botL.toFixed(1)} ${rand(46, 58).toFixed(1)} `;
+          d += Math.random() > 0.45
+            ? `L ${footX.toFixed(1)} ${footY.toFixed(1)} L ${botL.toFixed(1)} ${rand(46, 58).toFixed(1)} `
+            : `Q ${footX.toFixed(1)} ${footY.toFixed(1)}, ${botL.toFixed(1)} ${rand(46, 58).toFixed(1)} `;
         } else {
           d += `L ${botL.toFixed(1)} ${yBot.toFixed(1)} `;
         }
 
-        if (Math.random() > 0.45) {
-          const cutX = Math.min(topL + 18, lMidX + rand(14, 32));
-          d += `L ${cutX.toFixed(1)} ${(lMidY + rand(4, 12)).toFixed(1)} `;
-          d += `L ${lMidX.toFixed(1)} ${lMidY.toFixed(1)} `;
-          d += `C ${(lMidX - 10).toFixed(1)} ${(yTop + 16).toFixed(1)}, ${(topL - 20).toFixed(1)} ${(yTop + 10).toFixed(1)}, ${topL.toFixed(1)} ${yTop.toFixed(1)} Z`;
-        } else {
-          d += `C ${(botL - leftBulge * 0.6).toFixed(1)} ${(yBot - 14).toFixed(1)}, ${lMidX.toFixed(1)} ${(yTop + 14).toFixed(1)}, ${topL.toFixed(1)} ${yTop.toFixed(1)} Z`;
-        }
+        d += buildEdge(-1, botL, yBot, topL, yTop);
+        d += 'Z';
 
         const paths = [d];
 
