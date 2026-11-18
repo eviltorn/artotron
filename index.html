@@ -2128,7 +2128,7 @@
         <span class="preset-caret">▾</span>
       </button>
       <div class="mode-shortcuts">
-        <button type="button" class="mode-shortcut-btn is-soon" data-soon-mode="Персонажі" aria-label="Персонажі (скоро)" title="Персонажі (скоро)">
+        <button type="button" class="mode-shortcut-btn is-active-feature" id="charModeBtn" aria-label="Мод: Персонажі (активний)" title="Мод: Персонажі">
           <img src="./UI/character.png" alt="Персонажі" />
         </button>
         <button type="button" class="mode-shortcut-btn is-soon" data-soon-mode="Оточення" aria-label="Оточення (скоро)" title="Оточення (скоро)">
@@ -5566,6 +5566,15 @@
           }, 550);
         }
       } catch (_) {}
+    }
+
+    const charModeBtn = document.getElementById('charModeBtn');
+    if (charModeBtn) {
+      charModeBtn.addEventListener('click', () => {
+        triggerHaptic('light');
+        SoundFX.pop();
+        showToast('Активний мод: Персонажі', { top: true });
+      });
     }
 
     document.querySelectorAll('[data-soon-mode]').forEach((btn) => {
