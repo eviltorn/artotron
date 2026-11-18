@@ -1752,6 +1752,201 @@
       padding: 2px 10px;
     }
 
+    /* Mode Shortcuts Bar & Shaper Modal */
+    .mode-shortcuts {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .mode-shortcut-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      padding: 0;
+      color: #ffffff;
+      transition: transform 0.12s ease, border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .mode-shortcut-btn.is-soon {
+      opacity: 0.34;
+    }
+
+    .mode-shortcut-btn.is-active-feature {
+      border-color: rgba(255, 46, 147, 0.45);
+    }
+
+    .mode-shortcut-btn:active {
+      transform: scale(0.91);
+    }
+
+    .mode-shortcut-btn img,
+    .mode-shortcut-btn svg {
+      width: 17px;
+      height: 17px;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+    }
+
+    .shaper-modal-card {
+      max-width: 368px;
+      padding: 18px 16px 16px;
+    }
+
+    .shaper-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 8px 0 10px;
+    }
+
+    .shaper-mode-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .shaper-tool-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #101016;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      padding: 0;
+      color: rgba(255, 255, 255, 0.45);
+      transition: transform 0.12s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .shaper-tool-btn.active {
+      background: rgba(255, 46, 147, 0.14);
+      border-color: rgba(255, 46, 147, 0.55);
+      color: #ff4f9a;
+    }
+
+    .shaper-tool-btn:active {
+      transform: scale(0.91);
+    }
+
+    .shaper-tool-btn svg,
+    .shaper-tool-btn img {
+      width: 17px;
+      height: 17px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .shaper-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #e7e8ec;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .shaper-strip {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(20, 20, 28, 0.22);
+    }
+
+    .shaper-strip:last-child {
+      border-bottom: none;
+    }
+
+    .shaper-strip.is-locked::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(22, 22, 32, 0.62);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .shaper-track {
+      display: flex;
+      height: 100%;
+      will-change: transform;
+    }
+
+    .shaper-cell {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: visible;
+    }
+
+    .shaper-cell svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    .shaper-stage.mode-shape .shaper-path {
+      fill: #ec1d76;
+      stroke: none;
+    }
+
+    .shaper-stage.mode-line .shaper-path {
+      fill: none;
+      stroke: #ec1d76;
+      stroke-width: 2.4;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
+    .shaper-lock-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(26, 26, 36, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      z-index: 3;
+      padding: 0;
+      transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .shaper-lock-btn.active {
+      background: #ff2e93;
+      border-color: #ff69b4;
+    }
+
+    .shaper-lock-btn:active {
+      transform: translateY(-50%) scale(0.9);
+    }
+
+    .shaper-lock-btn img {
+      width: 13px;
+      height: 13px;
+      object-fit: contain;
+      display: block;
+    }
+
     .preset-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1925,9 +2120,19 @@
         <span>Сетінг: <strong id="presetName">Усі теми</strong></span>
         <span class="preset-caret">▾</span>
       </button>
-      <div class="stat-pill" id="lockedPill">
-        <img id="lockedPillIcon" class="pill-ui-icon" src="./UI/lock.png" alt="" />
-        <span>Закріплено: <strong id="lockedCount">0</strong> з 3</span>
+      <div class="mode-shortcuts">
+        <button type="button" class="mode-shortcut-btn is-soon" data-soon-mode="Персонажі" aria-label="Персонажі (скоро)" title="Персонажі (скоро)">
+          <img src="./UI/character.png" alt="Персонажі" />
+        </button>
+        <button type="button" class="mode-shortcut-btn is-soon" data-soon-mode="Оточення" aria-label="Оточення (скоро)" title="Оточення (скоро)">
+          <img src="./UI/landscape.png" alt="Оточення" />
+        </button>
+        <button type="button" class="mode-shortcut-btn is-soon" data-soon-mode="3D / Об’єкти" aria-label="Об’єкти (скоро)" title="Об’єкти (скоро)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 3.5 6.8v10.4L12 22l8.5-4.8V6.8L12 2Zm0 2.3 5.7 3.2L12 10.7 6.3 7.5 12 4.3Zm-6.5 5 5.5 3.1v6.9l-5.5-3.1V9.3Zm13 6.9L13 19.3v-6.9l5.5-3.1v6.9Z"/></svg>
+        </button>
+        <button type="button" class="mode-shortcut-btn is-active-feature" id="shaperBtn" aria-label="Шейпер" title="Шейпер">
+          <img src="./UI/ratingstar.png" alt="Шейпер" />
+        </button>
       </div>
     </div>
 
@@ -2320,6 +2525,32 @@
         </div>
       </div>
       <button type="button" class="modal-ok-btn font-hand" id="whatsNewOkBtn" style="font-size:15px; height:48px;">КРУТО, ПОЇХАЛИ!</button>
+    </div>
+  </div>
+
+  <!-- Shaper Modal -->
+  <div class="modal-backdrop" id="shaperModal" role="dialog" aria-modal="true" aria-labelledby="shaperModalTitle">
+    <div class="modal-card shaper-modal-card">
+      <div class="modal-top">
+        <span class="modal-badge"><img src="./UI/ratingstar.png" alt="" /> Шейпер</span>
+        <button type="button" class="modal-close-x" id="shaperCloseX" aria-label="Закрити">✕</button>
+      </div>
+      <h2 class="modal-title font-hand" id="shaperModalTitle" style="font-size:15.5px; line-height:1.25; text-align:center; margin-bottom:2px;"><span style="color:#ff4f9a;">Шейпер</span> - Шукаєш форму майбутнього<br/>шедевру? Тоді ти за адресою!</h2>
+      <div class="shaper-toolbar">
+        <div class="shaper-mode-group">
+          <button type="button" class="shaper-tool-btn active" id="shaperModeShapeBtn" aria-label="Режим шейп" title="Шейп (заливка)">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.4 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.2l-5.8 3.1 1.1-6.5L2.6 9.2l6.5-.9L12 2.4Z"/></svg>
+          </button>
+          <button type="button" class="shaper-tool-btn" id="shaperModeLineBtn" aria-label="Режим лайн" title="Лайн (контур)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.9 2.7 5.6 6.2.9-4.5 4.4 1.1 6.2-5.5-2.9-5.5 2.9 1.1-6.2-4.5-4.4 6.2-.9L12 2.9Z"/></svg>
+          </button>
+        </div>
+        <button type="button" class="shaper-tool-btn" id="shaperCopyBtn" aria-label="Скопіювати шейп" title="Скопіювати чистий шейп" style="color:#ffffff;">
+          <img src="./UI/copy2.png" alt="Копіювати" />
+        </button>
+      </div>
+      <div class="shaper-stage mode-shape" id="shaperStage"></div>
+      <button type="button" class="modal-ok-btn font-hand" id="shaperSpinBtn" style="font-size:15.5px; height:46px;">КРУТИТИ ВИДИМЕ</button>
     </div>
   </div>
 
@@ -3994,8 +4225,8 @@
 
     function updateLockUI() {
       const lockedTotal = state.locked.filter(Boolean).length;
-      lockedCountEl.textContent = String(lockedTotal);
-      lockedPillEl.classList.toggle('has-locks', lockedTotal > 0);
+      if (lockedCountEl) lockedCountEl.textContent = String(lockedTotal);
+      if (lockedPillEl) lockedPillEl.classList.toggle('has-locks', lockedTotal > 0);
       const lockedPillIcon = document.getElementById('lockedPillIcon');
       if (lockedPillIcon) lockedPillIcon.src = lockedTotal > 0 ? './UI/lock2.png' : './UI/lock.png';
 
@@ -5284,6 +5515,7 @@
         if (feedbackModal) feedbackModal.classList.remove('open');
         if (achModal) achModal.classList.remove('open');
         if (whatsNewModal) whatsNewModal.classList.remove('open');
+        if (shaperModal) shaperModal.classList.remove('open');
       }
     });
 
@@ -5329,11 +5561,335 @@
       } catch (_) {}
     }
 
+    document.querySelectorAll('[data-soon-mode]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        triggerHaptic('light');
+        SoundFX.pop();
+        showToast(`🚀 Мод «${btn.dataset.soonMode}» скоро з’явиться!`, { top: true });
+      });
+    });
+
+    const shaperBtn = document.getElementById('shaperBtn');
+    const shaperModal = document.getElementById('shaperModal');
+    const shaperCloseX = document.getElementById('shaperCloseX');
+    const shaperStage = document.getElementById('shaperStage');
+    const shaperSpinBtn = document.getElementById('shaperSpinBtn');
+    const shaperModeShapeBtn = document.getElementById('shaperModeShapeBtn');
+    const shaperModeLineBtn = document.getElementById('shaperModeLineBtn');
+    const shaperCopyBtn = document.getElementById('shaperCopyBtn');
+
+    const Shaper = (() => {
+      const STRIP_COUNT = 5;
+      const locked = [false, false, false, false, false];
+      const currentPieces = new Array(STRIP_COUNT).fill(null);
+      const tracks = [];
+      let lineMode = false;
+      let spinning = false;
+
+      const rand = (min, max) => min + Math.random() * (max - min);
+      const rInt = (min, max) => Math.floor(rand(min, max + 1));
+
+      function genPiece(stripIdx, prevBot) {
+        const isTop = stripIdx === 0;
+        const isBot = stripIdx === STRIP_COUNT - 1;
+
+        const baseAnchorL = prevBot ? prevBot.botL : rand(95, 145);
+        const baseAnchorR = prevBot ? prevBot.botR : rand(175, 225);
+        const topL = isTop ? rand(110, 155) : Math.max(54, Math.min(180, baseAnchorL + rand(-18, 18)));
+        const topR = isTop ? rand(topL + 35, 235) : Math.max(topL + 36, Math.min(266, baseAnchorR + rand(-18, 18)));
+
+        const botL = isBot ? rand(105, 155) : rand(68, 158);
+        const botR = isBot ? rand(botL + 32, 225) : rand(Math.max(botL + 44, 165), 255);
+
+        const yTop = isTop ? rand(6, 16) : -2;
+        const yBot = isBot ? rand(48, 58) : 66;
+
+        // Expressive silhouette: mix sweeping cubic Bezier on one side with crisp angular/hooked cut on the other
+        const rightBulge = rand(18, 68) * (Math.random() > 0.25 ? 1 : -0.65);
+        const leftBulge = rand(18, 65) * (Math.random() > 0.25 ? 1 : -0.65);
+
+        const rMidX = Math.min(295, Math.max(topR + 10, (topR + botR) / 2 + rightBulge));
+        const rMidY = rand(18, 46);
+        const lMidX = Math.max(25, Math.min(topL - 10, (topL + botL) / 2 - leftBulge));
+        const lMidY = rand(18, 46);
+
+        let d = `M ${topL.toFixed(1)} ${yTop.toFixed(1)} `;
+        if (isTop) {
+          // Crown / crest curve or bevel at top
+          const peakX = rand(topL + 10, topR - 10);
+          const peakY = rand(0, 10);
+          d += `Q ${peakX.toFixed(1)} ${peakY.toFixed(1)}, ${topR.toFixed(1)} ${rand(6, 20).toFixed(1)} `;
+        } else {
+          d += `L ${topR.toFixed(1)} ${yTop.toFixed(1)} `;
+        }
+
+        // Right edge: either sharp multi-facet notch or sweeping Bezier
+        if (Math.random() > 0.45) {
+          const notchInX = Math.max(topR - 20, rMidX - rand(18, 42));
+          d += `C ${(topR + 28).toFixed(1)} ${(yTop + 8).toFixed(1)}, ${rMidX.toFixed(1)} ${(rMidY - 8).toFixed(1)}, ${rMidX.toFixed(1)} ${rMidY.toFixed(1)} `;
+          d += `L ${notchInX.toFixed(1)} ${(rMidY + rand(6, 14)).toFixed(1)} `;
+          d += `L ${botR.toFixed(1)} ${yBot.toFixed(1)} `;
+        } else {
+          d += `C ${rMidX.toFixed(1)} ${(yTop + 14).toFixed(1)}, ${(botR + rightBulge * 0.7).toFixed(1)} ${(yBot - 16).toFixed(1)}, ${botR.toFixed(1)} ${yBot.toFixed(1)} `;
+        }
+
+        if (isBot) {
+          const footY = rand(54, 62);
+          d += `Q ${((botL + botR) / 2).toFixed(1)} ${footY.toFixed(1)}, ${botL.toFixed(1)} ${rand(46, 58).toFixed(1)} `;
+        } else {
+          d += `L ${botL.toFixed(1)} ${yBot.toFixed(1)} `;
+        }
+
+        // Left edge: contrasting curve / sharp wing
+        if (Math.random() > 0.45) {
+          const cutX = Math.min(topL + 20, lMidX + rand(15, 36));
+          d += `L ${cutX.toFixed(1)} ${(lMidY + rand(4, 12)).toFixed(1)} `;
+          d += `L ${lMidX.toFixed(1)} ${lMidY.toFixed(1)} `;
+          d += `C ${(lMidX - 10).toFixed(1)} ${(yTop + 16).toFixed(1)}, ${(topL - 22).toFixed(1)} ${(yTop + 10).toFixed(1)}, ${topL.toFixed(1)} ${yTop.toFixed(1)} Z`;
+        } else {
+          d += `C ${(botL - leftBulge * 0.65).toFixed(1)} ${(yBot - 14).toFixed(1)}, ${lMidX.toFixed(1)} ${(yTop + 14).toFixed(1)}, ${topL.toFixed(1)} ${yTop.toFixed(1)} Z`;
+        }
+
+        const paths = [d];
+
+        // Optional expressive overlapping fin / horn / shoulder shard (adds cool internal lines in Line mode)
+        if (Math.random() > 0.38) {
+          const onRight = Math.random() > 0.5;
+          const ax = onRight ? rand(topR - 25, topR + 5) : rand(topL - 5, topL + 25);
+          const ay = rand(4, 24);
+          const bx = onRight ? Math.min(302, ax + rand(26, 66)) : Math.max(18, ax - rand(26, 66));
+          const by = rand(10, 48);
+          const cx = onRight ? rand(botR - 35, botR + 8) : rand(botL - 8, botL + 35);
+          const cy = rand(42, 62);
+          const sub = `M ${ax.toFixed(1)} ${ay.toFixed(1)} Q ${bx.toFixed(1)} ${(ay - rand(4, 14)).toFixed(1)}, ${bx.toFixed(1)} ${by.toFixed(1)} L ${cx.toFixed(1)} ${cy.toFixed(1)} Z`;
+          paths.push(sub);
+        }
+
+        return { paths, botL, botR };
+      }
+
+      function pieceToSvg(piece) {
+        const pathTags = piece.paths.map((d) => `<path class="shaper-path" d="${d}" />`).join('');
+        return `<svg viewBox="0 0 320 64" preserveAspectRatio="none" aria-hidden="true">${pathTags}</svg>`;
+      }
+
+      function buildStage() {
+        if (!shaperStage) return;
+        shaperStage.innerHTML = '';
+        tracks.length = 0;
+
+        for (let i = 0; i < STRIP_COUNT; i++) {
+          const strip = document.createElement('div');
+          strip.className = 'shaper-strip' + (locked[i] ? ' is-locked' : '');
+
+          const track = document.createElement('div');
+          track.className = 'shaper-track';
+
+          const prev = i > 0 ? currentPieces[i - 1] : null;
+          const piece = genPiece(i, prev);
+          currentPieces[i] = piece;
+
+          const cell = document.createElement('div');
+          cell.className = 'shaper-cell';
+          cell.innerHTML = pieceToSvg(piece);
+          track.appendChild(cell);
+
+          const lockBtn = document.createElement('button');
+          lockBtn.type = 'button';
+          lockBtn.className = 'shaper-lock-btn' + (locked[i] ? ' active' : '');
+          lockBtn.setAttribute('aria-label', `Закріпити смугу ${i + 1}`);
+          const lockImg = document.createElement('img');
+          lockImg.src = locked[i] ? './UI/lock2.png' : './UI/lock.png';
+          lockImg.alt = '';
+          lockBtn.appendChild(lockImg);
+
+          lockBtn.addEventListener('click', () => {
+            if (spinning) return;
+            triggerHaptic('light');
+            SoundFX.lock(!locked[i]);
+            locked[i] = !locked[i];
+            strip.classList.toggle('is-locked', locked[i]);
+            lockBtn.classList.toggle('active', locked[i]);
+            lockImg.src = locked[i] ? './UI/lock2.png' : './UI/lock.png';
+          });
+
+          strip.appendChild(track);
+          strip.appendChild(lockBtn);
+          shaperStage.appendChild(strip);
+          tracks.push(track);
+        }
+      }
+
+      async function spinVisible() {
+        if (spinning) return;
+        const unlockedIndices = [];
+        for (let i = 0; i < STRIP_COUNT; i++) {
+          if (!locked[i]) unlockedIndices.push(i);
+        }
+        if (unlockedIndices.length === 0) {
+          showToast('Усі 5 смуг закріплено 🔒');
+          return;
+        }
+
+        spinning = true;
+        if (shaperSpinBtn) shaperSpinBtn.disabled = true;
+        triggerHaptic('medium');
+        SoundFX.unlock();
+
+        const STEPS = 4;
+        const promises = unlockedIndices.map((idx, order) => new Promise((resolve) => {
+          const track = tracks[idx];
+          if (!track) return resolve();
+
+          const newPieces = [];
+          for (let s = 0; s < STEPS; s++) {
+            const anchorPrev = idx > 0 ? currentPieces[idx - 1] : null;
+            const p = genPiece(idx, anchorPrev);
+            newPieces.push(p);
+            const cell = document.createElement('div');
+            cell.className = 'shaper-cell';
+            cell.innerHTML = pieceToSvg(p);
+            track.appendChild(cell);
+          }
+
+          currentPieces[idx] = newPieces[newPieces.length - 1];
+          track.style.transition = 'none';
+          track.style.transform = 'translate3d(0%, 0, 0)';
+          void track.offsetWidth;
+
+          const duration = 620 + order * 110;
+          track.style.transition = `transform ${duration}ms cubic-bezier(0.16, 0.88, 0.24, 1)`;
+          track.style.transform = `translate3d(-${STEPS * 100}%, 0, 0)`;
+
+          setTimeout(() => SoundFX.tick(idx % 3), 120 + order * 80);
+
+          setTimeout(() => {
+            track.style.transition = 'none';
+            while (track.children.length > 1) {
+              track.removeChild(track.firstElementChild);
+            }
+            track.style.transform = 'translate3d(0%, 0, 0)';
+            resolve();
+          }, duration + 30);
+        }));
+
+        await Promise.all(promises);
+        SoundFX.finishAll();
+        spinning = false;
+        if (shaperSpinBtn) shaperSpinBtn.disabled = false;
+      }
+
+      function setMode(isLine) {
+        lineMode = isLine;
+        if (shaperStage) {
+          shaperStage.classList.toggle('mode-line', isLine);
+          shaperStage.classList.toggle('mode-shape', !isLine);
+        }
+        if (shaperModeShapeBtn) shaperModeShapeBtn.classList.toggle('active', !isLine);
+        if (shaperModeLineBtn) shaperModeLineBtn.classList.toggle('active', isLine);
+      }
+
+      async function copyPureShape() {
+        triggerHaptic('medium');
+        SoundFX.pop();
+        const size = 640;
+        const scale = size / 320;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, size, size);
+        ctx.save();
+        ctx.scale(scale, scale);
+
+        for (let i = 0; i < STRIP_COUNT; i++) {
+          const piece = currentPieces[i];
+          if (!piece) continue;
+          ctx.save();
+          ctx.translate(0, i * 64);
+          piece.paths.forEach((d) => {
+            const path = new Path2D(d);
+            if (lineMode) {
+              ctx.strokeStyle = '#ec1d76';
+              ctx.lineWidth = 2.4;
+              ctx.lineJoin = 'round';
+              ctx.lineCap = 'round';
+              ctx.stroke(path);
+            } else {
+              ctx.fillStyle = '#ec1d76';
+              ctx.fill(path);
+            }
+          });
+          ctx.restore();
+        }
+        ctx.restore();
+
+        const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
+        if (!blob) return;
+
+        let copied = false;
+        if (navigator.clipboard && window.ClipboardItem) {
+          try {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            copied = true;
+          } catch (_) {}
+        }
+
+        if (copied) {
+          showToast('✅ Шейп скопійовано в буфер (PNG)');
+          return;
+        }
+
+        const file = new File([blob], 'artotron-shaper.png', { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: 'Artotron Шейпер' });
+            return;
+          } catch (_) {}
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'artotron-shaper.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast('💾 Шейп збережено як PNG');
+      }
+
+      return {
+        init() {
+          buildStage();
+          setMode(false);
+        },
+        spinVisible,
+        setMode,
+        copyPureShape
+      };
+    })();
+
+    bindBackdropModal(shaperBtn, shaperModal, [shaperCloseX]);
+    if (shaperSpinBtn) shaperSpinBtn.addEventListener('click', () => Shaper.spinVisible());
+    if (shaperModeShapeBtn) shaperModeShapeBtn.addEventListener('click', () => {
+      triggerHaptic('light');
+      SoundFX.pop();
+      Shaper.setMode(false);
+    });
+    if (shaperModeLineBtn) shaperModeLineBtn.addEventListener('click', () => {
+      triggerHaptic('light');
+      SoundFX.pop();
+      Shaper.setMode(true);
+    });
+    if (shaperCopyBtn) shaperCopyBtn.addEventListener('click', () => Shaper.copyPureShape());
+
     function init() {
       renderSocials();
       renderPresetGrid();
       initDrumNodes();
       Achievements.init();
+      Shaper.init();
       maybeShowWhatsNew();
       updateArticleModeUI();
       updateCat2ModeUI();
