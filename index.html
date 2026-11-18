@@ -2412,7 +2412,7 @@
           </div>
         </div>
       </div>
-      <button type="button" class="settings-version-btn font-hand" id="settingsVersionBtn" title="Що нового">v.0.4 • що нового</button>
+      <button type="button" class="settings-version-btn font-hand" id="settingsVersionBtn" title="Що нового">v.0.5 • що нового</button>
       <button type="button" class="modal-ok-btn" id="settingsOkBtn">Зрозуміло</button>
     </div>
   </div>
@@ -2512,7 +2512,7 @@
   <div class="modal-backdrop" id="whatsNewModal" role="dialog" aria-modal="true" aria-labelledby="whatsNewTitle">
     <div class="modal-card">
       <div class="modal-top">
-        <span class="modal-badge"><img src="./UI/dice.png" alt="" /> ЩО НОВОГО • v.0.4</span>
+        <span class="modal-badge"><img src="./UI/dice.png" alt="" /> ЩО НОВОГО • v.0.5</span>
         <button type="button" class="modal-close-x" id="whatsNewCloseX" aria-label="Закрити">✕</button>
       </div>
       <h2 class="modal-title font-hand" id="whatsNewTitle" style="font-size:18px; line-height:1.25; text-align:center; margin-bottom:4px;"><span style="color:#ff4f9a;">Артотрон</span> оновився!</h2>
@@ -2520,6 +2520,10 @@
       <div class="whatsnew-list">
         <div class="whatsnew-item">
           <span class="whatsnew-item-icon"><img src="./UI/ratingstar.png" alt="" /></span>
+          <div><strong>Шейпер силуетів</strong>Генератор образів із 5 смуг: перемикай Шейп / Лайн, фіксуй вдалі частини та копіюй готовий PNG.</div>
+        </div>
+        <div class="whatsnew-item">
+          <span class="whatsnew-item-icon"><img src="./UI/dice.png" alt="" /></span>
           <div><strong>Ачівки та стріки</strong>25 завдань і щоденні серії — відкривай нагороди, поки шукаєш ідеї.</div>
         </div>
         <div class="whatsnew-item">
@@ -2528,7 +2532,7 @@
         </div>
         <div class="whatsnew-item">
           <span class="whatsnew-item-icon"><img src="./UI/feedback.png" alt="" /></span>
-          <div><strong>Зворотній зв’язок і про автора</strong>Оцінюй Артотрон зірочками та пиши ідеї прямо автору.</div>
+          <div><strong>Зворотній зв’язок і скріншоти</strong>Оцінюй Артотрон зірочками та прикріплюй до 3 скріншотів до відгуку.</div>
         </div>
       </div>
       <button type="button" class="modal-ok-btn font-hand" id="whatsNewOkBtn" style="font-size:15px; height:48px;">КРУТО, ПОЇХАЛИ!</button>
@@ -5526,7 +5530,7 @@
       }
     });
 
-    const CURRENT_NEWS_ID = 'v0.4.0';
+    const CURRENT_NEWS_ID = 'v0.5.0';
     const NEWS_STORAGE_KEY = 'artotron_seen_news_v1';
     const whatsNewModal = document.getElementById('whatsNewModal');
     const whatsNewCloseX = document.getElementById('whatsNewCloseX');
