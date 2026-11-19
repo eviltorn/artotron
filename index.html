@@ -2224,7 +2224,7 @@
           <img src="./UI/landscape.png" alt="Оточення" />
         </button>
         <button type="button" class="mode-shortcut-btn is-soon" data-soon-mode="Пропси" aria-label="Пропси (скоро)" title="Пропси (скоро)">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2 3.6 6.7 12 11.2l8.4-4.5L12 2.2ZM3 8.1v9.1l8.2 4.6v-9.1L3 8.1Zm18 0-8.2 4.6v9.1l8.2-4.6V8.1Z"/></svg>
+          <svg viewBox="1.5 1.5 21 21" fill="currentColor" aria-hidden="true"><path d="M12 2.2 3.6 6.7 12 11.2l8.4-4.5L12 2.2ZM3 8.1v9.1l8.2 4.6v-9.1L3 8.1Zm18 0-8.2 4.6v9.1l8.2-4.6V8.1Z"/></svg>
         </button>
         <button type="button" class="mode-shortcut-btn is-active-feature" id="shaperBtn" aria-label="Шейпер" title="Шейпер">
           <img src="./UI/ratingstar.png" alt="Шейпер" />
@@ -4203,7 +4203,11 @@
     }
 
     function showToast(message, options = {}) {
-      toastEl.textContent = message;
+      if (options.html) {
+        toastEl.innerHTML = options.html;
+      } else {
+        toastEl.textContent = message;
+      }
       toastEl.classList.toggle('toast-top', Boolean(options.top));
       toastEl.classList.add('show');
       clearTimeout(toastTimer);
@@ -5702,7 +5706,10 @@
       btn.addEventListener('click', () => {
         triggerHaptic('light');
         SoundFX.pop();
-        showToast(`Мод ${btn.dataset.soonMode} скоро з’явиться!`, { top: true });
+        showToast(`Мод: ${btn.dataset.soonMode} (скоро з’явиться)`, {
+          top: true,
+          html: `Мод: ${btn.dataset.soonMode} <span style="color:rgba(255,255,255,0.48);font-weight:500;">(скоро з’явиться)</span>`
+        });
       });
     });
 
