@@ -1356,15 +1356,13 @@
     /* Feedback Modal */
     .feedback-modal-card {
       max-width: 390px;
-      max-height: 86dvh;
-      overflow-y: auto;
-      padding: 18px;
+      padding: 16px 18px;
     }
 
     .feedback-ratings {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       margin: 12px 0;
     }
 
@@ -1505,7 +1503,7 @@
 
     .feedback-textarea {
       width: 100%;
-      min-height: 82px;
+      min-height: 64px;
       resize: vertical;
       border-radius: 12px;
       border: 1px solid var(--border-subtle);
@@ -1513,8 +1511,8 @@
       color: var(--text-primary);
       font-family: inherit;
       font-size: 13.5px;
-      padding: 10px 12px;
-      margin-bottom: 12px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
       outline: none;
       transition: border-color 0.2s ease;
     }
@@ -2076,7 +2074,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.22s ease, transform 0.22s ease;
-      z-index: 50;
+      z-index: 250;
       white-space: nowrap;
       max-width: calc(100vw - 32px);
       overflow: hidden;
@@ -2273,7 +2271,7 @@
       </button>
       <div class="mode-shortcuts">
         <button type="button" class="mode-shortcut-btn is-soon" id="galleryBtn" data-soon-gallery="1" aria-label="Галерея (скоро)" title="Галерея і оцінка робіт (скоро)">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Zm4.5 3.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3ZM6 17h12l-3.8-5-2.9 3.6-2-2.4L6 17Z"/></svg>
+          <svg viewBox="2.5 2 19 20" fill="currentColor" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Zm4.5 3.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3ZM6 17h12l-3.8-5-2.9 3.6-2-2.4L6 17Z"/></svg>
         </button>
         <button type="button" class="mode-shortcut-btn is-active-feature" id="shaperBtn" aria-label="Шейпер" title="Шейпер">
           <img src="./UI/ratingstar.png" alt="Шейпер" />
@@ -2625,7 +2623,7 @@
         <h2 class="modal-title font-hand" id="feedbackModalTitle" style="font-size:17.5px; line-height:1.25; text-align:center; margin-bottom:6px;"><span style="color:#ff4f9a;">Артотрон</span> - твій кишеньковий<br/>арт-ідейник.</h2>
         <p class="modal-desc font-hand" style="font-size:13.5px; line-height:1.35; text-align:center; margin-bottom:10px;">Буду дуже вдячний за ваш відгук<br/>і зворотній зв’язок.</p>
         <div class="feedback-ratings font-hand" id="feedbackRatings"></div>
-        <div class="feedback-low-note" id="feedbackLowNote">Оцінка 1–3 ★ потребує пояснення — напиши коротко, що не так, або обери варіант:</div>
+        <div class="feedback-low-note" id="feedbackLowNote">Оцінка 1–3 ★ потребує короткого пояснення:</div>
         <div class="feedback-presets" id="feedbackPresets">
           <button type="button" class="feedback-preset-chip" data-feedback-preset="Не вистачає нових тем і слів">Не вистачає тем</button>
           <button type="button" class="feedback-preset-chip" data-feedback-preset="Незручно користуватися на моєму екрані">Незручний інтерфейс</button>
