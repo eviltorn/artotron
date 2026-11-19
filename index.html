@@ -5047,6 +5047,9 @@
           ? `<span>🔥</span><span>Прийняти участь</span><span class="hot-cta-timer">⏳ ${HotTheme.formatRemaining(round.remainingMs)}</span>`
           : '<span>✨</span><span>Крутити все</span>';
       }
+      if (articleToggleBtn) {
+        articleToggleBtn.style.opacity = isHot ? '0.38' : '';
+      }
       const gridPill = document.getElementById('hotGridTimerPill');
       if (gridPill) gridPill.textContent = `⏳ ${HotTheme.formatRemaining(round.remainingMs)}`;
     }
@@ -5180,6 +5183,10 @@
 
     if (articleToggleBtn) {
       articleToggleBtn.addEventListener('click', () => {
+        if (state.preset === 'hot') {
+          showToast('У «Гарячій темі» параметри зафіксовані', { top: true });
+          return;
+        }
         if (state.spinning[0]) return;
         triggerHaptic('medium');
         SoundFX.pop();
@@ -5200,6 +5207,10 @@
 
     document.querySelectorAll('[data-cat2-mode]').forEach((btn) => {
       btn.addEventListener('click', () => {
+        if (state.preset === 'hot') {
+          showToast('У «Гарячій темі» параметри зафіксовані', { top: true });
+          return;
+        }
         const nextMode = btn.dataset.cat2Mode;
         if (nextMode === state.cat2Mode || state.spinning[1]) return;
         triggerHaptic('medium');
@@ -5223,6 +5234,10 @@
 
     document.querySelectorAll('[data-cat3-mode]').forEach((btn) => {
       btn.addEventListener('click', () => {
+        if (state.preset === 'hot') {
+          showToast('У «Гарячій темі» параметри зафіксовані', { top: true });
+          return;
+        }
         const nextMode = btn.dataset.cat3Mode;
         if (nextMode === state.cat3Mode || state.spinning[2]) return;
         triggerHaptic('medium');
