@@ -1516,6 +1516,53 @@
       padding: 10px 12px;
       margin-bottom: 12px;
       outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .feedback-textarea.is-error {
+      border-color: #ff4f6e;
+    }
+
+    .feedback-low-note {
+      display: none;
+      font-size: 11.5px;
+      line-height: 1.3;
+      color: #ff82a9;
+      margin: 4px 0 6px;
+      text-align: left;
+    }
+
+    .feedback-low-note.visible {
+      display: block;
+    }
+
+    .feedback-presets {
+      display: none;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+
+    .feedback-presets.visible {
+      display: flex;
+    }
+
+    .feedback-preset-chip {
+      background: rgba(255, 46, 147, 0.1);
+      border: 1px solid rgba(255, 46, 147, 0.3);
+      border-radius: 999px;
+      color: #ffd3e4;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 9px;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.15s ease;
+    }
+
+    .feedback-preset-chip:active {
+      transform: scale(0.94);
+      background: rgba(255, 46, 147, 0.24);
     }
 
     .feedback-textarea:focus {
@@ -2563,6 +2610,13 @@
         <h2 class="modal-title font-hand" id="feedbackModalTitle" style="font-size:17.5px; line-height:1.25; text-align:center; margin-bottom:6px;"><span style="color:#ff4f9a;">Артотрон</span> - твій кишеньковий<br/>арт-ідейник.</h2>
         <p class="modal-desc font-hand" style="font-size:13.5px; line-height:1.35; text-align:center; margin-bottom:10px;">Буду дуже вдячний за ваш відгук<br/>і зворотній зв’язок.</p>
         <div class="feedback-ratings font-hand" id="feedbackRatings"></div>
+        <div class="feedback-low-note" id="feedbackLowNote">Оцінка 1–3 ★ потребує пояснення — напиши коротко, що не так, або обери варіант:</div>
+        <div class="feedback-presets" id="feedbackPresets">
+          <button type="button" class="feedback-preset-chip" data-feedback-preset="Не вистачає нових тем і слів">Не вистачає тем</button>
+          <button type="button" class="feedback-preset-chip" data-feedback-preset="Незручно користуватися на моєму екрані">Незручний інтерфейс</button>
+          <button type="button" class="feedback-preset-chip" data-feedback-preset="Знайшов помилку / баг: ">Знайшов баг</button>
+          <button type="button" class="feedback-preset-chip" data-feedback-preset="Хотілося б більше функцій">Мало функцій</button>
+        </div>
         <textarea class="feedback-textarea font-hand" id="feedbackText" placeholder="Є побажання або коментар? напиши мені!" style="margin-bottom:8px;"></textarea>
         <div class="feedback-attach-wrap">
           <input type="file" id="feedbackFilesInput" accept="image/*" multiple style="display:none;" />
@@ -5173,6 +5227,7 @@
             Array.from(box.children).forEach((child, idx) => {
               child.classList.toggle('filled', idx < star);
             });
+            updateFeedbackRequirementUI();
           });
           box.appendChild(btn);
         }
@@ -5181,9 +5236,46 @@
         row.appendChild(box);
         feedbackRatingsEl.appendChild(row);
       });
+      updateFeedbackRequirementUI();
+    }
+
+    const feedbackLowNoteEl = document.getElementById('feedbackLowNote');
+    const feedbackPresetsEl = document.getElementById('feedbackPresets');
+
+    function hasLowFeedbackRating() {
+      return Object.values(feedbackScores).some((v) => v <= 3);
+    }
+
+    function updateFeedbackRequirementUI() {
+      const low = hasLowFeedbackRating();
+      if (feedbackLowNoteEl) feedbackLowNoteEl.classList.toggle('visible', low);
+      if (feedbackPresetsEl) feedbackPresetsEl.classList.toggle('visible', low);
+      if (feedbackTextEl) {
+        const len = (feedbackTextEl.value || '').trim().length;
+        if (!low || len >= 8) feedbackTextEl.classList.remove('is-error');
+        feedbackTextEl.placeholder = low
+          ? 'Опиши причину низької оцінки (від 8 символів)...'
+          : 'Є побажання або коментар? напиши мені!';
+      }
+    }
+
+    if (feedbackPresetsEl) {
+      feedbackPresetsEl.querySelectorAll('[data-feedback-preset]').forEach((chip) => {
+        chip.addEventListener('click', () => {
+          triggerHaptic('light');
+          SoundFX.pop();
+          const snippet = chip.dataset.feedbackPreset || '';
+          if (!feedbackTextEl) return;
+          const cur = (feedbackTextEl.value || '').trim();
+          feedbackTextEl.value = cur ? `${cur}; ${snippet}` : snippet;
+          updateFeedbackRequirementUI();
+          feedbackTextEl.focus();
+        });
+      });
     }
 
     if (feedbackTextEl) {
+      feedbackTextEl.addEventListener('input', updateFeedbackRequirementUI);
       feedbackTextEl.addEventListener('focus', () => {
         setTimeout(() => {
           feedbackTextEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -5243,6 +5335,18 @@
 
     if (feedbackSubmitBtn) {
       feedbackSubmitBtn.addEventListener('click', async () => {
+        const comment = (feedbackTextEl?.value || '').trim();
+        if (hasLowFeedbackRating() && comment.length < 8) {
+          triggerHaptic('medium');
+          if (feedbackTextEl) {
+            feedbackTextEl.classList.remove('shake');
+            void feedbackTextEl.offsetWidth;
+            feedbackTextEl.classList.add('is-error', 'shake');
+            feedbackTextEl.focus();
+          }
+          showToast('Оцінка 1–3 ★: напиши пояснення (від 8 символів) або обери варіант', { top: true });
+          return;
+        }
         triggerHaptic('medium');
         SoundFX.pop();
         feedbackSubmitBtn.disabled = true;
@@ -5253,7 +5357,6 @@
         const userTag = user
           ? `${user.first_name || ''} ${user.last_name || ''}`.trim() + (user.username ? ` (@${user.username})` : ` (id:${user.id})`)
           : 'Гість (браузер)';
-        const comment = (feedbackTextEl?.value || '').trim();
         const starsLine = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
 
         const messageText = [
