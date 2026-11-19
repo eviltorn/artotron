@@ -2042,6 +2042,157 @@
       box-shadow: 0 4px 14px rgba(255, 46, 147, 0.2);
     }
 
+    .preset-item.is-hot {
+      grid-column: 1 / -1;
+      border-color: rgba(255, 184, 77, 0.5);
+      background: linear-gradient(135deg, rgba(255, 46, 147, 0.14), rgba(255, 184, 77, 0.11));
+    }
+
+    .preset-item.is-hot.active {
+      border-color: #ffb84d;
+      box-shadow: 0 4px 16px rgba(255, 184, 77, 0.24);
+    }
+
+    .hot-preset-head {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .hot-timer-pill {
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffd080;
+      background: rgba(255, 184, 77, 0.14);
+      border: 1px solid rgba(255, 184, 77, 0.35);
+      border-radius: 999px;
+      padding: 2px 8px;
+      white-space: nowrap;
+    }
+
+    .hot-timer-bar {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffd080;
+      margin-bottom: 6px;
+    }
+
+    .hot-timer-bar.visible {
+      display: flex;
+    }
+
+    .hot-timer-bar img {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+    }
+
+    .spin-all-btn.is-hot-cta {
+      background: linear-gradient(135deg, #ff2e93 0%, #ff8a3d 100%);
+      box-shadow: 0 8px 24px rgba(255, 110, 80, 0.32);
+    }
+
+    .hot-topic-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 184, 77, 0.35);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin: 8px 0 12px;
+      font-size: 12.5px;
+      line-height: 1.4;
+      color: var(--text-primary);
+    }
+
+    .hot-topic-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11.5px;
+      color: #ffd080;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .hot-input {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: #101015;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    .hot-input:focus {
+      border-color: rgba(255, 46, 147, 0.6);
+    }
+
+    .hot-upload-btn {
+      width: 100%;
+      border: 1px dashed rgba(255, 46, 147, 0.45);
+      border-radius: 12px;
+      background: #101015;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 12px;
+      cursor: pointer;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .hot-preview-wrap {
+      position: relative;
+      display: none;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: #101015;
+      max-height: 190px;
+    }
+
+    .hot-preview-wrap.visible {
+      display: block;
+    }
+
+    .hot-preview-wrap img {
+      width: 100%;
+      max-height: 190px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .hot-preview-del {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(12, 12, 16, 0.85);
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+
     .preset-item-top {
       display: flex;
       align-items: center;
@@ -2364,6 +2515,10 @@
 
     <!-- Bottom Controls -->
     <footer class="bottom-dock">
+      <div class="hot-timer-bar" id="hotTimerBar">
+        <img src="./UI/calendar.png" alt="" />
+        <span id="hotTimerText">Оновлення теми через: ...</span>
+      </div>
       <button type="button" class="spin-all-btn" id="spinAllBtn">
         <span>✨</span>
         <span>Крутити все</span>
@@ -2726,6 +2881,34 @@
       </div>
       <div class="shaper-stage mode-shape" id="shaperStage"></div>
       <button type="button" class="modal-ok-btn font-hand" id="shaperSpinBtn" style="font-size:15.5px; height:46px;">КРУТИТИ ВИДИМЕ</button>
+    </div>
+  </div>
+
+  <!-- Hot Theme Participation Modal -->
+  <div class="modal-backdrop" id="hotSubmitModal" role="dialog" aria-modal="true" aria-labelledby="hotSubmitTitle">
+    <div class="modal-card">
+      <div class="modal-top">
+        <span class="modal-badge"><img src="./UI/calendar.png" alt="" /> ГАРЯЧА ТЕМА</span>
+        <button type="button" class="modal-close-x" id="hotSubmitCloseX" aria-label="Закрити">✕</button>
+      </div>
+      <div id="hotSubmitFormView">
+        <h2 class="modal-title font-hand" id="hotSubmitTitle" style="font-size:18px; line-height:1.25; text-align:center; margin-bottom:2px;">Участь у <span style="color:#ff4f9a;">Гарячій темі</span></h2>
+        <div class="hot-topic-box" id="hotTopicBox"></div>
+        <input type="text" class="hot-input" id="hotWorkTitle" maxlength="80" placeholder="Назва твоєї роботи..." />
+        <input type="file" id="hotWorkFileInput" accept="image/*" style="display:none;" />
+        <button type="button" class="hot-upload-btn" id="hotWorkDropBtn">🖼️ Обрати зображення арту</button>
+        <div class="hot-preview-wrap" id="hotWorkPreviewWrap">
+          <img id="hotWorkPreviewImg" src="" alt="Прев’ю роботи" />
+          <button type="button" class="hot-preview-del" id="hotWorkPreviewDel" aria-label="Видалити фото">✕</button>
+        </div>
+        <button type="button" class="modal-ok-btn font-hand" id="hotSubmitBtn" style="font-size:16px; height:48px;">НАДІСЛАТИ РОБОТУ</button>
+      </div>
+      <div id="hotSubmitThanksView" class="feedback-thanks" style="display:none;">
+        <div class="feedback-thanks-icon">🔥</div>
+        <h2 class="modal-title font-hand" style="font-size:20px; margin-bottom:8px; color:#ff4f9a;">РОБОТУ НАДІСЛАНО!</h2>
+        <p class="modal-desc" style="margin-bottom:16px;">Твій арт прийнято на Гарячу тему. У наступному колі спільнота зможе оцінити роботи!</p>
+        <button type="button" class="modal-ok-btn font-hand" id="hotSubmitDoneBtn" style="font-size:15px; height:48px;">ПОВЕРНУТИСЯ ДО АРТОТРОНУ</button>
+      </div>
     </div>
   </div>
 
@@ -4014,7 +4197,69 @@
       return drawFromPoolDeck(getArticlePool().length, `${state.preset}:article`, currentMod);
     }
 
+    const HotTheme = (() => {
+      const PERIOD_MS = 3 * 24 * 60 * 60 * 1000; // 3 дні
+
+      function mulberry32(seed) {
+        let a = seed >>> 0;
+        return () => {
+          a |= 0;
+          a = (a + 0x6D2B79F5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function getRound() {
+        const now = Date.now();
+        const periodId = Math.floor(now / PERIOD_MS);
+        const remainingMs = Math.max(0, (periodId + 1) * PERIOD_MS - now);
+        const rng = mulberry32(periodId * 2654435761 + 17);
+
+        const poolIds = PRESET_ORDER.filter((id) => id !== 'all' && PRESETS[id]);
+        const presetId = poolIds[Math.floor(rng() * poolIds.length)] || 'fantasy';
+        const p = PRESETS[presetId];
+
+        const charIdx = Math.floor(rng() * p.chars.length);
+        const cat2Mode = rng() > 0.5 ? 'action' : 'place';
+        const cat2Pool = cat2Mode === 'action' ? p.actions : p.places;
+        const cat2Idx = Math.floor(rng() * cat2Pool.length);
+        const cat3Mode = rng() > 0.45 ? 'palette' : 'style';
+        const cat3Pool = cat3Mode === 'palette' ? p.palettes : p.styles;
+        const cat3Idx = Math.floor(rng() * cat3Pool.length);
+
+        return {
+          periodId,
+          remainingMs,
+          presetId,
+          preset: p,
+          charIdx,
+          cat2Mode,
+          cat2Idx,
+          cat3Mode,
+          cat3Idx,
+          charLabel: p.chars[charIdx][0],
+          cat2Label: cat2Pool[cat2Idx][0],
+          cat3Label: cat3Pool[cat3Idx][0]
+        };
+      }
+
+      function formatRemaining(ms) {
+        const totalMin = Math.max(1, Math.floor(ms / 60000));
+        const d = Math.floor(totalMin / (60 * 24));
+        const h = Math.floor((totalMin % (60 * 24)) / 60);
+        const m = totalMin % 60;
+        if (d > 0) return `${d}д ${h}г ${m}хв`;
+        if (h > 0) return `${h}г ${m}хв`;
+        return `${m}хв`;
+      }
+
+      return { getRound, formatRemaining };
+    })();
+
     function getActivePreset() {
+      if (state.preset === 'hot') return HotTheme.getRound().preset;
       return PRESETS[state.preset] || PRESETS.all;
     }
 
@@ -4708,6 +4953,10 @@
     document.querySelectorAll('[data-lock]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const idx = Number(btn.dataset.lock);
+        if (state.preset === 'hot') {
+          showToast('У «Гарячій темі» слоти зафіксовані для всіх учасників', { top: true });
+          return;
+        }
         if (state.spinning[idx]) return;
         triggerHaptic('medium');
         state.locked[idx] = !state.locked[idx];
@@ -4744,11 +4993,16 @@
 
     spinAllBtn.addEventListener('click', () => {
       SoundFX.unlock();
+      if (state.preset === 'hot') {
+        openHotSubmitModal();
+        return;
+      }
       handleSpinAll();
     });
     copyBtn.addEventListener('click', handleCopy);
 
     const PRESET_ICON_MAP = {
+      hot: { img: './UI/calendar.png' },
       all: { img: './UI/dice.png' },
       fantasy: { img: './UI/character.png' },
       folklore: { img: './UI/landscape.png' },
@@ -4774,17 +5028,74 @@
       return entry.svg;
     }
 
+    const hotTimerBar = document.getElementById('hotTimerBar');
+    const hotTimerText = document.getElementById('hotTimerText');
+
+    function updateHotModeUI() {
+      const isHot = state.preset === 'hot';
+      const round = HotTheme.getRound();
+      if (hotTimerBar) hotTimerBar.classList.toggle('visible', isHot);
+      if (hotTimerText) hotTimerText.textContent = `Оновлення теми через: ${HotTheme.formatRemaining(round.remainingMs)}`;
+      if (spinAllBtn) {
+        spinAllBtn.classList.toggle('is-hot-cta', isHot);
+        spinAllBtn.innerHTML = isHot
+          ? '<span>🔥</span><span>Прийняти участь</span>'
+          : '<span>✨</span><span>Крутити все</span>';
+      }
+      const gridPill = document.getElementById('hotGridTimerPill');
+      if (gridPill) gridPill.textContent = `⏳ ${HotTheme.formatRemaining(round.remainingMs)}`;
+    }
+
+    function applyHotThemeRound() {
+      const round = HotTheme.getRound();
+      state.articleMode = false;
+      updateArticleModeUI();
+      state.cat2Mode = round.cat2Mode;
+      updateCat2ModeUI();
+      state.cat3Mode = round.cat3Mode;
+      updateCat3ModeUI();
+      state.positions[0] = round.charIdx;
+      state.positions[1] = round.cat2Idx;
+      state.cat2Positions[round.cat2Mode] = round.cat2Idx;
+      state.positions[2] = round.cat3Idx;
+      state.cat3Positions[round.cat3Mode] = round.cat3Idx;
+      state.locked = [true, true, true];
+      renderDrum(0);
+      renderArticleDrum();
+      renderDrum(1);
+      renderDrum(2);
+      updateLockUI();
+      updateHotModeUI();
+    }
+
     function updatePresetUI() {
+      const isHot = state.preset === 'hot';
       const p = getActivePreset();
-      presetEmoji.innerHTML = renderPresetIcon(state.preset, p.emoji);
-      presetName.textContent = p.name;
+      presetEmoji.innerHTML = renderPresetIcon(state.preset, isHot ? '📅' : p.emoji);
+      presetName.textContent = isHot ? 'Гаряча тема' : p.name;
       presetGrid.querySelectorAll('.preset-item').forEach((el) => {
         el.classList.toggle('active', el.dataset.presetId === state.preset);
       });
+      updateHotModeUI();
     }
 
     function renderPresetGrid() {
       presetGrid.innerHTML = '';
+      const round = HotTheme.getRound();
+      const hotBtn = document.createElement('button');
+      hotBtn.type = 'button';
+      hotBtn.className = 'preset-item is-hot';
+      hotBtn.dataset.presetId = 'hot';
+      hotBtn.innerHTML = `
+        <div class="hot-preset-head">
+          <span class="preset-item-top">${renderPresetIcon('hot', '📅')}<span>Гаряча тема</span></span>
+          <span class="hot-timer-pill" id="hotGridTimerPill">⏳ ${HotTheme.formatRemaining(round.remainingMs)}</span>
+        </div>
+        <span class="preset-item-sub">Спільний челендж на 3 дні • ${round.preset.name}</span>
+      `;
+      hotBtn.addEventListener('click', () => selectPreset('hot'));
+      presetGrid.appendChild(hotBtn);
+
       PRESET_ORDER.forEach((id) => {
         const p = PRESETS[id];
         const btn = document.createElement('button');
@@ -4812,11 +5123,19 @@
     }
 
     function selectPreset(id) {
-      if (!PRESETS[id] || state.isSpinningAll || state.spinning.some(Boolean)) return;
+      if ((id !== 'hot' && !PRESETS[id]) || state.isSpinningAll || state.spinning.some(Boolean)) return;
       triggerHaptic('medium');
       SoundFX.pop();
       state.preset = id;
       localStorage.setItem('artotron_preset', id);
+      if (id === 'hot') {
+        applyHotThemeRound();
+        updatePresetUI();
+        closePresetModal();
+        const round = HotTheme.getRound();
+        showToast(`🔥 Гаряча тема • ${round.preset.name}`, { top: true });
+        return;
+      }
       state.locked = [false, false, false];
       const p = getActivePreset();
       state.positions[0] = drawFromDeck(0);
@@ -5763,6 +6082,7 @@
         if (achModal) achModal.classList.remove('open');
         if (whatsNewModal) whatsNewModal.classList.remove('open');
         if (shaperModal) shaperModal.classList.remove('open');
+        if (hotSubmitModal) hotSubmitModal.classList.remove('open');
       }
     });
 
@@ -6216,6 +6536,133 @@
     });
     if (shaperCopyBtn) shaperCopyBtn.addEventListener('click', () => Shaper.copyPureShape());
 
+    const hotSubmitModal = document.getElementById('hotSubmitModal');
+    const hotSubmitCloseX = document.getElementById('hotSubmitCloseX');
+    const hotSubmitFormView = document.getElementById('hotSubmitFormView');
+    const hotSubmitThanksView = document.getElementById('hotSubmitThanksView');
+    const hotSubmitDoneBtn = document.getElementById('hotSubmitDoneBtn');
+    const hotTopicBox = document.getElementById('hotTopicBox');
+    const hotWorkTitle = document.getElementById('hotWorkTitle');
+    const hotWorkFileInput = document.getElementById('hotWorkFileInput');
+    const hotWorkDropBtn = document.getElementById('hotWorkDropBtn');
+    const hotWorkPreviewWrap = document.getElementById('hotWorkPreviewWrap');
+    const hotWorkPreviewImg = document.getElementById('hotWorkPreviewImg');
+    const hotWorkPreviewDel = document.getElementById('hotWorkPreviewDel');
+    const hotSubmitBtn = document.getElementById('hotSubmitBtn');
+    let hotWorkFile = null;
+
+    function resetHotWorkFile() {
+      hotWorkFile = null;
+      if (hotWorkFileInput) hotWorkFileInput.value = '';
+      if (hotWorkPreviewWrap) hotWorkPreviewWrap.classList.remove('visible');
+      if (hotWorkPreviewImg) hotWorkPreviewImg.src = '';
+    }
+
+    function openHotSubmitModal() {
+      triggerHaptic('medium');
+      SoundFX.pop();
+      const round = HotTheme.getRound();
+      if (hotTopicBox) {
+        hotTopicBox.innerHTML = `
+          <div class="hot-topic-meta">
+            <span>Раунд #${round.periodId} • ${round.preset.name}</span>
+            <span>⏳ ${HotTheme.formatRemaining(round.remainingMs)}</span>
+          </div>
+          <div><strong style="color:#ff4f9a;">01:</strong> ${round.charLabel}</div>
+          <div><strong style="color:#ff4f9a;">02:</strong> ${round.cat2Label}</div>
+          <div><strong style="color:#ff4f9a;">03:</strong> ${round.cat3Label}</div>
+        `;
+      }
+      if (hotSubmitFormView) hotSubmitFormView.style.display = 'block';
+      if (hotSubmitThanksView) hotSubmitThanksView.style.display = 'none';
+      if (hotSubmitModal) hotSubmitModal.classList.add('open');
+    }
+
+    if (hotSubmitCloseX) hotSubmitCloseX.addEventListener('click', () => hotSubmitModal.classList.remove('open'));
+    if (hotSubmitDoneBtn) hotSubmitDoneBtn.addEventListener('click', () => hotSubmitModal.classList.remove('open'));
+    if (hotSubmitModal) {
+      hotSubmitModal.addEventListener('click', (e) => {
+        if (e.target === hotSubmitModal) hotSubmitModal.classList.remove('open');
+      });
+    }
+    if (hotWorkDropBtn && hotWorkFileInput) {
+      hotWorkDropBtn.addEventListener('click', () => hotWorkFileInput.click());
+      hotWorkFileInput.addEventListener('change', () => {
+        const file = Array.from(hotWorkFileInput.files || []).find((f) => f.type.startsWith('image/'));
+        if (!file) return;
+        hotWorkFile = file;
+        const url = URL.createObjectURL(file);
+        if (hotWorkPreviewImg) {
+          hotWorkPreviewImg.src = url;
+          hotWorkPreviewImg.onload = () => URL.revokeObjectURL(url);
+        }
+        if (hotWorkPreviewWrap) hotWorkPreviewWrap.classList.add('visible');
+      });
+    }
+    if (hotWorkPreviewDel) {
+      hotWorkPreviewDel.addEventListener('click', () => {
+        triggerHaptic('light');
+        resetHotWorkFile();
+      });
+    }
+    if (hotSubmitBtn) {
+      hotSubmitBtn.addEventListener('click', async () => {
+        const title = (hotWorkTitle?.value || '').trim();
+        if (!hotWorkFile) {
+          showToast('Обери зображення свого арту 🖼️', { top: true });
+          return;
+        }
+        if (title.length < 2) {
+          showToast('Напиши назву роботи (від 2 символів)', { top: true });
+          if (hotWorkTitle) hotWorkTitle.focus();
+          return;
+        }
+        triggerHaptic('medium');
+        SoundFX.pop();
+        hotSubmitBtn.disabled = true;
+        const prevTxt = hotSubmitBtn.textContent;
+        hotSubmitBtn.textContent = 'НАДСИЛАЄМО...';
+
+        const round = HotTheme.getRound();
+        const user = tg?.initDataUnsafe?.user;
+        const userTag = user
+          ? `${user.first_name || ''} ${user.last_name || ''}`.trim() + (user.username ? ` (@${user.username})` : ` (id:${user.id})`)
+          : 'Гість (браузер)';
+
+        const caption = [
+          `🔥 НОВА РОБОТА • ГАРЯЧА ТЕМА (Раунд #${round.periodId})`,
+          `🎨 Назва: ${title}`,
+          `👤 Автор: ${userTag}`,
+          `🎭 Сетінг: ${round.preset.name}`,
+          `• 01: ${round.charLabel}`,
+          `• 02: ${round.cat2Label}`,
+          `• 03: ${round.cat3Label}`
+        ].join('\n');
+
+        if (FEEDBACK_BOT_CONFIG.botToken && FEEDBACK_BOT_CONFIG.chatId) {
+          try {
+            const fd = new FormData();
+            fd.append('chat_id', FEEDBACK_BOT_CONFIG.chatId);
+            fd.append('photo', hotWorkFile, hotWorkFile.name || 'artotron-work.png');
+            fd.append('caption', caption.slice(0, 1024));
+            await fetch(`https://api.telegram.org/bot${FEEDBACK_BOT_CONFIG.botToken}/sendPhoto`, {
+              method: 'POST',
+              body: fd
+            });
+          } catch (_) {}
+        }
+
+        hotSubmitBtn.disabled = false;
+        hotSubmitBtn.textContent = prevTxt;
+        resetHotWorkFile();
+        if (hotWorkTitle) hotWorkTitle.value = '';
+        if (hotSubmitFormView) hotSubmitFormView.style.display = 'none';
+        if (hotSubmitThanksView) hotSubmitThanksView.style.display = 'block';
+      });
+    }
+
+    setInterval(updateHotModeUI, 30000);
+
     function init() {
       renderSocials();
       renderPresetGrid();
@@ -6226,23 +6673,27 @@
       updateArticleModeUI();
       updateCat2ModeUI();
       updateCat3ModeUI();
+      if (state.preset === 'hot') {
+        applyHotThemeRound();
+      } else {
+        const p = getActivePreset();
+        state.positions[0] = drawFromDeck(0);
+        state.articlePos = drawFromArticleDeck();
+        state.cat2Positions.place = Math.floor(Math.random() * p.places.length);
+        state.cat2Positions.action = Math.floor(Math.random() * p.actions.length);
+        state.positions[1] = drawFromDeck(1);
+        state.cat2Positions[state.cat2Mode] = state.positions[1];
+        state.cat3Positions.style = Math.floor(Math.random() * p.styles.length);
+        state.cat3Positions.palette = Math.floor(Math.random() * p.palettes.length);
+        state.positions[2] = drawFromDeck(2);
+        state.cat3Positions[state.cat3Mode] = state.positions[2];
+        renderDrum(0);
+        renderArticleDrum();
+        renderDrum(1);
+        renderDrum(2);
+        updateLockUI();
+      }
       updatePresetUI();
-      const p = getActivePreset();
-      state.positions[0] = drawFromDeck(0);
-      state.articlePos = drawFromArticleDeck();
-      state.cat2Positions.place = Math.floor(Math.random() * p.places.length);
-      state.cat2Positions.action = Math.floor(Math.random() * p.actions.length);
-      state.positions[1] = drawFromDeck(1);
-      state.cat2Positions[state.cat2Mode] = state.positions[1];
-      state.cat3Positions.style = Math.floor(Math.random() * p.styles.length);
-      state.cat3Positions.palette = Math.floor(Math.random() * p.palettes.length);
-      state.positions[2] = drawFromDeck(2);
-      state.cat3Positions[state.cat3Mode] = state.positions[2];
-      renderDrum(0);
-      renderArticleDrum();
-      renderDrum(1);
-      renderDrum(2);
-      updateLockUI();
       updateSettingsUI();
       StatsTracker.trackBoot();
     }
