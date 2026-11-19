@@ -2010,6 +2010,14 @@
       margin-top: 4px;
     }
 
+    .preset-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 4px 0 10px;
+    }
+
     .preset-item {
       display: flex;
       flex-direction: column;
@@ -2264,14 +2272,8 @@
         <span class="preset-caret">▾</span>
       </button>
       <div class="mode-shortcuts">
-        <button type="button" class="mode-shortcut-btn is-active-feature" id="charModeBtn" aria-label="Мод: Персонажі (активний)" title="Мод: Персонажі">
-          <img src="./UI/character.png" alt="Персонажі" />
-        </button>
-        <button type="button" class="mode-shortcut-btn is-soon" data-soon-mode="Оточення" aria-label="Оточення (скоро)" title="Оточення (скоро)">
-          <img src="./UI/landscape.png" alt="Оточення" />
-        </button>
-        <button type="button" class="mode-shortcut-btn is-soon" data-soon-mode="Пропси" aria-label="Пропси (скоро)" title="Пропси (скоро)">
-          <svg viewBox="1.5 1.5 21 21" fill="currentColor" aria-hidden="true"><path d="M12 2.2 3.6 6.7 12 11.2l8.4-4.5L12 2.2ZM3 8.1v9.1l8.2 4.6v-9.1L3 8.1Zm18 0-8.2 4.6v9.1l8.2-4.6V8.1Z"/></svg>
+        <button type="button" class="mode-shortcut-btn is-soon" id="galleryBtn" data-soon-gallery="1" aria-label="Галерея (скоро)" title="Галерея і оцінка робіт (скоро)">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Zm4.5 3.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3ZM6 17h12l-3.8-5-2.9 3.6-2-2.4L6 17Z"/></svg>
         </button>
         <button type="button" class="mode-shortcut-btn is-active-feature" id="shaperBtn" aria-label="Шейпер" title="Шейпер">
           <img src="./UI/ratingstar.png" alt="Шейпер" />
@@ -2392,7 +2394,20 @@
         <span class="modal-badge"><img src="./UI/dice.png" alt="" /> ОБЕРИ СЕТІНГ</span>
         <button type="button" class="modal-close-x" id="presetCloseX" aria-label="Закрити">✕</button>
       </div>
-      <h2 class="modal-title" id="presetModalTitle" style="font-size:17px; margin-bottom:10px;">Тематичні пресети</h2>
+      <div class="preset-header-row">
+        <h2 class="modal-title" id="presetModalTitle" style="font-size:17px; margin:0;">Тематичні пресети</h2>
+        <div class="mode-shortcuts">
+          <button type="button" class="mode-shortcut-btn is-active-feature" id="charModeBtn" aria-label="Мод: Персонажі (активний)" title="Мод: Персонажі">
+            <img src="./UI/character.png" alt="Персонажі" />
+          </button>
+          <button type="button" class="mode-shortcut-btn is-soon" data-soon-mode="Оточення" aria-label="Оточення (скоро)" title="Оточення (скоро)">
+            <img src="./UI/landscape.png" alt="Оточення" />
+          </button>
+          <button type="button" class="mode-shortcut-btn is-soon" data-soon-mode="Пропси" aria-label="Пропси (скоро)" title="Пропси (скоро)">
+            <svg viewBox="1.5 1.5 21 21" fill="currentColor" aria-hidden="true"><path d="M12 2.2 3.6 6.7 12 11.2l8.4-4.5L12 2.2ZM3 8.1v9.1l8.2 4.6v-9.1L3 8.1Zm18 0-8.2 4.6v9.1l8.2-4.6V8.1Z"/></svg>
+          </button>
+        </div>
+      </div>
       <div class="preset-grid" id="presetGrid"></div>
     </div>
   </div>
@@ -5794,6 +5809,18 @@
           }, 550);
         }
       } catch (_) {}
+    }
+
+    const galleryBtn = document.getElementById('galleryBtn');
+    if (galleryBtn) {
+      galleryBtn.addEventListener('click', () => {
+        triggerHaptic('light');
+        SoundFX.pop();
+        showToast('Галерея і оцінка робіт (скоро з’явиться)', {
+          top: true,
+          html: `Галерея і оцінка робіт <span style="color:rgba(255,255,255,0.48);font-weight:500;">(скоро з’явиться)</span>`
+        });
+      });
     }
 
     const charModeBtn = document.getElementById('charModeBtn');
