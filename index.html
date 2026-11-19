@@ -2072,30 +2072,41 @@
       white-space: nowrap;
     }
 
-    .hot-timer-bar {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #ffd080;
-      margin-bottom: 6px;
-    }
-
-    .hot-timer-bar.visible {
-      display: flex;
-    }
-
-    .hot-timer-bar img {
-      width: 14px;
-      height: 14px;
-      object-fit: contain;
-    }
-
     .spin-all-btn.is-hot-cta {
       background: linear-gradient(135deg, #ff2e93 0%, #ff8a3d 100%);
       box-shadow: 0 8px 24px rgba(255, 110, 80, 0.32);
+    }
+
+    .hot-cta-timer {
+      font-size: 11.5px;
+      font-weight: 700;
+      background: rgba(0, 0, 0, 0.24);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 2px 9px;
+      white-space: nowrap;
+    }
+
+    .hot-palette-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 3px;
+    }
+
+    .hot-palette-swatches {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hot-palette-swatch {
+      width: 22px;
+      height: 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      display: inline-block;
     }
 
     .hot-topic-box {
@@ -2515,10 +2526,6 @@
 
     <!-- Bottom Controls -->
     <footer class="bottom-dock">
-      <div class="hot-timer-bar" id="hotTimerBar">
-        <img src="./UI/calendar.png" alt="" />
-        <span id="hotTimerText">Оновлення теми через: ...</span>
-      </div>
       <button type="button" class="spin-all-btn" id="spinAllBtn">
         <span>✨</span>
         <span>Крутити все</span>
@@ -4199,6 +4206,7 @@
 
     const HotTheme = (() => {
       const PERIOD_MS = 3 * 24 * 60 * 60 * 1000; // 3 дні
+      const EPOCH_MS = Date.UTC(2026, 10, 19, 0, 0, 0); // старт: 19.11.2026
 
       function mulberry32(seed) {
         let a = seed >>> 0;
@@ -4213,8 +4221,9 @@
 
       function getRound() {
         const now = Date.now();
-        const periodId = Math.floor(now / PERIOD_MS);
-        const remainingMs = Math.max(0, (periodId + 1) * PERIOD_MS - now);
+        const rawIdx = Math.max(0, Math.floor((now - EPOCH_MS) / PERIOD_MS));
+        const periodId = rawIdx + 1;
+        const remainingMs = Math.max(0, EPOCH_MS + (rawIdx + 1) * PERIOD_MS - now);
         const rng = mulberry32(periodId * 2654435761 + 17);
 
         const poolIds = PRESET_ORDER.filter((id) => id !== 'all' && PRESETS[id]);
@@ -4241,7 +4250,8 @@
           cat3Idx,
           charLabel: p.chars[charIdx][0],
           cat2Label: cat2Pool[cat2Idx][0],
-          cat3Label: cat3Pool[cat3Idx][0]
+          cat3Label: cat3Pool[cat3Idx][0],
+          cat3Colors: cat3Mode === 'palette' && Array.isArray(cat3Pool[cat3Idx][2]) ? cat3Pool[cat3Idx][2] : null
         };
       }
 
@@ -5028,18 +5038,13 @@
       return entry.svg;
     }
 
-    const hotTimerBar = document.getElementById('hotTimerBar');
-    const hotTimerText = document.getElementById('hotTimerText');
-
     function updateHotModeUI() {
       const isHot = state.preset === 'hot';
       const round = HotTheme.getRound();
-      if (hotTimerBar) hotTimerBar.classList.toggle('visible', isHot);
-      if (hotTimerText) hotTimerText.textContent = `Оновлення теми через: ${HotTheme.formatRemaining(round.remainingMs)}`;
       if (spinAllBtn) {
         spinAllBtn.classList.toggle('is-hot-cta', isHot);
         spinAllBtn.innerHTML = isHot
-          ? '<span>🔥</span><span>Прийняти участь</span>'
+          ? `<span>🔥</span><span>Прийняти участь</span><span class="hot-cta-timer">⏳ ${HotTheme.formatRemaining(round.remainingMs)}</span>`
           : '<span>✨</span><span>Крутити все</span>';
       }
       const gridPill = document.getElementById('hotGridTimerPill');
@@ -6563,14 +6568,17 @@
       SoundFX.pop();
       const round = HotTheme.getRound();
       if (hotTopicBox) {
+        const cat3Html = round.cat3Colors
+          ? `<div class="hot-palette-row"><strong style="color:#ff4f9a;">03:</strong><span class="hot-palette-swatches">${round.cat3Colors.map((c) => `<span class="hot-palette-swatch" style="background:${c};"></span>`).join('')}</span><span>(${round.cat3Colors.length} кольори: ${round.cat3Label})</span></div>`
+          : `<div><strong style="color:#ff4f9a;">03:</strong> ${round.cat3Label}</div>`;
         hotTopicBox.innerHTML = `
           <div class="hot-topic-meta">
-            <span>Раунд #${round.periodId} • ${round.preset.name}</span>
-            <span>⏳ ${HotTheme.formatRemaining(round.remainingMs)}</span>
+            <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Раунд #${round.periodId} • ${round.preset.name}</span>
+            <span style="white-space:nowrap;flex-shrink:0;">⏳ ${HotTheme.formatRemaining(round.remainingMs)}</span>
           </div>
           <div><strong style="color:#ff4f9a;">01:</strong> ${round.charLabel}</div>
           <div><strong style="color:#ff4f9a;">02:</strong> ${round.cat2Label}</div>
-          <div><strong style="color:#ff4f9a;">03:</strong> ${round.cat3Label}</div>
+          ${cat3Html}
         `;
       }
       if (hotSubmitFormView) hotSubmitFormView.style.display = 'block';
