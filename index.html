@@ -1885,17 +1885,33 @@
       color: #00e5ff;
     }
 
-    .shaper-overlay-svg {
+    .shaper-overlay-viewport {
       position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
+      overflow: hidden;
       pointer-events: none;
       z-index: 1;
-      transition: opacity 0.25s ease;
     }
 
-    .shaper-stage.l2-off .shaper-overlay-svg {
+    .shaper-overlay-track {
+      display: flex;
+      height: 100%;
+      will-change: transform;
+    }
+
+    .shaper-overlay-cell {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+    }
+
+    .shaper-overlay-cell svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .shaper-stage.l2-off .shaper-overlay-viewport {
       display: none;
     }
 
@@ -2920,6 +2936,9 @@
           </button>
           <button type="button" class="shaper-tool-btn" id="shaperL2LineBtn" aria-label="Шар 2: Неотрайбл/Флюїд (Лайн)" title="Шар 2: Неотрайбл/Флюїд (Лайн)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 9.4 9.8 3.5 14.3l5.1-1.2L6.3 20.5 12 15.6l5.7 4.9-2.3-7.4 5.1 1.2-5.9-4.5L12 2.5Z"/></svg>
+          </button>
+          <button type="button" class="shaper-tool-btn" id="shaperL2LockBtn" aria-label="Закріпити 2-й шар" title="Закріпити 2-й шар">
+            <img id="shaperL2LockImg" src="./UI/lock.png" alt="Замок 2-го шару" style="width:14px;height:14px;" />
           </button>
         </div>
         <button type="button" class="shaper-tool-btn" id="shaperCopyBtn" aria-label="Скопіювати шейп" title="Скопіювати чистий шейп" style="color:#ffffff;">
@@ -6230,6 +6249,8 @@
     const shaperModeLineBtn = document.getElementById('shaperModeLineBtn');
     const shaperL2ShapeBtn = document.getElementById('shaperL2ShapeBtn');
     const shaperL2LineBtn = document.getElementById('shaperL2LineBtn');
+    const shaperL2LockBtn = document.getElementById('shaperL2LockBtn');
+    const shaperL2LockImg = document.getElementById('shaperL2LockImg');
     const shaperCopyBtn = document.getElementById('shaperCopyBtn');
 
     const Shaper = (() => {
@@ -6237,10 +6258,11 @@
       const locked = [false, false, false, false, false];
       const currentPieces = new Array(STRIP_COUNT).fill(null);
       const tracks = [];
-      let overlaySvg = null;
+      let overlayTrack = null;
       let currentL2Paths = [];
       let lineMode = false;
       let l2Mode = 'shape'; // 'shape' | 'line' | 'off'
+      let l2Locked = false;
       let spinning = false;
 
       const rand = (min, max) => min + Math.random() * (max - min);
@@ -6498,10 +6520,19 @@
         return paths;
       }
 
-      function renderOverlay() {
-        if (!overlaySvg) return;
+      function overlayPathsToSvg(paths) {
+        const pathTags = paths.map((d) => `<path class="shaper-l2-path" d="${d}" />`).join('');
+        return `<svg viewBox="0 0 320 320" preserveAspectRatio="none" aria-hidden="true">${pathTags}</svg>`;
+      }
+
+      function initOverlayTrack() {
+        if (!overlayTrack) return;
         currentL2Paths = genLayer2Overlay();
-        overlaySvg.innerHTML = currentL2Paths.map((d) => `<path class="shaper-l2-path" d="${d}" />`).join('');
+        overlayTrack.innerHTML = '';
+        const cell = document.createElement('div');
+        cell.className = 'shaper-overlay-cell';
+        cell.innerHTML = overlayPathsToSvg(currentL2Paths);
+        overlayTrack.appendChild(cell);
       }
 
       function buildStage() {
@@ -6550,13 +6581,13 @@
           tracks.push(track);
         }
 
-        overlaySvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        overlaySvg.setAttribute('class', 'shaper-overlay-svg');
-        overlaySvg.setAttribute('viewBox', '0 0 320 320');
-        overlaySvg.setAttribute('preserveAspectRatio', 'none');
-        overlaySvg.setAttribute('aria-hidden', 'true');
-        shaperStage.appendChild(overlaySvg);
-        renderOverlay();
+        const overlayViewport = document.createElement('div');
+        overlayViewport.className = 'shaper-overlay-viewport';
+        overlayTrack = document.createElement('div');
+        overlayTrack.className = 'shaper-overlay-track';
+        overlayViewport.appendChild(overlayTrack);
+        shaperStage.appendChild(overlayViewport);
+        initOverlayTrack();
       }
 
       async function spinVisible() {
@@ -6565,8 +6596,9 @@
         for (let i = 0; i < STRIP_COUNT; i++) {
           if (!locked[i]) unlockedIndices.push(i);
         }
-        if (unlockedIndices.length === 0) {
-          showToast('Усі 5 смуг закріплено 🔒');
+        const canSpinL2 = l2Mode !== 'off' && !l2Locked && Boolean(overlayTrack);
+        if (unlockedIndices.length === 0 && !canSpinL2) {
+          showToast('Усе закріплено 🔒');
           return;
         }
 
@@ -6613,8 +6645,37 @@
           }, duration + 30);
         }));
 
+        if (canSpinL2) {
+          promises.push(new Promise((resolve) => {
+            let lastPaths = currentL2Paths;
+            for (let s = 0; s < STEPS; s++) {
+              lastPaths = genLayer2Overlay();
+              const cell = document.createElement('div');
+              cell.className = 'shaper-overlay-cell';
+              cell.innerHTML = overlayPathsToSvg(lastPaths);
+              overlayTrack.appendChild(cell);
+            }
+            currentL2Paths = lastPaths;
+            overlayTrack.style.transition = 'none';
+            overlayTrack.style.transform = 'translate3d(0%, 0, 0)';
+            void overlayTrack.offsetWidth;
+
+            const l2Duration = 1280;
+            overlayTrack.style.transition = `transform ${l2Duration}ms cubic-bezier(0.14, 0.86, 0.22, 1)`;
+            overlayTrack.style.transform = `translate3d(-${STEPS * 100}%, 0, 0)`;
+
+            setTimeout(() => {
+              overlayTrack.style.transition = 'none';
+              while (overlayTrack.children.length > 1) {
+                overlayTrack.removeChild(overlayTrack.firstElementChild);
+              }
+              overlayTrack.style.transform = 'translate3d(0%, 0, 0)';
+              resolve();
+            }, l2Duration + 30);
+          }));
+        }
+
         await Promise.all(promises);
-        if (l2Mode !== 'off') renderOverlay();
         SoundFX.finishAll();
         if (typeof Achievements !== 'undefined') Achievements.recordShaperSpin();
         spinning = false;
@@ -6741,6 +6802,14 @@
         showToast('💾 Шейп збережено як PNG');
       }
 
+      function toggleLayer2Lock() {
+        if (spinning) return;
+        l2Locked = !l2Locked;
+        if (shaperL2LockBtn) shaperL2LockBtn.classList.toggle('active-cyan', l2Locked);
+        if (shaperL2LockImg) shaperL2LockImg.src = l2Locked ? './UI/lock2.png' : './UI/lock.png';
+        SoundFX.lock(l2Locked);
+      }
+
       return {
         init() {
           buildStage();
@@ -6750,6 +6819,7 @@
         spinVisible,
         setMode,
         toggleLayer2,
+        toggleLayer2Lock,
         copyPureShape
       };
     })();
@@ -6775,6 +6845,10 @@
       triggerHaptic('light');
       SoundFX.pop();
       Shaper.toggleLayer2('line');
+    });
+    if (shaperL2LockBtn) shaperL2LockBtn.addEventListener('click', () => {
+      triggerHaptic('light');
+      Shaper.toggleLayer2Lock();
     });
     if (shaperCopyBtn) shaperCopyBtn.addEventListener('click', () => Shaper.copyPureShape());
 
