@@ -6447,146 +6447,227 @@
       }
 
       function genLayer2Overlay() {
-        const styleRoll = Math.random();
-        const paths = [];
+        // Real 2D Anisotropic Metaballs + Marching Squares contour tracer
+        const N = 68;
+        const W = 280;
+        const H = 320;
+        const cellW = W / N;
+        const cellH = H / N;
         const flip = Math.random() > 0.5 ? 1 : -1;
-        const mapX = (x) => (flip === 1 ? x : 276 - x).toFixed(1);
-        const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+        const mapX = (x) => (flip === 1 ? x : W - x);
 
-        // Helper: tapered curved thorn / claw between (x1,y1) and (x2,y2)
-        function addTaperedCurve(x1, y1, cx, cy, x2, y2, wRoot) {
-          const dx = x2 - x1;
-          const dy = y2 - y1;
-          const len = Math.hypot(dx, dy) || 1;
-          const nx = -dy / len;
-          const ny = dx / len;
-          const ax = x1 + nx * wRoot;
-          const ay = y1 + ny * wRoot;
-          const bx = x1 - nx * wRoot;
-          const by = y1 - ny * wRoot;
-          const c1x = cx + nx * (wRoot * 0.42);
-          const c1y = cy + ny * (wRoot * 0.42);
-          const c2x = cx - nx * (wRoot * 0.42);
-          const c2y = cy - ny * (wRoot * 0.42);
-          paths.push(`M ${mapX(ax)} ${ay.toFixed(1)} Q ${mapX(c1x)} ${c1y.toFixed(1)}, ${mapX(x2)} ${y2.toFixed(1)} Q ${mapX(c2x)} ${c2y.toFixed(1)}, ${mapX(bx)} ${by.toFixed(1)} Z`);
-        }
+        const posBlobs = [];
+        const negBlobs = [];
+        const mode = Math.random();
 
-        if (styleRoll < 0.42) {
-          // 1. Chaotic Cyber-sigilism / Neotribal with recursive curved thorns & cutouts
-          const segs = rInt(4, 6);
-          const spine = [];
-          let curX = rand(36, 110);
-          let curY = rand(12, 42);
-          for (let i = 0; i <= segs; i++) {
-            spine.push({ x: clamp(curX, 24, 252), y: clamp(curY, 10, 310) });
-            curX += rand(-45, 78);
-            curY += rand(38, 66);
+        if (mode < 0.4) {
+          // 1. Flowing Liquid Ink Stream (elongated diagonal metaballs + droplets + cutouts)
+          const count = rInt(7, 10);
+          let cx = rand(55, 115);
+          let cy = rand(28, 52);
+          for (let i = 0; i < count; i++) {
+            const ang = rand(-0.9, 1.1);
+            posBlobs.push({
+              x: cx, y: cy,
+              r: rand(13, 24),
+              cos: Math.cos(ang), sin: Math.sin(ang),
+              sx: rand(1.3, 2.3), sy: rand(0.55, 0.9)
+            });
+            cx = Math.max(38, Math.min(238, cx + rand(-24, 44)));
+            cy = Math.min(294, cy + rand(24, 38));
           }
-
-          let mainD = '';
-          for (let i = 0; i < spine.length - 1; i++) {
-            const p0 = spine[i];
-            const p1 = spine[i + 1];
-            const mx = (p0.x + p1.x) / 2 + rand(-24, 24);
-            const my = (p0.y + p1.y) / 2 + rand(-14, 14);
-            const w0 = rand(4, 11);
-            addTaperedCurve(p0.x, p0.y, mx, my, p1.x, p1.y, w0);
-
-            // Primary curved thorn branching out
-            const side = Math.random() > 0.45 ? 1 : -1;
-            const bLen = rand(34, 88);
-            const bAng = Math.atan2(p1.y - p0.y, p1.x - p0.x) + side * rand(0.55, 1.35);
-            const tx = clamp(mx + Math.cos(bAng) * bLen, 14, 264);
-            const ty = clamp(my + Math.sin(bAng) * bLen, 8, 312);
-            const cx = (mx + tx) / 2 + rand(-22, 22);
-            const cy = (my + ty) / 2 + rand(-22, 22);
-            addTaperedCurve(mx, my, cx, cy, tx, ty, rand(3.5, 8.5));
-
-            // Secondary sub-thorn
-            if (Math.random() > 0.35) {
-              const sAng = bAng - side * rand(0.45, 1.0);
-              const sLen = rand(18, 44);
-              const sx = clamp(cx + Math.cos(sAng) * sLen, 14, 264);
-              const sy = clamp(cy + Math.sin(sAng) * sLen, 8, 312);
-              addTaperedCurve(cx, cy, (cx + sx) / 2 + rand(-10, 10), (cy + sy) / 2 + rand(-10, 10), sx, sy, rand(2, 4.5));
-            }
-          }
-
-          // Organic slit cutouts in thicker junctions
-          for (let c = 0; c < rInt(2, 3); c++) {
-            const jp = spine[rInt(1, spine.length - 2)];
-            const rx = rand(3.5, 8);
-            const ry = rand(7, 15);
-            const hx = clamp(jp.x + rand(-10, 10), 26, 250);
-            const hy = clamp(jp.y + rand(-10, 10), 20, 300);
-            mainD += ` M ${mapX(hx - rx)} ${hy.toFixed(1)} A ${rx.toFixed(1)} ${ry.toFixed(1)} 0 1 0 ${mapX(hx + rx)} ${hy.toFixed(1)} A ${rx.toFixed(1)} ${ry.toFixed(1)} 0 1 0 ${mapX(hx - rx)} ${hy.toFixed(1)} Z`;
-          }
-          if (mainD) paths.push(mainD.trim());
-        } else if (styleRoll < 0.68) {
-          // 2. Recursive Fractal Vein / Lightning Sigil
-          function growBranch(x, y, angle, len, width, depth) {
-            if (depth <= 0 || len < 14) return;
-            const bend = rand(-0.55, 0.55);
-            const ex = clamp(x + Math.cos(angle) * len, 14, 264);
-            const ey = clamp(y + Math.sin(angle) * len, 8, 312);
-            const cx = (x + ex) / 2 + Math.cos(angle + Math.PI / 2) * (len * bend * 0.45);
-            const cy = (y + ey) / 2 + Math.sin(angle + Math.PI / 2) * (len * bend * 0.45);
-            addTaperedCurve(x, y, cx, cy, ex, ey, width);
-
-            const children = depth > 1 ? rInt(2, 3) : 1;
-            for (let k = 0; k < children; k++) {
-              const spread = (k === 0 ? -1 : 1) * rand(0.32, 0.85) + rand(-0.2, 0.2);
-              growBranch(ex, ey, angle + spread, len * rand(0.58, 0.78), width * 0.62, depth - 1);
-            }
-          }
-          const fromTop = Math.random() > 0.4;
-          const startX = rand(50, 220);
-          const startY = fromTop ? rand(14, 34) : rand(280, 304);
-          const baseAngle = fromTop ? rand(1.15, 2.0) : rand(-2.0, -1.15);
-          growBranch(startX, startY, baseAngle, rand(68, 96), rand(5.5, 9), 3);
-        } else if (styleRoll < 0.86) {
-          // 3. Chaotic Fluid Swirl & Ink Eddies
-          const fx = rand(70, 200);
-          const fy = rand(80, 240);
-          const arms = rInt(4, 6);
-          for (let a = 0; a < arms; a++) {
-            const ang = (a / arms) * Math.PI * 2 + rand(-0.4, 0.4);
-            const r1 = rand(18, 42);
-            const r2 = rand(65, 135);
-            const x1 = clamp(fx + Math.cos(ang) * r1, 18, 258);
-            const y1 = clamp(fy + Math.sin(ang) * r1, 12, 308);
-            const x2 = clamp(fx + Math.cos(ang + rand(0.6, 1.4)) * r2, 18, 258);
-            const y2 = clamp(fy + Math.sin(ang + rand(0.6, 1.4)) * r2, 12, 308);
-            const cx = clamp((x1 + x2) / 2 + Math.cos(ang + 1.5) * rand(22, 52), 16, 260);
-            const cy = clamp((y1 + y2) / 2 + Math.sin(ang + 1.5) * rand(22, 52), 10, 310);
-            addTaperedCurve(x1, y1, cx, cy, x2, y2, rand(4, 11));
-          }
-        } else {
-          // 4. Asymmetric Metaball Web + Micro-sparks
-          const nodes = [];
-          const nCount = rInt(4, 5);
-          for (let i = 0; i < nCount; i++) {
-            nodes.push({
-              x: rand(44, 232),
-              y: rand(34, 286),
-              r: rand(12, 40)
+          for (let d = 0; d < rInt(2, 4); d++) {
+            const b = posBlobs[rInt(0, posBlobs.length - 1)];
+            posBlobs.push({
+              x: Math.max(26, Math.min(254, b.x + rand(-48, 48))),
+              y: Math.max(20, Math.min(300, b.y + rand(-30, 30))),
+              r: rand(8, 15), cos: 1, sin: 0, sx: 1, sy: 1
             });
           }
-          nodes.sort((a, b) => a.y - b.y);
-          nodes.forEach((n) => {
-            const rIn = n.r * rand(0.55, 0.78);
-            const d = `M ${mapX(n.x - n.r)} ${n.y.toFixed(1)} A ${n.r.toFixed(1)} ${n.r.toFixed(1)} 0 1 0 ${mapX(n.x + n.r)} ${n.y.toFixed(1)} A ${n.r.toFixed(1)} ${n.r.toFixed(1)} 0 1 0 ${mapX(n.x - n.r)} ${n.y.toFixed(1)} Z M ${mapX(n.x - rIn)} ${n.y.toFixed(1)} A ${rIn.toFixed(1)} ${rIn.toFixed(1)} 0 1 1 ${mapX(n.x + rIn)} ${n.y.toFixed(1)} A ${rIn.toFixed(1)} ${rIn.toFixed(1)} 0 1 1 ${mapX(n.x - rIn)} ${n.y.toFixed(1)} Z`;
-            paths.push(d);
-          });
-          for (let i = 0; i < nodes.length - 1; i++) {
-            const a = nodes[i];
-            const b = nodes[i + 1];
-            const mx = (a.x + b.x) / 2 + rand(-24, 24);
-            const my = (a.y + b.y) / 2;
-            addTaperedCurve(a.x, a.y, mx, my, b.x, b.y, rand(3, 7));
+          for (let n = 0; n < rInt(2, 3); n++) {
+            const b = posBlobs[rInt(1, posBlobs.length - 2)];
+            negBlobs.push({
+              x: b.x + rand(-10, 10),
+              y: b.y + rand(-10, 10),
+              r: rand(10, 17), cos: 1, sin: 0, sx: 1, sy: 1
+            });
+          }
+        } else if (mode < 0.72) {
+          // 2. Gooey Metaball Cluster + Carved Negative-Space Rings
+          const count = rInt(8, 11);
+          for (let i = 0; i < count; i++) {
+            const ang = rand(0, Math.PI);
+            posBlobs.push({
+              x: rand(46, 232),
+              y: 34 + (i / count) * 252 + rand(-18, 18),
+              r: rand(14, 27),
+              cos: Math.cos(ang), sin: Math.sin(ang),
+              sx: rand(0.85, 1.65), sy: rand(0.75, 1.2)
+            });
+          }
+          for (let n = 0; n < rInt(3, 4); n++) {
+            const b = posBlobs[rInt(0, posBlobs.length - 1)];
+            negBlobs.push({
+              x: b.x + rand(-12, 12),
+              y: b.y + rand(-12, 12),
+              r: rand(11, 18), cos: 1, sin: 0, sx: 1, sy: 1
+            });
+          }
+        } else {
+          // 3. Swirling Fluid Vortex / Ink Splash
+          const fx = rand(85, 195);
+          const fy = rand(95, 225);
+          const arms = rInt(3, 4);
+          for (let a = 0; a < arms; a++) {
+            const baseA = (a / arms) * Math.PI * 2 + rand(-0.3, 0.3);
+            for (let s = 0; s < 4; s++) {
+              const dist = 16 + s * rand(22, 30);
+              const ang = baseA + s * 0.38;
+              posBlobs.push({
+                x: Math.max(28, Math.min(252, fx + Math.cos(ang) * dist)),
+                y: Math.max(22, Math.min(298, fy + Math.sin(ang) * dist)),
+                r: Math.max(8, 22 - s * 3.5),
+                cos: Math.cos(ang), sin: Math.sin(ang),
+                sx: 1.5, sy: 0.7
+              });
+            }
+          }
+          negBlobs.push({ x: fx + rand(-8, 8), y: fy + rand(-8, 8), r: rand(13, 20), cos: 1, sin: 0, sx: 1, sy: 1 });
+        }
+
+        // Evaluate scalar field on (N+1) x (N+1) grid
+        const stride = N + 1;
+        const field = new Float32Array(stride * stride);
+        for (let gy = 1; gy < N; gy++) {
+          const y = gy * cellH;
+          for (let gx = 1; gx < N; gx++) {
+            const x = gx * cellW;
+            let sum = 0;
+            for (let i = 0; i < posBlobs.length; i++) {
+              const b = posBlobs[i];
+              const dx = x - b.x;
+              const dy = y - b.y;
+              const rx = (dx * b.cos + dy * b.sin) / b.sx;
+              const ry = (-dx * b.sin + dy * b.cos) / b.sy;
+              sum += (b.r * b.r) / (rx * rx + ry * ry + 1);
+            }
+            for (let i = 0; i < negBlobs.length; i++) {
+              const b = negBlobs[i];
+              const dx = x - b.x;
+              const dy = y - b.y;
+              sum -= (b.r * b.r) / (dx * dx + dy * dy + 1);
+            }
+            field[gy * stride + gx] = sum;
           }
         }
-        return paths;
+
+        // Marching Squares segment extraction at threshold = 1.0
+        const TH = 1.0;
+        const interp = (a, b, va, vb) => {
+          const d = vb - va;
+          const t = Math.abs(d) < 1e-6 ? 0.5 : (TH - va) / d;
+          return a + Math.max(0, Math.min(1, t)) * (b - a);
+        };
+
+        // Lookup table of edge pairs per 4-bit case (TL=8, TR=4, BR=2, BL=1)
+        // Edges: 0=top, 1=right, 2=bottom, 3=left
+        const MS_TABLE = [
+          [], [[3, 2]], [[2, 1]], [[3, 1]],
+          [[1, 0]], [[3, 0], [1, 2]], [[2, 0]], [[3, 0]],
+          [[0, 3]], [[0, 2]], [[0, 1], [2, 3]], [[0, 1]],
+          [[1, 3]], [[1, 2]], [[2, 3]], []
+        ];
+
+        const segs = [];
+        const adj = new Map();
+        const keyOf = (x, y) => `${Math.round(x * 10)},${Math.round(y * 10)}`;
+
+        for (let gy = 0; gy < N; gy++) {
+          const y0 = gy * cellH;
+          const y1 = y0 + cellH;
+          for (let gx = 0; gx < N; gx++) {
+            const x0 = gx * cellW;
+            const x1 = x0 + cellW;
+            const vTL = field[gy * stride + gx];
+            const vTR = field[gy * stride + gx + 1];
+            const vBR = field[(gy + 1) * stride + gx + 1];
+            const vBL = field[(gy + 1) * stride + gx];
+            const code = (vTL >= TH ? 8 : 0) | (vTR >= TH ? 4 : 0) | (vBR >= TH ? 2 : 0) | (vBL >= TH ? 1 : 0);
+            const pairs = MS_TABLE[code];
+            if (!pairs.length) continue;
+
+            const edgePt = (e) => {
+              if (e === 0) return [interp(x0, x1, vTL, vTR), y0];
+              if (e === 1) return [x1, interp(y0, y1, vTR, vBR)];
+              if (e === 2) return [interp(x0, x1, vBL, vBR), y1];
+              return [x0, interp(y0, y1, vTL, vBL)];
+            };
+
+            for (let p = 0; p < pairs.length; p++) {
+              const pA = edgePt(pairs[p][0]);
+              const pB = edgePt(pairs[p][1]);
+              const idx = segs.length;
+              segs.push({ pA, pB, used: false });
+              const kA = keyOf(pA[0], pA[1]);
+              const kB = keyOf(pB[0], pB[1]);
+              if (!adj.has(kA)) adj.set(kA, []);
+              if (!adj.has(kB)) adj.set(kB, []);
+              adj.get(kA).push(idx);
+              adj.get(kB).push(idx);
+            }
+          }
+        }
+
+        // Stitch segments into closed loops and smooth via midpoint quadratic Beziers
+        let combinedD = '';
+        for (let i = 0; i < segs.length; i++) {
+          if (segs[i].used) continue;
+          segs[i].used = true;
+          const loop = [segs[i].pA, segs[i].pB];
+          let curPt = segs[i].pB;
+          const startKey = keyOf(segs[i].pA[0], segs[i].pA[1]);
+
+          for (let guard = 0; guard < 2000; guard++) {
+            const k = keyOf(curPt[0], curPt[1]);
+            if (k === startKey) break;
+            const candidates = adj.get(k) || [];
+            let nextIdx = -1;
+            for (let c = 0; c < candidates.length; c++) {
+              if (!segs[candidates[c]].used) {
+                nextIdx = candidates[c];
+                break;
+              }
+            }
+            if (nextIdx === -1) break;
+            segs[nextIdx].used = true;
+            const s = segs[nextIdx];
+            const nxt = keyOf(s.pA[0], s.pA[1]) === k ? s.pB : s.pA;
+            loop.push(nxt);
+            curPt = nxt;
+          }
+
+          if (loop.length < 8) continue;
+          // Subsample every 2nd point for ultra-smooth organic Beziers
+          const pts = [];
+          for (let j = 0; j < loop.length; j += 2) {
+            pts.push([mapX(loop[j][0]), loop[j][1]]);
+          }
+          if (pts.length < 4) continue;
+
+          const last = pts[pts.length - 1];
+          const first = pts[0];
+          let d = `M ${((last[0] + first[0]) / 2).toFixed(1)} ${((last[1] + first[1]) / 2).toFixed(1)} `;
+          for (let j = 0; j < pts.length; j++) {
+            const p0 = pts[j];
+            const p1 = pts[(j + 1) % pts.length];
+            const mx = (p0[0] + p1[0]) / 2;
+            const my = (p0[1] + p1[1]) / 2;
+            d += `Q ${p0[0].toFixed(1)} ${p0[1].toFixed(1)}, ${mx.toFixed(1)} ${my.toFixed(1)} `;
+          }
+          combinedD += d + 'Z ';
+        }
+
+        return combinedD ? [combinedD.trim()] : [];
       }
 
       function overlayPathsToSvg(paths) {
