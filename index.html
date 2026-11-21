@@ -1934,6 +1934,54 @@
       display: block;
     }
 
+    .shaper-tool-btn.active-purple {
+      background: rgba(168, 85, 247, 0.16);
+      border-color: rgba(168, 85, 247, 0.7);
+      color: #c084fc;
+    }
+
+    .shaper-tool-btn.active-purple-line {
+      background: rgba(168, 85, 247, 0.06);
+      border: 1px dashed rgba(168, 85, 247, 0.78);
+      color: #c084fc;
+    }
+
+    .shaper-l3-cell {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      padding: 10px 44px 10px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shaper-l3-cell svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    .shaper-stage.l3-off .shaper-l3-viewport {
+      display: none;
+    }
+
+    .shaper-stage.l3-shape .shaper-l3-path {
+      fill: #9333ea;
+      fill-rule: evenodd;
+      stroke: none;
+    }
+
+    .shaper-stage.l3-line .shaper-l3-path {
+      fill: none;
+      stroke: #9333ea;
+      stroke-width: 1.8;
+      vector-effect: non-scaling-stroke;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
     .shaper-stage.l2-off .shaper-overlay-viewport {
       display: none;
     }
@@ -2953,8 +3001,11 @@
           <button type="button" class="shaper-tool-btn" id="shaperL2LockBtn" aria-label="Закріпити 2-й шар" title="Закріпити 2-й шар">
             <img id="shaperL2LockImg" src="./UI/lock.png" alt="Замок 2-го шару" style="width:14px;height:14px;" />
           </button>
-          <button type="button" class="shaper-tool-btn is-soon" id="shaperL3Btn" aria-label="Шар 3: Кіберсигілізм (скоро)" title="Шар 3: Кіберсигілізм (скоро)" style="color:#c084fc;">
+          <button type="button" class="shaper-tool-btn active-purple" id="shaperL3Btn" aria-label="Шар 3: Кіберсигілізм (Шейп / Лайн / Вимк)" title="Шар 3: Кіберсигілізм (Шейп / Лайн / Вимк)">
             <span class="shaper-mask-icon" style="-webkit-mask-image:url('./UI/spiral.png');mask-image:url('./UI/spiral.png');" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="shaper-tool-btn" id="shaperL3LockBtn" aria-label="Закріпити 3-й шар" title="Закріпити 3-й шар">
+            <img id="shaperL3LockImg" src="./UI/lock.png" alt="Замок 3-го шару" style="width:14px;height:14px;" />
           </button>
         </div>
         <button type="button" class="shaper-tool-btn" id="shaperCopyBtn" aria-label="Скопіювати шейп" title="Скопіювати чистий шейп" style="color:#ffffff;">
@@ -6318,7 +6369,22 @@
     const shaperL2LockBtn = document.getElementById('shaperL2LockBtn');
     const shaperL2LockImg = document.getElementById('shaperL2LockImg');
     const shaperL3Btn = document.getElementById('shaperL3Btn');
+    const shaperL3LockBtn = document.getElementById('shaperL3LockBtn');
+    const shaperL3LockImg = document.getElementById('shaperL3LockImg');
     const shaperCopyBtn = document.getElementById('shaperCopyBtn');
+
+    const VECTOR_SIGILS = [
+      'Group 54.svg', 'Group 55.svg', 'Group 56.svg',
+      'Силует 1.svg', 'Силует 2.svg', 'Силует 3.svg', 'Силует 4.svg', 'Силует 5.svg',
+      'Фігура 1.svg', 'Фігура 2.svg', 'Фігура 3.svg', 'Фігура 4.svg', 'Фігура 5.svg',
+      'Фігура 6.svg', 'Фігура 7.svg', 'Фігура 8.svg', 'Фігура 10.svg', 'Фігура 12.svg',
+      'Фігура 14.svg', 'Фігура 15.svg', 'Фігура 16.svg', 'Фігура 17.svg', 'Фігура 18.svg',
+      'Фігура 19.svg', 'Фігура 20.svg', 'Фігура 21.svg', 'Фігура 23.svg', 'Фігура 24.svg',
+      'Фігура 25.svg', 'Фігура 26.svg', 'Фігура 27.svg', 'Фігура 28.svg', 'Фігура 29.svg',
+      'Фігура 30.svg', 'Фігура 31.svg', 'Фігура 32.svg', 'Фігура 33.svg', 'Фігура 34.svg',
+      'Фігура 35.svg', 'Фігура 36.svg', 'Фігура 37.svg', 'Фігура 38.svg', 'Фігура 39.svg',
+      'Фігура 40.svg', 'Фігура 41.svg', 'Фігура 42.svg', 'Фігура 43.svg', 'Фігура 44.svg'
+    ];
 
     const Shaper = (() => {
       const STRIP_COUNT = 5;
@@ -6326,11 +6392,58 @@
       const currentPieces = new Array(STRIP_COUNT).fill(null);
       const tracks = [];
       let overlayTrack = null;
+      let l3Track = null;
       let currentL2Paths = [];
+      let currentL3Item = null;
+      const vectorCache = new Map();
       let lineMode = false;
       let l2Mode = 'shape'; // 'shape' | 'line' | 'off'
+      let l3Mode = 'shape'; // 'shape' | 'line' | 'off'
       let l2Locked = false;
+      let l3Locked = false;
       let spinning = false;
+
+      async function loadVectorSigil(filename) {
+        if (vectorCache.has(filename)) return vectorCache.get(filename);
+        try {
+          const res = await fetch(`./vectors/${encodeURIComponent(filename)}`);
+          if (!res.ok) return null;
+          const text = await res.text();
+          const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
+          const svg = doc.querySelector('svg');
+          if (!svg) return null;
+          let vbW = Number(svg.getAttribute('width')) || 300;
+          let vbH = Number(svg.getAttribute('height')) || 300;
+          const vb = (svg.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+          if (vb.length === 4 && vb[2] > 0 && vb[3] > 0) {
+            vbW = vb[2];
+            vbH = vb[3];
+          }
+          const paths = Array.from(svg.querySelectorAll('path'))
+            .map((p) => p.getAttribute('d'))
+            .filter(Boolean);
+          if (!paths.length) return null;
+          const item = { vbW, vbH, paths };
+          vectorCache.set(filename, item);
+          return item;
+        } catch (_) {
+          return null;
+        }
+      }
+
+      async function pickRandomSigil() {
+        const name = VECTOR_SIGILS[rInt(0, VECTOR_SIGILS.length - 1)];
+        const data = await loadVectorSigil(name);
+        if (!data) return null;
+        return { ...data, flipX: Math.random() > 0.5 };
+      }
+
+      function sigilToSvg(item) {
+        if (!item) return '';
+        const flipStyle = item.flipX ? ' style="transform:scaleX(-1);"' : '';
+        const pathTags = item.paths.map((d) => `<path class="shaper-l3-path" d="${d}" />`).join('');
+        return `<svg viewBox="0 0 ${item.vbW} ${item.vbH}" preserveAspectRatio="xMidYMid meet"${flipStyle} aria-hidden="true">${pathTags}</svg>`;
+      }
 
       const rand = (min, max) => min + Math.random() * (max - min);
       const rInt = (min, max) => Math.floor(rand(min, max + 1));
@@ -6758,6 +6871,23 @@
         overlayViewport.appendChild(overlayTrack);
         shaperStage.appendChild(overlayViewport);
         initOverlayTrack();
+
+        const l3Viewport = document.createElement('div');
+        l3Viewport.className = 'shaper-overlay-viewport shaper-l3-viewport';
+        l3Track = document.createElement('div');
+        l3Track.className = 'shaper-overlay-track';
+        l3Viewport.appendChild(l3Track);
+        shaperStage.appendChild(l3Viewport);
+
+        pickRandomSigil().then((item) => {
+          if (!item || !l3Track) return;
+          currentL3Item = item;
+          l3Track.innerHTML = '';
+          const cell = document.createElement('div');
+          cell.className = 'shaper-l3-cell';
+          cell.innerHTML = sigilToSvg(item);
+          l3Track.appendChild(cell);
+        });
       }
 
       async function spinVisible() {
@@ -6767,7 +6897,8 @@
           if (!locked[i]) unlockedIndices.push(i);
         }
         const canSpinL2 = l2Mode !== 'off' && !l2Locked && Boolean(overlayTrack);
-        if (unlockedIndices.length === 0 && !canSpinL2) {
+        const canSpinL3 = l3Mode !== 'off' && !l3Locked && Boolean(l3Track);
+        if (unlockedIndices.length === 0 && !canSpinL2 && !canSpinL3) {
           showToast('Усе закріплено 🔒');
           return;
         }
@@ -6778,6 +6909,10 @@
         SoundFX.unlock();
 
         const STEPS = 8;
+        let l3Items = [];
+        if (canSpinL3) {
+          l3Items = (await Promise.all(Array.from({ length: STEPS }, () => pickRandomSigil()))).filter(Boolean);
+        }
         const promises = unlockedIndices.map((idx, order) => new Promise((resolve) => {
           const track = tracks[idx];
           if (!track) return resolve();
@@ -6845,6 +6980,34 @@
           }));
         }
 
+        if (canSpinL3 && l3Items.length) {
+          promises.push(new Promise((resolve) => {
+            l3Items.forEach((item) => {
+              const cell = document.createElement('div');
+              cell.className = 'shaper-l3-cell';
+              cell.innerHTML = sigilToSvg(item);
+              l3Track.appendChild(cell);
+            });
+            currentL3Item = l3Items[l3Items.length - 1];
+            l3Track.style.transition = 'none';
+            l3Track.style.transform = 'translate3d(0%, 0, 0)';
+            void l3Track.offsetWidth;
+
+            const l3Duration = 1420;
+            l3Track.style.transition = `transform ${l3Duration}ms cubic-bezier(0.14, 0.86, 0.22, 1)`;
+            l3Track.style.transform = `translate3d(-${l3Items.length * 100}%, 0, 0)`;
+
+            setTimeout(() => {
+              l3Track.style.transition = 'none';
+              while (l3Track.children.length > 1) {
+                l3Track.removeChild(l3Track.firstElementChild);
+              }
+              l3Track.style.transform = 'translate3d(0%, 0, 0)';
+              resolve();
+            }, l3Duration + 30);
+          }));
+        }
+
         await Promise.all(promises);
         SoundFX.finishAll();
         if (typeof Achievements !== 'undefined') Achievements.recordShaperSpin();
@@ -6885,6 +7048,22 @@
           shaperL2Btn.classList.toggle('active-cyan-line', next === 'line');
         }
         const labels = { shape: 'Шар 2: Шейп', line: 'Шар 2: Лайн', off: 'Шар 2: Вимкнено' };
+        showToast(labels[next], { top: true });
+      }
+
+      function cycleLayer3() {
+        const order = ['shape', 'line', 'off'];
+        const next = order[(order.indexOf(l3Mode) + 1) % order.length];
+        l3Mode = next;
+        if (shaperStage) {
+          shaperStage.classList.remove('l3-shape', 'l3-line', 'l3-off');
+          shaperStage.classList.add(`l3-${next}`);
+        }
+        if (shaperL3Btn) {
+          shaperL3Btn.classList.toggle('active-purple', next === 'shape');
+          shaperL3Btn.classList.toggle('active-purple-line', next === 'line');
+        }
+        const labels = { shape: 'Шар 3: Шейп', line: 'Шар 3: Лайн', off: 'Шар 3: Вимкнено' };
         showToast(labels[next], { top: true });
       }
 
@@ -6950,6 +7129,30 @@
           });
           ctx.restore();
         }
+        if (l3Mode !== 'off' && currentL3Item) {
+          ctx.save();
+          const padW = 250;
+          const padH = 290;
+          const s = Math.min(padW / currentL3Item.vbW, padH / currentL3Item.vbH);
+          ctx.translate(144, 160);
+          if (currentL3Item.flipX) ctx.scale(-1, 1);
+          ctx.scale(s, s);
+          ctx.translate(-currentL3Item.vbW / 2, -currentL3Item.vbH / 2);
+          currentL3Item.paths.forEach((d) => {
+            const path = new Path2D(d);
+            if (l3Mode === 'line') {
+              ctx.strokeStyle = '#9333ea';
+              ctx.lineWidth = 1.8 / s;
+              ctx.lineJoin = 'round';
+              ctx.lineCap = 'round';
+              ctx.stroke(path);
+            } else {
+              ctx.fillStyle = '#9333ea';
+              ctx.fill(path, 'evenodd');
+            }
+          });
+          ctx.restore();
+        }
         ctx.restore();
 
         const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
@@ -6995,16 +7198,28 @@
         SoundFX.lock(l2Locked);
       }
 
+      function toggleLayer3Lock() {
+        if (spinning) return;
+        l3Locked = !l3Locked;
+        if (shaperL3LockBtn) shaperL3LockBtn.classList.toggle('active-purple', l3Locked);
+        if (shaperL3LockImg) shaperL3LockImg.src = l3Locked ? './UI/lock2.png' : './UI/lock.png';
+        SoundFX.lock(l3Locked);
+      }
+
       return {
         init() {
           buildStage();
           setMode(false);
-          if (shaperStage) shaperStage.classList.add('l2-shape');
+          if (shaperStage) {
+            shaperStage.classList.add('l2-shape', 'l3-shape');
+          }
         },
         spinVisible,
         cycleLayer1,
         cycleLayer2,
+        cycleLayer3,
         toggleLayer2Lock,
+        toggleLayer3Lock,
         copyPureShape
       };
     })();
@@ -7028,10 +7243,11 @@
     if (shaperL3Btn) shaperL3Btn.addEventListener('click', () => {
       triggerHaptic('light');
       SoundFX.pop();
-      showToast('Шар 3: Кіберсигілізм (скоро з’явиться)', {
-        top: true,
-        html: `Шар 3: Кіберсигілізм <span style="color:rgba(255,255,255,0.48);font-weight:500;">(скоро з’явиться)</span>`
-      });
+      Shaper.cycleLayer3();
+    });
+    if (shaperL3LockBtn) shaperL3LockBtn.addEventListener('click', () => {
+      triggerHaptic('light');
+      Shaper.toggleLayer3Lock();
     });
     if (shaperCopyBtn) shaperCopyBtn.addEventListener('click', () => Shaper.copyPureShape());
 
