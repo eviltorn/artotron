@@ -2781,7 +2781,7 @@
           </div>
         </div>
       </div>
-      <button type="button" class="settings-version-btn font-hand" id="settingsVersionBtn" title="Що нового">v.0.5 • що нового</button>
+      <button type="button" class="settings-version-btn font-hand" id="settingsVersionBtn" title="Що нового">v.0.6 • що нового</button>
       <button type="button" class="modal-ok-btn" id="settingsOkBtn">Зрозуміло</button>
     </div>
   </div>
@@ -2888,7 +2888,7 @@
   <div class="modal-backdrop" id="whatsNewModal" role="dialog" aria-modal="true" aria-labelledby="whatsNewTitle">
     <div class="modal-card">
       <div class="modal-top">
-        <span class="modal-badge"><img src="./UI/dice.png" alt="" /> ЩО НОВОГО • v.0.5</span>
+        <span class="modal-badge"><img src="./UI/dice.png" alt="" /> ЩО НОВОГО • v.0.6</span>
         <button type="button" class="modal-close-x" id="whatsNewCloseX" aria-label="Закрити">✕</button>
       </div>
       <h2 class="modal-title font-hand" id="whatsNewTitle" style="font-size:18px; line-height:1.25; text-align:center; margin-bottom:4px;"><span style="color:#ff4f9a;">Артотрон</span> оновився!</h2>
@@ -2896,19 +2896,15 @@
       <div class="whatsnew-list">
         <div class="whatsnew-item">
           <span class="whatsnew-item-icon"><img src="./UI/ratingstar.png" alt="" /></span>
-          <div><strong>Шейпер силуетів</strong>Генератор образів із 5 смуг: перемикай Шейп / Лайн, фіксуй вдалі частини та копіюй готовий PNG.</div>
+          <div><strong>Шейпер 2.0: 2-й шар</strong>Додали блакитний шар (кіберсигілізм, фрактали, флюїди) з окремими режимами Шейп/Лайн та замочком!</div>
         </div>
         <div class="whatsnew-item">
           <span class="whatsnew-item-icon"><img src="./UI/dice.png" alt="" /></span>
-          <div><strong>Ачівки та стріки</strong>25 завдань і щоденні серії — відкривай нагороди, поки шукаєш ідеї.</div>
+          <div><strong>Розширені палітри (3–6 кольорів)</strong>У слоті палітри тепер випадає від 3 до 6 гармонійних кольорів замість фіксованих 3.</div>
         </div>
         <div class="whatsnew-item">
-          <span class="whatsnew-item-icon"><img src="./UI/bell.png" alt="" /></span>
-          <div><strong>Нагадування малювати</strong>У Налаштуваннях можна обрати зручну годину й увімкнути нагадування в Telegram.</div>
-        </div>
-        <div class="whatsnew-item">
-          <span class="whatsnew-item-icon"><img src="./UI/feedback.png" alt="" /></span>
-          <div><strong>Зворотній зв’язок і скріншоти</strong>Оцінюй Артотрон зірочками та прикріплюй до 3 скріншотів до відгуку.</div>
+          <span class="whatsnew-item-icon"><img src="./UI/calendar.png" alt="" /></span>
+          <div><strong>Гаряча тема на 3 дні</strong>Спільний челендж у списку сеттінгів із таймером та можливістю надіслати свій арт.</div>
         </div>
       </div>
       <button type="button" class="modal-ok-btn font-hand" id="whatsNewOkBtn" style="font-size:15px; height:48px;">КРУТО, ПОЇХАЛИ!</button>
@@ -4202,7 +4198,8 @@
           const base = entry[2];
           if (base.length !== 3) return;
           const h = hashStr(entry[0] || '');
-          const targetCount = 3 + (h % 4); // 3, 4, 5 або 6 кольорів
+          const roll = h % 10;
+          const targetCount = roll < 1 ? 3 : roll < 4 ? 4 : roll < 7 ? 5 : 6; // 90% палітр мають 4–6 кольорів
           if (targetCount === 3) return;
 
           const extra = [];
@@ -6215,7 +6212,7 @@
       }
     });
 
-    const CURRENT_NEWS_ID = 'v0.5.0';
+    const CURRENT_NEWS_ID = 'v0.6.0';
     const NEWS_STORAGE_KEY = 'artotron_seen_news_v1';
     const whatsNewModal = document.getElementById('whatsNewModal');
     const whatsNewCloseX = document.getElementById('whatsNewCloseX');
