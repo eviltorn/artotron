@@ -6406,7 +6406,7 @@
       async function loadVectorSigil(filename) {
         if (vectorCache.has(filename)) return vectorCache.get(filename);
         try {
-          const res = await fetch(`./vectors/${encodeURIComponent(filename)}`);
+          const res = await fetch(`./Vectors/${encodeURIComponent(filename)}`);
           if (!res.ok) return null;
           const text = await res.text();
           const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
