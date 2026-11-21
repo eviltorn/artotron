@@ -2995,14 +2995,14 @@
           <button type="button" class="shaper-tool-btn active" id="shaperL1Btn" aria-label="Шар 1: Шейп / Лайн" title="Шар 1: Шейп / Лайн">
             <svg id="shaperL1Icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.4 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.2l-5.8 3.1 1.1-6.5L2.6 9.2l6.5-.9L12 2.4Z"/></svg>
           </button>
-          <button type="button" class="shaper-tool-btn active-cyan" id="shaperL2Btn" aria-label="Шар 2: Флюїд (Шейп / Лайн / Вимк)" title="Шар 2: Флюїд (Шейп / Лайн / Вимк)">
-            <span class="shaper-mask-icon" style="-webkit-mask-image:url('./UI/Goo.png');mask-image:url('./UI/Goo.png');" aria-hidden="true"></span>
+          <button type="button" class="shaper-tool-btn" id="shaperL2Btn" aria-label="Шар 2: Флюїд (Шейп / Лайн / Вимк)" title="Шар 2: Флюїд (Шейп / Лайн / Вимк)">
+            <span class="shaper-mask-icon" id="shaperL2Icon" style="-webkit-mask-image:url('./UI/Goo_shape.png');mask-image:url('./UI/Goo_shape.png');" aria-hidden="true"></span>
           </button>
           <button type="button" class="shaper-tool-btn" id="shaperL2LockBtn" aria-label="Закріпити 2-й шар" title="Закріпити 2-й шар">
             <img id="shaperL2LockImg" src="./UI/lock.png" alt="Замок 2-го шару" style="width:14px;height:14px;" />
           </button>
-          <button type="button" class="shaper-tool-btn active-purple" id="shaperL3Btn" aria-label="Шар 3: Кіберсигілізм (Шейп / Лайн / Вимк)" title="Шар 3: Кіберсигілізм (Шейп / Лайн / Вимк)">
-            <span class="shaper-mask-icon" style="-webkit-mask-image:url('./UI/spiral.png');mask-image:url('./UI/spiral.png');" aria-hidden="true"></span>
+          <button type="button" class="shaper-tool-btn" id="shaperL3Btn" aria-label="Шар 3: Кіберсигілізм (Шейп / Лайн / Вимк)" title="Шар 3: Кіберсигілізм (Шейп / Лайн / Вимк)">
+            <span class="shaper-mask-icon" id="shaperL3Icon" style="-webkit-mask-image:url('./UI/spiral_shape.png');mask-image:url('./UI/spiral_shape.png');" aria-hidden="true"></span>
           </button>
           <button type="button" class="shaper-tool-btn" id="shaperL3LockBtn" aria-label="Закріпити 3-й шар" title="Закріпити 3-й шар">
             <img id="shaperL3LockImg" src="./UI/lock.png" alt="Замок 3-го шару" style="width:14px;height:14px;" />
@@ -6366,9 +6366,11 @@
     const shaperL1Btn = document.getElementById('shaperL1Btn');
     const shaperL1Icon = document.getElementById('shaperL1Icon');
     const shaperL2Btn = document.getElementById('shaperL2Btn');
+    const shaperL2Icon = document.getElementById('shaperL2Icon');
     const shaperL2LockBtn = document.getElementById('shaperL2LockBtn');
     const shaperL2LockImg = document.getElementById('shaperL2LockImg');
     const shaperL3Btn = document.getElementById('shaperL3Btn');
+    const shaperL3Icon = document.getElementById('shaperL3Icon');
     const shaperL3LockBtn = document.getElementById('shaperL3LockBtn');
     const shaperL3LockImg = document.getElementById('shaperL3LockImg');
     const shaperCopyBtn = document.getElementById('shaperCopyBtn');
@@ -6397,8 +6399,8 @@
       let currentL3Item = null;
       const vectorCache = new Map();
       let lineMode = false;
-      let l2Mode = 'shape'; // 'shape' | 'line' | 'off'
-      let l3Mode = 'shape'; // 'shape' | 'line' | 'off'
+      let l2Mode = 'off'; // 'off' | 'shape' | 'line'
+      let l3Mode = 'off'; // 'off' | 'shape' | 'line'
       let l2Locked = false;
       let l3Locked = false;
       let spinning = false;
@@ -7047,6 +7049,11 @@
           shaperL2Btn.classList.toggle('active-cyan', next === 'shape');
           shaperL2Btn.classList.toggle('active-cyan-line', next === 'line');
         }
+        if (shaperL2Icon) {
+          const iconUrl = next === 'line' ? './UI/Goo_line.png' : './UI/Goo_shape.png';
+          shaperL2Icon.style.webkitMaskImage = `url('${iconUrl}')`;
+          shaperL2Icon.style.maskImage = `url('${iconUrl}')`;
+        }
         const labels = { shape: 'Шар 2: Шейп', line: 'Шар 2: Лайн', off: 'Шар 2: Вимкнено' };
         showToast(labels[next], { top: true });
       }
@@ -7062,6 +7069,11 @@
         if (shaperL3Btn) {
           shaperL3Btn.classList.toggle('active-purple', next === 'shape');
           shaperL3Btn.classList.toggle('active-purple-line', next === 'line');
+        }
+        if (shaperL3Icon) {
+          const iconUrl = next === 'line' ? './UI/spiral_line.png' : './UI/spiral_shape.png';
+          shaperL3Icon.style.webkitMaskImage = `url('${iconUrl}')`;
+          shaperL3Icon.style.maskImage = `url('${iconUrl}')`;
         }
         const labels = { shape: 'Шар 3: Шейп', line: 'Шар 3: Лайн', off: 'Шар 3: Вимкнено' };
         showToast(labels[next], { top: true });
@@ -7211,7 +7223,7 @@
           buildStage();
           setMode(false);
           if (shaperStage) {
-            shaperStage.classList.add('l2-shape', 'l3-shape');
+            shaperStage.classList.add('l2-off', 'l3-off');
           }
         },
         spinVisible,
