@@ -1885,6 +1885,29 @@
       color: #00e5ff;
     }
 
+    .shaper-tool-btn.active-cyan-line {
+      background: rgba(0, 217, 255, 0.06);
+      border: 1px dashed rgba(0, 217, 255, 0.75);
+      color: #00e5ff;
+    }
+
+    .shaper-tool-btn.is-soon {
+      opacity: 0.36;
+    }
+
+    .shaper-mask-icon {
+      width: 18px;
+      height: 18px;
+      display: block;
+      background: currentColor;
+      -webkit-mask-position: center;
+      mask-position: center;
+      -webkit-mask-size: contain;
+      mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+
     .shaper-overlay-viewport {
       position: absolute;
       inset: 0;
@@ -2921,20 +2944,17 @@
       <h2 class="modal-title font-hand" id="shaperModalTitle" style="font-size:15.5px; line-height:1.25; text-align:center; margin-bottom:2px;"><span style="color:#ff4f9a;">Шейпер</span> - Шукаєш форму майбутнього<br/>шедевру? Тоді ти за адресою!</h2>
       <div class="shaper-toolbar">
         <div class="shaper-mode-group">
-          <button type="button" class="shaper-tool-btn active" id="shaperModeShapeBtn" aria-label="Шар 1: Шейп" title="Шар 1: Шейп">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.4 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.2l-5.8 3.1 1.1-6.5L2.6 9.2l6.5-.9L12 2.4Z"/></svg>
+          <button type="button" class="shaper-tool-btn active" id="shaperL1Btn" aria-label="Шар 1: Шейп / Лайн" title="Шар 1: Шейп / Лайн">
+            <svg id="shaperL1Icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.4 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.2l-5.8 3.1 1.1-6.5L2.6 9.2l6.5-.9L12 2.4Z"/></svg>
           </button>
-          <button type="button" class="shaper-tool-btn" id="shaperModeLineBtn" aria-label="Шар 1: Лайн" title="Шар 1: Лайн">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.9 2.7 5.6 6.2.9-4.5 4.4 1.1 6.2-5.5-2.9-5.5 2.9 1.1-6.2-4.5-4.4 6.2-.9L12 2.9Z"/></svg>
-          </button>
-          <button type="button" class="shaper-tool-btn active-cyan" id="shaperL2ShapeBtn" aria-label="Шар 2: Неотрайбл/Флюїд (Шейп)" title="Шар 2: Неотрайбл/Флюїд (Шейп)">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 9.2 9.8 3 14.5l5.4-1.3L6 21l6-5.2L18 21l-2.4-7.8 5.4 1.3-6.2-4.7L12 2Z"/></svg>
-          </button>
-          <button type="button" class="shaper-tool-btn" id="shaperL2LineBtn" aria-label="Шар 2: Неотрайбл/Флюїд (Лайн)" title="Шар 2: Неотрайбл/Флюїд (Лайн)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 9.4 9.8 3.5 14.3l5.1-1.2L6.3 20.5 12 15.6l5.7 4.9-2.3-7.4 5.1 1.2-5.9-4.5L12 2.5Z"/></svg>
+          <button type="button" class="shaper-tool-btn active-cyan" id="shaperL2Btn" aria-label="Шар 2: Флюїд (Шейп / Лайн / Вимк)" title="Шар 2: Флюїд (Шейп / Лайн / Вимк)">
+            <span class="shaper-mask-icon" style="-webkit-mask-image:url('./UI/Goo.png');mask-image:url('./UI/Goo.png');" aria-hidden="true"></span>
           </button>
           <button type="button" class="shaper-tool-btn" id="shaperL2LockBtn" aria-label="Закріпити 2-й шар" title="Закріпити 2-й шар">
             <img id="shaperL2LockImg" src="./UI/lock.png" alt="Замок 2-го шару" style="width:14px;height:14px;" />
+          </button>
+          <button type="button" class="shaper-tool-btn is-soon" id="shaperL3Btn" aria-label="Шар 3: Кіберсигілізм (скоро)" title="Шар 3: Кіберсигілізм (скоро)" style="color:#c084fc;">
+            <span class="shaper-mask-icon" style="-webkit-mask-image:url('./UI/spiral.png');mask-image:url('./UI/spiral.png');" aria-hidden="true"></span>
           </button>
         </div>
         <button type="button" class="shaper-tool-btn" id="shaperCopyBtn" aria-label="Скопіювати шейп" title="Скопіювати чистий шейп" style="color:#ffffff;">
@@ -6292,12 +6312,12 @@
     const shaperCloseX = document.getElementById('shaperCloseX');
     const shaperStage = document.getElementById('shaperStage');
     const shaperSpinBtn = document.getElementById('shaperSpinBtn');
-    const shaperModeShapeBtn = document.getElementById('shaperModeShapeBtn');
-    const shaperModeLineBtn = document.getElementById('shaperModeLineBtn');
-    const shaperL2ShapeBtn = document.getElementById('shaperL2ShapeBtn');
-    const shaperL2LineBtn = document.getElementById('shaperL2LineBtn');
+    const shaperL1Btn = document.getElementById('shaperL1Btn');
+    const shaperL1Icon = document.getElementById('shaperL1Icon');
+    const shaperL2Btn = document.getElementById('shaperL2Btn');
     const shaperL2LockBtn = document.getElementById('shaperL2LockBtn');
     const shaperL2LockImg = document.getElementById('shaperL2LockImg');
+    const shaperL3Btn = document.getElementById('shaperL3Btn');
     const shaperCopyBtn = document.getElementById('shaperCopyBtn');
 
     const Shaper = (() => {
@@ -6838,19 +6858,34 @@
           shaperStage.classList.toggle('mode-line', isLine);
           shaperStage.classList.toggle('mode-shape', !isLine);
         }
-        if (shaperModeShapeBtn) shaperModeShapeBtn.classList.toggle('active', !isLine);
-        if (shaperModeLineBtn) shaperModeLineBtn.classList.toggle('active', isLine);
+        if (shaperL1Btn) shaperL1Btn.classList.add('active');
+        if (shaperL1Icon) {
+          shaperL1Icon.setAttribute('fill', isLine ? 'none' : 'currentColor');
+          shaperL1Icon.setAttribute('stroke', isLine ? 'currentColor' : 'none');
+          shaperL1Icon.setAttribute('stroke-width', isLine ? '2' : '0');
+          shaperL1Icon.setAttribute('stroke-linejoin', 'round');
+        }
       }
 
-      function toggleLayer2(targetMode) {
-        const next = l2Mode === targetMode ? 'off' : targetMode;
+      function cycleLayer1() {
+        setMode(!lineMode);
+        showToast(lineMode ? 'Шар 1: Лайн' : 'Шар 1: Шейп', { top: true });
+      }
+
+      function cycleLayer2() {
+        const order = ['shape', 'line', 'off'];
+        const next = order[(order.indexOf(l2Mode) + 1) % order.length];
         l2Mode = next;
         if (shaperStage) {
           shaperStage.classList.remove('l2-shape', 'l2-line', 'l2-off');
           shaperStage.classList.add(`l2-${next}`);
         }
-        if (shaperL2ShapeBtn) shaperL2ShapeBtn.classList.toggle('active-cyan', next === 'shape');
-        if (shaperL2LineBtn) shaperL2LineBtn.classList.toggle('active-cyan', next === 'line');
+        if (shaperL2Btn) {
+          shaperL2Btn.classList.toggle('active-cyan', next === 'shape');
+          shaperL2Btn.classList.toggle('active-cyan-line', next === 'line');
+        }
+        const labels = { shape: 'Шар 2: Шейп', line: 'Шар 2: Лайн', off: 'Шар 2: Вимкнено' };
+        showToast(labels[next], { top: true });
       }
 
       async function copyPureShape() {
@@ -6967,8 +7002,8 @@
           if (shaperStage) shaperStage.classList.add('l2-shape');
         },
         spinVisible,
-        setMode,
-        toggleLayer2,
+        cycleLayer1,
+        cycleLayer2,
         toggleLayer2Lock,
         copyPureShape
       };
@@ -6976,29 +7011,27 @@
 
     bindBackdropModal(shaperBtn, shaperModal, [shaperCloseX]);
     if (shaperSpinBtn) shaperSpinBtn.addEventListener('click', () => Shaper.spinVisible());
-    if (shaperModeShapeBtn) shaperModeShapeBtn.addEventListener('click', () => {
+    if (shaperL1Btn) shaperL1Btn.addEventListener('click', () => {
       triggerHaptic('light');
       SoundFX.pop();
-      Shaper.setMode(false);
+      Shaper.cycleLayer1();
     });
-    if (shaperModeLineBtn) shaperModeLineBtn.addEventListener('click', () => {
+    if (shaperL2Btn) shaperL2Btn.addEventListener('click', () => {
       triggerHaptic('light');
       SoundFX.pop();
-      Shaper.setMode(true);
-    });
-    if (shaperL2ShapeBtn) shaperL2ShapeBtn.addEventListener('click', () => {
-      triggerHaptic('light');
-      SoundFX.pop();
-      Shaper.toggleLayer2('shape');
-    });
-    if (shaperL2LineBtn) shaperL2LineBtn.addEventListener('click', () => {
-      triggerHaptic('light');
-      SoundFX.pop();
-      Shaper.toggleLayer2('line');
+      Shaper.cycleLayer2();
     });
     if (shaperL2LockBtn) shaperL2LockBtn.addEventListener('click', () => {
       triggerHaptic('light');
       Shaper.toggleLayer2Lock();
+    });
+    if (shaperL3Btn) shaperL3Btn.addEventListener('click', () => {
+      triggerHaptic('light');
+      SoundFX.pop();
+      showToast('Шар 3: Кіберсигілізм (скоро з’явиться)', {
+        top: true,
+        html: `Шар 3: Кіберсигілізм <span style="color:rgba(255,255,255,0.48);font-weight:500;">(скоро з’явиться)</span>`
+      });
     });
     if (shaperCopyBtn) shaperCopyBtn.addEventListener('click', () => Shaper.copyPureShape());
 
