@@ -5846,7 +5846,7 @@
       const p = getActivePreset();
       presetEmoji.innerHTML = renderPresetIcon(state.preset, isHot ? '📅' : p.emoji);
       const baseName = isHot ? 'Гаряча тема' : p.name;
-      presetName.textContent = isEnvMode() ? `Оточення • ${baseName}` : baseName;
+      presetName.textContent = isHot ? baseName : `${isEnvMode() ? 'Оточення' : 'Персонажі'} • ${baseName}`;
       presetGrid.querySelectorAll('.preset-item').forEach((el) => {
         el.classList.toggle('active', el.dataset.presetId === state.preset);
       });
